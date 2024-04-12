@@ -1,5 +1,5 @@
 //
-//  SelectUserRoleView.swift
+//  SelectUserProfileView.swift
 //  PillinTime-iOS
 //
 //  Created by Jae Hyun Lee on 4/13/24.
@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-struct SelectUserRoleView: View {
+struct SelectUserProfileView: View {
     
     // MARK: - Properties
 
@@ -91,5 +91,5 @@ struct UserRoleView: View {
 }
 
 #Preview {
-    SelectUserRoleView()
+    SelectUserProfileView()
 }

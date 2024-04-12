@@ -1,5 +1,5 @@
 //
-//  PhoneNumberVerificationView.swift
+//  PhoneNumberInputView.swift
 //  PillinTime-iOS
 //
 //  Created by Jae Hyun Lee on 4/11/24.
@@ -8,7 +8,7 @@
 import SwiftUI
 import Combine
 
-struct PhoneNumberVerificationView: View {
+struct PhoneNumberInputView: View {
     
     @Environment(\.dismiss) var dismiss
     
@@ -56,5 +56,5 @@ struct PhoneNumberVerificationView: View {
 }
 
 #Preview {
-    PhoneNumberVerificationView()
+    PhoneNumberInputView()
 }

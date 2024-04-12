@@ -30,16 +30,17 @@ struct PhoneNumberInputView: View {
     
     var body: some View {
         NavigationView {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading) {
                 Text("휴대폰 본인 인증")
                     .font(.logo2ExtraBold)
                     .foregroundStyle(Color.gray100)
                     .padding(.top, 69)
+                    .padding(.bottom, 5)
                 
                 Text("본인 명의의 휴대폰 번호를 입력해주세요.")
                     .font(.body1Regular)
                     .foregroundStyle(Color.gray70)
-                    .padding(.bottom, 21)
+                    .padding(.bottom, 15)
                 
                 CustomTextInput(placeholder: "휴대폰 번호 입력",
                                 text: $validationViewModel.infoState.phoneNumber,

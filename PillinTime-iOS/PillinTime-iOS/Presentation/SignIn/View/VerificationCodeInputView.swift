@@ -20,7 +20,7 @@ struct VerificationCodeInputView: View {
         
         CustomNavigationBar()
         
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading) {
             
             Text("문자로 발송된\n인증번호를 입력해 주세요")
                 .font(.logo2ExtraBold)

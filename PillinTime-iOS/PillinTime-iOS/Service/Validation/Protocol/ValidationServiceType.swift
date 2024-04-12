@@ -30,5 +30,5 @@ protocol ValidationServiceType {
     ///
     /// 주민번호는 7자리의 숫자 형태 (뒷자리 첫번째 숫자까지만 저장)
     /// e.g., 0101284
-    func isValidSshFormat(_ ssh: String) -> Bool
+    func isValidSsnFormat(_ ssh: String) -> Bool
 }

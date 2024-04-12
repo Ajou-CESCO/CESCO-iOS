@@ -12,7 +12,8 @@ import Combine
 enum CustomTextInputStyle {
     case phoneNumber        // 전화번호 입력
     case verificationCode   // 인증코드 입력
-    case ssh                // 주민번호 입력
+    case ssn                // 주민번호 입력
+    case text               // 일반 입력
 }
 
 struct CustomTextInput: View {
@@ -33,67 +34,8 @@ struct CustomTextInput: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.white)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .strokeBorder(
-                                Color.primary60,
-                                lineWidth: 1
-                            )
-                            .background(Color.white)
-                            .animation(.easeInOut(duration: 0.1), value: isFocused)
-                    )
-                    .frame(maxWidth: .infinity, minHeight: 64, maxHeight: 64)
+            customTextField()
                 
-                HStack {
-                    TextField(placeholder,
-                              text: $text)
-                        .frame(maxWidth: .infinity,
-                               minHeight: 64,
-                               maxHeight: 64)
-                        .focused($isFocused)
-                        .padding()
-                        .onSubmit {
-                            onFocusOut?.send(text)
-                        }
-                        .disabled(disabled)
-                        .font(.h5Medium)
-                        .foregroundColor(.gray90)
-                        .keyboardType(.phonePad)
-                        .onChange(of: text, perform: { newValue in
-                            switch textInputStyle {
-                            case .phoneNumber, .ssh:
-                                text = formatPhoneNumber(phoneNumber: newValue)
-                            case .verificationCode:
-                                text = formatVerificationCode(verificationCode: newValue)
-                            }
-                        })
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                self.isFocused = true
-                            }
-                    }
-                    
-                    Spacer()
-                    
-                    // 텍스트 필드가 비어있지 않을 경우, clear 버튼 추가
-                    if !text.isEmpty {
-                        Button(action: {
-                            self.text = String()
-                        }, label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(Color.gray70)
-                                .padding()
-                        })
-                    }
-                }
-            }
-            .onTapGesture {
-                isFocused = true
-            }
-            
             Text(errorMessage)
                 .foregroundStyle(Color.error90)
                 .font(.body1Regular)
@@ -105,13 +47,88 @@ struct CustomTextInput: View {
     }
 }
 
+// MARK: - Methods
+
 extension CustomTextInput {
+    /// 공통적으로 쓰이는 TextField
+    private func customTextField() -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.white)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .strokeBorder(
+                            Color.primary60,
+                            lineWidth: 1
+                        )
+                        .background(Color.white)
+                        .animation(.easeInOut(duration: 0.1), value: isFocused)
+                )
+            .frame(maxWidth: .infinity, minHeight: 64, maxHeight: 64)
+            
+            HStack {
+               TextField(placeholder, text: $text)
+                   .frame(maxWidth: .infinity,
+                          minHeight: 64,
+                          maxHeight: 64)
+                   .focused($isFocused)
+                   .padding()
+                   .onSubmit {
+                       onFocusOut?.send(text)
+                   }
+                   .disabled(disabled)
+                   .font(.h5Medium)
+                   .foregroundColor(.gray90)
+                   .keyboardType({
+                       switch textInputStyle {
+                       case .phoneNumber, .ssn, .verificationCode:
+                           return .numberPad
+                       case .text:
+                           return .default
+                       }
+                   }())
+                   .onChange(of: text, perform: { newValue in
+                       switch textInputStyle {
+                       case .phoneNumber:
+                           text = formatPhoneNumber(phoneNumber: newValue)
+                       case .ssn:
+                           text = formatSsn(ssn: newValue)
+                       case .verificationCode:
+                           text = formatVerificationCode(verificationCode: newValue)
+                       default:
+                           break
+                       }
+                   })
+                   .onAppear {
+                       DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                           self.isFocused = true
+                       }
+                   }
+                
+                Spacer()
+                
+                /// 텍스트 필드가 비어있지 않을 경우, clear 버튼 추가
+                if !text.isEmpty {
+                    Button(action: {
+                        self.text = String()
+                    }, label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(Color.gray70)
+                            .padding()
+                    })
+                }
+            }
+        }
+    }
+
+    // MARK: - ETC. Methods
+        
     mutating func disabled(_ disabled: Bool) -> Self {
         self.disabled = true
         return self
     }
     
-    /// 전화번호 형식을 포맷해 리턴해주는 함수입니다.
+    /// 전화번호 형식을 포맷해 리턴해주는 함수
     func formatPhoneNumber(phoneNumber: String) -> String {
         let digits = phoneNumber.filter { $0.isNumber }
         let mask = "XXX-XXXX-XXXX"
@@ -131,7 +148,31 @@ extension CustomTextInput {
         return result
     }
     
-    /// 인증코드 형식을 포맷해 리턴해주는 함수입니다.
+    /// 주민번호 형식을 포맷해 리턴해주는 함수
+    func formatSsn(ssn: String) -> String {
+        let digits = ssn.filter { $0.isNumber }
+        let mask = "XXXXXX-X"
+        
+        var result = String()
+        var index = digits.startIndex
+        
+        for ch in mask where index < digits.endIndex {
+            if ch == "X" {
+                result.append(digits[index])
+                index = digits.index(after: index)
+            } else {
+                result.append(ch)
+            }
+        }
+        
+        if digits.count == 7 {
+            result.append("●●●●●●")
+        }
+        
+        return result
+    }
+    
+    /// 인증코드 형식을 포맷해 리턴해주는 함수
     func formatVerificationCode(verificationCode: String) -> String {
         let digits = verificationCode.filter { $0.isNumber }
         return String(digits.prefix(6))
@@ -140,7 +181,7 @@ extension CustomTextInput {
 
 #Preview {
     CustomTextInput(placeholder: "인증번호 입력",
-                    text: .constant("01064290056"),
-                    errorMessage: "인증에 실패했어요", 
-                    textInputStyle: .ssh)
+                    text: .constant("010128"),
+                    errorMessage: "인증에 실패했어요",
+                    textInputStyle: .ssn)
 }

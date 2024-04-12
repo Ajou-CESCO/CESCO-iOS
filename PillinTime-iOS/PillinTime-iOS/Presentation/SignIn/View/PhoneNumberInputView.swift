@@ -14,15 +14,14 @@ struct PhoneNumberInputView: View {
     
     @Environment(\.dismiss) var dismiss
     
-    @ObservedObject var validationViewModel: PhoneNumberValidationViewModel
+    @ObservedObject var validationViewModel: UserProfileValidationViewModel
 
     @State private var navigateToVerificationCodeInputView = false
     
     // MARK: - Initializer
 
     init() {
-        let validationService = ValidationService() // ValidationService를 초기화
-        self.validationViewModel = PhoneNumberValidationViewModel(validationService: ValidationService())
+        self.validationViewModel = UserProfileValidationViewModel(validationService: ValidationService())
         self.validationViewModel.bindEvent()
     }
     

@@ -9,4 +9,6 @@ import Foundation
 
 class InfoErrorState {
     var phoneNumberErrorMessage: String = String()
+    var nameErrorMessage: String = String()
+    var ssnErrorMessage: String = String()
 }

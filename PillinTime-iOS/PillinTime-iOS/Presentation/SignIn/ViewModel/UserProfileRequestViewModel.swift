@@ -1,5 +1,5 @@
 //
-//  PhoneNumberRequestViewModel.swift
+//  UserProfileRequestViewModel.swift
 //  PillinTime-iOS
 //
 //  Created by Jae Hyun Lee on 4/11/24.
@@ -10,6 +10,6 @@ import Combine
 
 import Factory
 
-class PhoneNumberRequestViewModel: ObservableObject {
+class UserProfileRequestViewModel: ObservableObject {
     
 }

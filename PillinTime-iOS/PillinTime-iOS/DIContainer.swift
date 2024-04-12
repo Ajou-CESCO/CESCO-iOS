@@ -17,7 +17,7 @@ extension Container {
     // MARK: - Moya
     
     // MARK: - Service
-    
+        
     var validationService: Factory<ValidationServiceType> {
         Factory(self) {
             ValidationService()

@@ -8,5 +8,5 @@
 import Foundation
 
 class InfoErrorState {
-    var phoneNumberErrorMessate: String = String()
+    var phoneNumberErrorMessage: String = String()
 }

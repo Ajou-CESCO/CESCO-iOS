@@ -10,7 +10,8 @@ import Combine
 
 @frozen
 enum CustomTextInputStyle {
-    case phoneNumber    // 전화번호 입력
+    case phoneNumber        // 전화번호 입력
+    case verificationCode   // 인증코드 입력
 }
 
 struct CustomTextInput: View {
@@ -21,6 +22,7 @@ struct CustomTextInput: View {
     @Binding var text: String
     var disabled: Bool = false
     var errorMessage: String
+    var textInputStyle: CustomTextInputStyle
     
     var onFocusOut: PassthroughSubject<String, Never>? = nil
     
@@ -60,8 +62,12 @@ struct CustomTextInput: View {
                         .foregroundColor(.gray90)
                         .keyboardType(.phonePad)
                         .onChange(of: text, perform: { newValue in
-                            // MARK: - TODO: 다른 텍스트필드일 경우 분기 처리
-                            text = formatPhoneNumber(phoneNumber: newValue)
+                            switch textInputStyle {
+                            case .phoneNumber:
+                                text = formatPhoneNumber(phoneNumber: newValue)
+                            case .verificationCode:
+                                text = formatVerificationCode(verificationCode: newValue)
+                            }
                         })
                         .onAppear {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -123,10 +129,17 @@ extension CustomTextInput {
         
         return result
     }
+    
+    /// 인증코드 형식을 포맷해 리턴해주는 함수입니다.
+    func formatVerificationCode(verificationCode: String) -> String {
+        let digits = verificationCode.filter { $0.isNumber }
+        return String(digits.prefix(6))
+    }
 }
 
 #Preview {
     CustomTextInput(placeholder: "인증번호 입력",
                     text: .constant("01064290056"),
-                    errorMessage: "인증에 실패했어요")
+                    errorMessage: "인증에 실패했어요", 
+                    textInputStyle: .phoneNumber)
 }

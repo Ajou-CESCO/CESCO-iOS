@@ -50,10 +50,10 @@ class PhoneNumberValidationViewModel: ObservableObject {
             // 모든 입력값이 형식 검사를 통과했음을 알림
             if isPhoneNumberValid {
                 self.eventToRequestViewModel.send(.phoneNumberValid(phone: $0.phoneNumber))
-            }
+            } 
             
             // 빈 값일 때는 에러메세지를 띄우지 않음
-            infoErrorState.phoneNumberErrorMessate = isPhoneNumberValid || $0.phoneNumber.isEmpty ? "" : ValidationErrorMessage.invalidPhoneNumber.description
+            infoErrorState.phoneNumberErrorMessage = isPhoneNumberValid || $0.phoneNumber.isEmpty ? "" : ValidationErrorMessage.invalidPhoneNumber.description
         }.store(in: &cancellables)
     }
     

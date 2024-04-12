@@ -12,6 +12,7 @@ import Combine
 enum CustomTextInputStyle {
     case phoneNumber        // 전화번호 입력
     case verificationCode   // 인증코드 입력
+    case ssh                // 주민번호 입력
 }
 
 struct CustomTextInput: View {
@@ -63,7 +64,7 @@ struct CustomTextInput: View {
                         .keyboardType(.phonePad)
                         .onChange(of: text, perform: { newValue in
                             switch textInputStyle {
-                            case .phoneNumber:
+                            case .phoneNumber, .ssh:
                                 text = formatPhoneNumber(phoneNumber: newValue)
                             case .verificationCode:
                                 text = formatVerificationCode(verificationCode: newValue)
@@ -141,5 +142,5 @@ extension CustomTextInput {
     CustomTextInput(placeholder: "인증번호 입력",
                     text: .constant("01064290056"),
                     errorMessage: "인증에 실패했어요", 
-                    textInputStyle: .phoneNumber)
+                    textInputStyle: .ssh)
 }

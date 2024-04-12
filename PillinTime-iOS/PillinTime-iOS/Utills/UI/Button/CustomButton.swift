@@ -15,6 +15,12 @@ enum CustomButtonStyle {
     case disabled
 }
 
+@frozen
+enum ControlSize {
+    case regular
+    case small
+}
+
 struct CustomButton<Content>: View where Content: View {
     
     // MARK: - Properties
@@ -22,7 +28,7 @@ struct CustomButton<Content>: View where Content: View {
     let buttonSize: ControlSize
     var width: CGFloat?
     var height: CGFloat?
-    let buttonStyle: CustomButtonStyle
+    var buttonStyle: CustomButtonStyle
     var tintColor: Color = .primary5
     var buttonColor: Color = .primary60
     var subject: Subjected<Void>? = nil
@@ -30,52 +36,25 @@ struct CustomButton<Content>: View where Content: View {
     let action: () -> Void
     @ViewBuilder let content: Content
     
+    var isDisabled: Bool
+    
     // MARK: - Body
     
     var body: some View {
-        // 버튼 Style에 따른 분기
-        switch buttonStyle {
-        // 채워진 버튼
-        case .filled:
-            Button(action: {
+        Button(action: {
+            if !isDisabled {
                 action()
-                subject?.send() }) {
-                    setLabel()
-                }
-                .background(buttonColor)
-                .tint(tintColor)
-                .cornerRadius(8)
-        case .disabled:
-            Button(action: {
-                action()
-                subject?.send() }) {
-                    setLabel()
-                }
-                .background(Color.gray5)
-                .tint(.gray50)
-                .cornerRadius(8)
-        }
-    }
-    
-    @ViewBuilder
-    func setLabel() -> some View {
-        // 버튼 사이즈로 분기
-        switch buttonSize {
-        // 기본 버튼
-        case .regular:
+                subject?.send()
+            }
+        }) {
             content
                 .padding()
-                .font(.h5Medium)
-                .frame(maxWidth: .infinity,
-                       minHeight: 64,
-                       maxHeight: 64)
-        // 작은 버튼
-        default:
-            content
-                .padding()
-                .font(.body1Medium)
-                .frame(maxWidth: width,
-                       maxHeight: height)
+                .font(buttonSize == .regular ? .h5Medium : .body1Medium)
+                .frame(maxWidth: width ?? .infinity, minHeight: height ?? 64, maxHeight: height ?? 64)
+                .background(isDisabled ? Color.gray5 : buttonColor)
+                .foregroundColor(isDisabled ? .gray50 : tintColor)
+                .cornerRadius(8)
         }
+        .disabled(isDisabled)
     }
 }

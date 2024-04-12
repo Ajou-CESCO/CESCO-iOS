@@ -12,20 +12,20 @@ import SwiftUI
 
 extension Font {
     // OAGothic
-    static let logo1Medium = customFont(.oaGothicExtraBold, size: 36)
-    static let logo1ExtraBold = customFont(.oaGothicMedium, size: 36)
+    static let logo1Medium = customFont(.oaGothicMedium, size: 36)
+    static let logo1ExtraBold = customFont(.oaGothicExtraBold, size: 36)
     
-    static let logo2Medium = customFont(.oaGothicExtraBold, size: 24)
-    static let logo2ExtraBold = customFont(.oaGothicMedium, size: 24)
+    static let logo2Medium = customFont(.oaGothicMedium, size: 24)
+    static let logo2ExtraBold = customFont(.oaGothicExtraBold, size: 24)
     
-    static let logo3Medium = customFont(.oaGothicExtraBold, size: 20)
-    static let logo3ExtraBold = customFont(.oaGothicMedium, size: 20)
+    static let logo3Medium = customFont(.oaGothicMedium, size: 20)
+    static let logo3ExtraBold = customFont(.oaGothicExtraBold, size: 20)
     
-    static let logo4Medium = customFont(.oaGothicExtraBold, size: 16)
-    static let logo4ExtraBold = customFont(.oaGothicMedium, size: 16)
+    static let logo4Medium = customFont(.oaGothicMedium, size: 16)
+    static let logo4ExtraBold = customFont(.oaGothicExtraBold, size: 16)
     
-    static let logo5Medium = customFont(.oaGothicExtraBold, size: 12)
-    static let logo5ExtraBold = customFont(.oaGothicMedium, size: 12)
+    static let logo5Medium = customFont(.oaGothicMedium, size: 12)
+    static let logo5ExtraBold = customFont(.oaGothicExtraBold, size: 12)
     
     // Pretendard
     static let h1Regular = customFont(.pretendardRegular, size: 48)

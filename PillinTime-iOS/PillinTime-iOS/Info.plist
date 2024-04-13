@@ -10,5 +10,12 @@
 		<string>Pretendard-Medium.ttf</string>
 		<string>Pretendard-Regular.ttf</string>
 	</array>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>primary60</string>
+		<key>UIImageName</key>
+		<string>ic_logo</string>
+	</dict>
 </dict>
 </plist>

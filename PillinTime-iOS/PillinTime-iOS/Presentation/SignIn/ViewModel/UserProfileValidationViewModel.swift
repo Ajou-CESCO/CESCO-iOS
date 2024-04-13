@@ -75,7 +75,6 @@ class UserProfileValidationViewModel: ObservableObject {
             switch event {
             case .signUp:
                 self.eventToRequestViewModel.send(.sendInfoForSignUp(info: self.infoState))
-                break
             }
         }.store(in: &cancellables)
     }

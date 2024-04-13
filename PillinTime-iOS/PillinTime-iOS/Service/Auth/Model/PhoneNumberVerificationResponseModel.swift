@@ -11,7 +11,7 @@ import Foundation
 struct PhoneNumberVerificationResponseModel: Codable {
     let verificationCode: String
     
-    // MARK: - TODO: 명세서 확정 시 변경
+    // TODO: - 명세서 확정 시 변경
     enum CodingKeys: String, CodingKey {
         case verificationCode = "verificationCode"
     }

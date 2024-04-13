@@ -21,6 +21,7 @@ struct PhoneNumberInputView: View {
     // MARK: - Initializer
 
     init() {
+        let validationService = ValidationService() // ValidationService를 초기화
         self.validationViewModel = UserProfileValidationViewModel(validationService: ValidationService())
         self.validationViewModel.bindEvent()
     }

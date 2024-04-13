@@ -31,7 +31,7 @@ struct CustomButton<Content>: View where Content: View {
     var buttonStyle: CustomButtonStyle
     var tintColor: Color = .primary5
     var buttonColor: Color = .primary60
-    var subject: Subjected<Void>? = nil
+    var subject: Subjected<Void>?
     
     let action: () -> Void
     @ViewBuilder let content: Content
@@ -51,8 +51,8 @@ struct CustomButton<Content>: View where Content: View {
                 .padding()
                 .font(buttonSize == .regular ? .h5Medium : .body1Medium)
                 .frame(maxWidth: width ?? .infinity, minHeight: height ?? 64, maxHeight: height ?? 64)
-                .background(isDisabled ? Color.gray5 : buttonColor)
-                .foregroundColor(isDisabled ? .gray50 : tintColor)
+                .background(buttonStyle == .disabled ? Color.gray5 : buttonColor)
+                .foregroundColor(buttonStyle == .disabled ? .gray50 : tintColor)
                 .cornerRadius(8)
         }
         .disabled(isDisabled)

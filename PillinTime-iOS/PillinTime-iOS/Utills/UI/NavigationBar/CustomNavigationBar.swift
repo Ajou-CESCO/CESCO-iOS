@@ -17,6 +17,7 @@ struct CustomNavigationBar: View {
                 presentationMode.wrappedValue.dismiss()
             }, label: {
                 Image("ic_arrow_back")
+                    .accessibilityHidden(true)
                     .padding(.leading, 16)
             })
             

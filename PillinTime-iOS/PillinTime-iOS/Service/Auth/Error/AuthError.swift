@@ -10,11 +10,11 @@ import Foundation
 /// Auth API Error
 enum AuthError: Error {
     /// Auth API Signup Error
-    case signup(_ :SignupError)
+    case signup(_: SignupError)
     /// Auth API Phone Number Verification Error
-    case phoneNumberVerificationError(_ :PhoneNumberVerificationError)
+    case phoneNumberVerificationError(_: PhoneNumberVerificationError)
     /// Auth API Login Error
-    case login(_ : LoginError)
+    case login(_: LoginError)
     
     var description: String {
         switch self {

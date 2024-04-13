@@ -25,7 +25,7 @@ class CreateUserProfileViewModel: ObservableObject {
         case 3:
             return "주민등록번호를 입력해주세요."
         default:
-            return String()
+            return "보호자들이\n회원님을 기다리고 있어요"
         }
     }
     
@@ -38,7 +38,7 @@ class CreateUserProfileViewModel: ObservableObject {
         case 3:
             return "주민등록번호 7번째 자리까지 입력해주세요."
         default:
-            return String()
+            return "단 한 명의 보호자만 선택할 수 있어요."
         }
     }
     

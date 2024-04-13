@@ -26,7 +26,7 @@ struct CustomTextInput: View {
     var errorMessage: String
     var textInputStyle: CustomTextInputStyle
     
-    var onFocusOut: PassthroughSubject<String, Never>? = nil
+    var onFocusOut: PassthroughSubject<String, Never>?
     
     @FocusState private var isFocused: Bool
     

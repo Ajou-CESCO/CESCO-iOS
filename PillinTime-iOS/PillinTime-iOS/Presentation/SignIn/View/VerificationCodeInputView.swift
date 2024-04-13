@@ -13,6 +13,7 @@ struct VerificationCodeInputView: View {
     // MARK: - Properties
 
     @Binding var text: String
+    @Binding var isError: Bool
     
     // MARK: - body
     
@@ -27,7 +28,8 @@ struct VerificationCodeInputView: View {
                 .foregroundStyle(Color.gray100)
             
             CustomTextInput(placeholder: "인증번호 입력",
-                            text: $text,
+                            text: $text, // TODO: - 전화번호 인증 API 연결 이후 isError 로직 구현
+                            isError: $isError,
                             errorMessage: "잘못",
                             textInputStyle: .verificationCode)
             
@@ -49,5 +51,6 @@ struct VerificationCodeInputView: View {
 }
 
 #Preview {
-    VerificationCodeInputView(text: .constant("012"))
+    VerificationCodeInputView(text: .constant("012"),
+                              isError: .constant(false))
 }

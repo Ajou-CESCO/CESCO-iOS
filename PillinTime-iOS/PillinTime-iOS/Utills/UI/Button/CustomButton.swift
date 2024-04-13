@@ -51,8 +51,8 @@ struct CustomButton<Content>: View where Content: View {
                 .padding()
                 .font(buttonSize == .regular ? .h5Medium : .body1Medium)
                 .frame(maxWidth: width ?? .infinity, minHeight: height ?? 64, maxHeight: height ?? 64)
-                .background(buttonStyle == .disabled ? Color.gray5 : buttonColor)
-                .foregroundColor(buttonStyle == .disabled ? .gray50 : tintColor)
+                .background(buttonStyle == .disabled || isDisabled ? Color.gray5 : buttonColor)
+                .foregroundColor(buttonStyle == .disabled || isDisabled ? .gray50 : tintColor)
                 .cornerRadius(8)
         }
         .disabled(isDisabled)

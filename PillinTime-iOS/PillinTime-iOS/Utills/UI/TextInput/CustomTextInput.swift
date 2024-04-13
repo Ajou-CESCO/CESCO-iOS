@@ -23,6 +23,7 @@ struct CustomTextInput: View {
     let placeholder: String
     @Binding var text: String
     var disabled: Bool = false
+    @Binding var isError: Bool
     var errorMessage: String
     var textInputStyle: CustomTextInputStyle
     
@@ -58,7 +59,7 @@ extension CustomTextInput {
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
                         .strokeBorder(
-                            Color.primary60,
+                            isError ? Color.error90 : Color.primary60,
                             lineWidth: 1
                         )
                         .background(Color.white)
@@ -179,9 +180,19 @@ extension CustomTextInput {
     }
 }
 
+extension Binding {
+    static func isErrorBinding(for error: Binding<String>) -> Binding<Bool> {
+        Binding<Bool>(
+            get: { !error.wrappedValue.isEmpty },
+            set: { _ in }
+        )
+    }
+}
+
 #Preview {
     CustomTextInput(placeholder: "인증번호 입력",
                     text: .constant("010128"),
+                    isError: .constant(true),
                     errorMessage: "인증에 실패했어요",
                     textInputStyle: .ssn)
 }

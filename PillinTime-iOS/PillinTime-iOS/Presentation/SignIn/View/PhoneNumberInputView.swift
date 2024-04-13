@@ -44,6 +44,7 @@ struct PhoneNumberInputView: View {
                 
                 CustomTextInput(placeholder: "휴대폰 번호 입력",
                                 text: $validationViewModel.infoState.phoneNumber,
+                                isError: .isErrorBinding(for: $validationViewModel.infoErrorState.phoneNumberErrorMessage),
                                 errorMessage: validationViewModel.infoErrorState.phoneNumberErrorMessage,
                                 textInputStyle: .phoneNumber)
                 
@@ -57,7 +58,8 @@ struct PhoneNumberInputView: View {
                     Text("다음")
                 }, isDisabled: !validationViewModel.infoErrorState.phoneNumberErrorMessage.isEmpty || validationViewModel.infoState.phoneNumber.isEmpty)
                 
-                NavigationLink(destination: VerificationCodeInputView(text: $validationViewModel.infoState.phoneNumber)
+                NavigationLink(destination: VerificationCodeInputView(text: $validationViewModel.infoState.phoneNumber, 
+                                                                      isError: .isErrorBinding(for: $validationViewModel.infoErrorState.phoneNumberErrorMessage))
                                 .navigationBarBackButtonHidden(true)
                                 .navigationBarHidden(true),
                                isActive: $navigateToVerificationCodeInputView) {

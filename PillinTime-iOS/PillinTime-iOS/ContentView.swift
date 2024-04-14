@@ -11,7 +11,7 @@ struct ContentView: View {
     
     // MARK: - Properties
     
-    @State private var selectedTab = "home"
+    @State private var selectedTab: TabBarType = .home
 
     // MARK: - body
     
@@ -19,21 +19,21 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             DoseScheduleView()
                 .tabItem {
-                    Image(selectedTab == "dose" ? "ic_dose_filled" : "ic_dose_unfilled")
+                    Image(selectedTab == .doseSchedule ? "ic_dose_filled" : "ic_dose_unfilled")
                 }
-                .tag("dose")
+                .tag(TabBarType.doseSchedule)
             
             HomeView()
                 .tabItem {
-                    Image(selectedTab == "home" ? "ic_home_filled" : "ic_home_unfilled")
+                    Image(selectedTab == .home ? "ic_home_filled" : "ic_home_unfilled")
                 }
-                .tag("home")
+                .tag(TabBarType.home)
             
             MyPageView()
                 .tabItem {
-                    Image(selectedTab == "myPage" ? "ic_user_filled" : "ic_user_unfilled")
+                    Image(selectedTab == .myPage ? "ic_user_filled" : "ic_user_unfilled")
                 }
-                .tag("myPage")
+                .tag(TabBarType.myPage)
         }
     }
 }

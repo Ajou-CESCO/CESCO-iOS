@@ -18,22 +18,27 @@ struct ClientListView: View {
     // MARK: - body
     
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 15) {
-                ForEach(0..<viewModel.clients.count, id: \.self) { index in
-                    ClientView(client: viewModel.clients[index],
-                               isSelected: index == selectedClient)
-                        .onTapGesture {
-                            self.selectedClient = index
-                        }
+        ZStack {
+            Color.white.ignoresSafeArea()
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 15) {
+                    ForEach(0..<viewModel.clients.count, id: \.self) { index in
+                        ClientView(client: viewModel.clients[index],
+                                   isSelected: index == selectedClient)
+                            .onTapGesture {
+                                self.selectedClient = index
+                            }
+                    }
                 }
             }
-            .padding()
+            .padding(.top, 10)
+            .padding(.leading, 30)
+            
         }
-        .background(Color.white)
         .frame(maxWidth: .infinity,
-               minHeight: 60,
-               maxHeight: 60)
+               minHeight: 110,
+               maxHeight: 110)
     }
 }
 

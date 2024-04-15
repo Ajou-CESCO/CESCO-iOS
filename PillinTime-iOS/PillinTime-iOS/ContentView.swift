@@ -26,7 +26,7 @@ struct ContentView: View {
             HomeView(userStatus: .manager, selectedClient: 0)
                 .tabItem {
                     Image(selectedTab == .home ? "ic_home_filled" : "ic_home_unfilled")
-                }
+                } 
                 .tag(TabBarType.home)
             
             MyPageView()

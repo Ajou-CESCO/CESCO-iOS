@@ -216,7 +216,7 @@ struct HealthMainView: View {
             }
         }
         .cornerRadius(8)
-        .frame(width: .infinity, height: 80)
+        .frame(maxWidth: .infinity, minHeight: 80, maxHeight: 80)
     }
 }
 

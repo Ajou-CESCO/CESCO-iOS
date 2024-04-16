@@ -16,24 +16,26 @@ struct ContentView: View {
     // MARK: - body
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            DoseScheduleView()
-                .tabItem {
-                    Image(selectedTab == .doseSchedule ? "ic_dose_filled" : "ic_dose_unfilled")
-                }
-                .tag(TabBarType.doseSchedule)
-            
-            HomeView(userStatus: .manager, selectedClient: 0)
-                .tabItem {
-                    Image(selectedTab == .home ? "ic_home_filled" : "ic_home_unfilled")
-                } 
-                .tag(TabBarType.home)
-            
-            MyPageView()
-                .tabItem {
-                    Image(selectedTab == .myPage ? "ic_user_filled" : "ic_user_unfilled")
-                }
-                .tag(TabBarType.myPage)
+        NavigationView {
+            TabView(selection: $selectedTab) {
+                DoseScheduleView()
+                    .tabItem {
+                        Image(selectedTab == .doseSchedule ? "ic_dose_filled" : "ic_dose_unfilled")
+                    }
+                    .tag(TabBarType.doseSchedule)
+                
+                HomeView(userStatus: .manager, selectedClient: 0)
+                    .tabItem {
+                        Image(selectedTab == .home ? "ic_home_filled" : "ic_home_unfilled")
+                    } 
+                    .tag(TabBarType.home)
+                
+                MyPageView()
+                    .tabItem {
+                        Image(selectedTab == .myPage ? "ic_user_filled" : "ic_user_unfilled")
+                    }
+                    .tag(TabBarType.myPage)
+            }
         }
     }
 }

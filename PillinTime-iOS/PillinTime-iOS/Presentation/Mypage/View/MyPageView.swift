@@ -42,56 +42,53 @@ struct MyPageView: View {
     
     var body: some View {
         
-        NavigationView {
+        VStack {
             VStack {
-                VStack {
-                    Text("보호자")
-                        .font(.body1Medium)
-                        .foregroundStyle(Color.primary40)
-                        .padding(.leading, 32)
-                        .padding(.top, 10)
-                        .padding(.bottom, 6)
-                        .frame(maxWidth: .infinity,
-                               alignment: .leading)
+                Text("보호자")
+                    .font(.body1Medium)
+                    .foregroundStyle(Color.primary40)
+                    .padding(.leading, 32)
+                    .padding(.top, 10)
+                    .padding(.bottom, 6)
+                    .frame(maxWidth: .infinity,
+                           alignment: .leading)
+                
+                Text("세스코 님, 안녕하세요!")
+                    .font(.logo2Medium)
+                    .foregroundStyle(Color.gray90)
+                    .padding(.leading, 32)
+                    .padding(.bottom, 36)
+                    .frame(maxWidth: .infinity,
+                           alignment: .leading)
+                
+                HStack {
+                    Spacer()
                     
-                    Text("세스코 님, 안녕하세요!")
-                        .font(.logo2Medium)
-                        .foregroundStyle(Color.gray90)
-                        .padding(.leading, 32)
-                        .padding(.bottom, 36)
-                        .frame(maxWidth: .infinity,
-                               alignment: .leading)
-                    
-                    HStack {
-                        Spacer()
-                        
-                        ForEach(0..<3, id: \.self) { index in
-                            VStack {
-                                Text(mainText[index])
-                                    .font(.body2Regular)
-                                    .foregroundStyle(Color.gray90)
-                                    .padding(.bottom, 5)
-                                
-                                Text(subText[index])
-                                    .font(.h5Bold)
-                                    .foregroundStyle(Color.gray70)
-                            }
+                    ForEach(0..<3, id: \.self) { index in
+                        VStack {
+                            Text(mainText[index])
+                                .font(.body2Regular)
+                                .foregroundStyle(Color.gray90)
+                                .padding(.bottom, 5)
                             
-                            Spacer()
+                            Text(subText[index])
+                                .font(.h5Bold)
+                                .foregroundStyle(Color.gray70)
                         }
                         
+                        Spacer()
                     }
-                    .frame(maxWidth: .infinity)
+                    
                 }
-                .frame(maxWidth: .infinity,
-                       minHeight: 264,
-                       maxHeight: 264)
-                .background(Color.white)
-                
-                SettingList()
+                .frame(maxWidth: .infinity)
             }
+            .frame(maxWidth: .infinity,
+                   minHeight: 264,
+                   maxHeight: 264)
+            .background(Color.white)
+            
+            SettingList()
         }
-        .navigationBarHidden(true)
     }
 }
 

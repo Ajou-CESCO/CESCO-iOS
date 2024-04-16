@@ -22,7 +22,7 @@ struct MyPageDetailView: View {
             
             Spacer()
         }
-        .navigationBarHidden(true)
+        
     }
 }
 

@@ -43,7 +43,6 @@ struct CustomTextInput: View {
                 .opacity(!errorMessage.isEmpty ? 1.0 : 0.0)
                 .animation(.easeInOut(duration: 0.1),
                            value: isFocused)
-                .frame(height: 10)
         }
     }
 }

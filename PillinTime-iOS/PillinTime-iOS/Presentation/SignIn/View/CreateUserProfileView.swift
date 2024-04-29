@@ -30,10 +30,13 @@ struct CreateUserProfileView: View {
     // MARK: - body
     
     var body: some View {
-        CustomNavigationBar()
+        CustomNavigationBar(previousAction: {
+            if userProfileViewModel.step > 1 {
+                userProfileViewModel.previousStep()
+            }
+        })
         
         VStack(alignment: .leading) {
-            
             Text(userProfileViewModel.mainText)
                 .font(.logo2ExtraBold)
                 .foregroundStyle(Color.gray100)

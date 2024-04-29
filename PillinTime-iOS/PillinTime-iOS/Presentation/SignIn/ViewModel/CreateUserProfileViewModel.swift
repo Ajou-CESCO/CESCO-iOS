@@ -50,4 +50,11 @@ class CreateUserProfileViewModel: ObservableObject {
             step += 1
         }
     }
+    
+    /// 이전 단계로 돌아가는 함수
+    func previousStep() {
+        if step > 1 {
+            step -= 1
+        }
+    }
 }

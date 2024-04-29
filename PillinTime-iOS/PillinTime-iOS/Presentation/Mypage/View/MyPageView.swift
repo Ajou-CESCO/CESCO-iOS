@@ -7,38 +7,14 @@
 
 import SwiftUI
 
-@frozen
-enum SettingListElement {
-    case managementMyInformation
-    case subscriptionPaymentHistory
-    case customerServiceCenter
-    case withdrawal
-
-    var description: String {
-        switch self {
-        case .managementMyInformation:
-            return "내 정보 관리"
-        case .subscriptionPaymentHistory:
-            return "구독 결제 내역"
-        case .customerServiceCenter:
-            return "고객 센터"
-        case .withdrawal:
-            return "회원 탈퇴"
-        }
-    }
-    
-    static let allCases: [SettingListElement] = [
-        .managementMyInformation,
-        .subscriptionPaymentHistory,
-        .customerServiceCenter,
-        .withdrawal
-    ]
-}
-
 struct MyPageView: View {
+    
+    // MARK: - Properties
     
     let mainText: [String] = ["예정된 횟수", "완료한 횟수", "미완료 횟수"]
     let subText: [String] = ["12회", "23회", "70회"]
+    
+    // MARK: - body
     
     var body: some View {
         
@@ -98,6 +74,11 @@ struct SettingList: View {
     
     @State private var isShowingDetailView = false
     @State private var selectedElement: SettingListElement?
+    @ObservedObject var myPageViewModel: MyPageViewModel
+    
+    init() {
+        self.myPageViewModel = MyPageViewModel()
+    }
         
     var body: some View {
         ZStack {

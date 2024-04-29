@@ -28,7 +28,7 @@ struct VerificationCodeInputView: View {
                 .foregroundStyle(Color.gray100)
             
             CustomTextInput(placeholder: "인증번호 입력",
-                            text: $text, // TODO: - 전화번호 인증 API 연결 이후 isError 로직 구현
+                            text: $text,
                             isError: $isError,
                             errorMessage: "잘못",
                             textInputStyle: .verificationCode)

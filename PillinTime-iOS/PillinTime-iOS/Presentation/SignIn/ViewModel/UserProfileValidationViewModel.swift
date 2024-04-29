@@ -40,6 +40,14 @@ class UserProfileValidationViewModel: ObservableObject {
     
     // MARK: - Method
     
+    /// UserMager에서 값을 읽어와 초기값을 설정하기 위한 함수입니다.
+    func setInitValue() {
+        let userManager = UserManager.shared
+        infoState.name = userManager.name ?? "null"
+        infoState.phoneNumber = userManager.phoneNumber ?? "null"
+        infoState.ssn = userManager.ssn ?? "null"
+    }
+    
     private func bindState() {
         $infoState.sink { [weak self] in
             guard let self = self else { return }

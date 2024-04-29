@@ -111,7 +111,7 @@ struct DoesHomeView: View {
                             Text(viewModel.todayDoesLog[index].pillName)
                                 .font(.h5Bold)
                                 .foregroundStyle(Color.gray90)
-                            .padding(.bottom, 2)
+                                .padding(.bottom, 2)
                             
                             Spacer()
                             

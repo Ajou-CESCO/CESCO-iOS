@@ -12,12 +12,14 @@ struct CustomNavigationBar: View {
     @Environment(\.presentationMode) var presentationMode
     
     var title: String = String()
+    var previousAction: (() -> Void)?   // 이전 동작을 설정하고 싶다면 사용
     
     var body: some View {
         ZStack {
             HStack {
                 Button(action: {
-                    presentationMode.wrappedValue.dismiss()
+                    // 이전 동작을 설정했다면 그대로, 아니면 dismiss
+                    self.previousAction?() ?? presentationMode.wrappedValue.dismiss()
                 }, label: {
                     Image("ic_arrow_back")
                         .accessibilityHidden(true)
@@ -35,8 +37,5 @@ struct CustomNavigationBar: View {
                     .foregroundStyle(Color.gray70)
             }
         }
-        
-       
     }
-    
 }

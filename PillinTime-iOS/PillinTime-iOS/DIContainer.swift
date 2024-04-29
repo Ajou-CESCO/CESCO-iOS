@@ -17,7 +17,20 @@ extension Container {
     // MARK: - Moya
     
     // MARK: - Service
-        
+    
+    var userService: Factory<UserServiceType> {
+        Factory(self) {
+            UserService()
+        }
+        .singleton
+    }
+    
+//    var authService: Factory<AuthServiceType> {
+//        Factory(self) {
+//            AuthService()
+//        }
+//        .singleton
+//    }
     var validationService: Factory<ValidationServiceType> {
         Factory(self) {
             ValidationService()

@@ -25,12 +25,13 @@ extension Container {
         .singleton
     }
     
-//    var authService: Factory<AuthServiceType> {
-//        Factory(self) {
-//            AuthService()
-//        }
-//        .singleton
-//    }
+    var authService: Factory<AuthServiceType> {
+        Factory(self) {
+            AuthService(provider: MoyaProvider<AuthAPI>())
+        }
+        .singleton
+    }
+    
     var validationService: Factory<ValidationServiceType> {
         Factory(self) {
             ValidationService()

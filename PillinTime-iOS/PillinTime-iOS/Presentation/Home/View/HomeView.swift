@@ -38,6 +38,7 @@ struct HomeView: View {
     @ObservedObject var viewModel = ClientListViewModel()
     @State var userStatus: UserStatus      // 사용자 상태값
     @State var selectedClient: Int  // 선택된 Client
+    @State private var showEncourageView: Bool = false
     
     // MARK: - body
     
@@ -47,12 +48,15 @@ struct HomeView: View {
                 ClientListView(viewModel: viewModel,
                                selectedClient: selectedClient)
                     .padding(.bottom, 17)
+                    .fadeIn(delay: 0.1)
                 
                 Text.multiColoredText("오늘 이재현 님의 약속시간은?", coloredSubstrings: [("이재현", Color.primary60),
                                                                                     ("약", Color.primary60)])
                     .foregroundStyle(Color.gray90)
                     .font(.logo3Medium)
                     .padding(.leading, 33)
+                    .fadeIn(delay: 0.2)
+
             } else {
                 HStack {
                     Text.multiColoredText("이재현 님,\n오늘 하루도 화이팅이에요!", coloredSubstrings: [("이재현", Color.primary60)])
@@ -75,17 +79,34 @@ struct HomeView: View {
             }
             
             DoesHomeView(isPillCaseExist: true)
-                .padding(.top, 18)
+                .padding([.top, .bottom], 18)
                 .padding([.leading, .trailing], 25)
+                .fadeIn(delay: 0.3)
+            
+            if showEncourageView {
+                EncourageMainView()
+                    .transition(.move(edge: .top))
+                    .scaleFadeIn(delay: 0.4)
+                    .padding([.leading, .trailing], 25)
+            }
             
             HealthMainView()
-                .padding(.top, 12)
+                .padding(.top, showEncourageView ? 17 : 0) // EncourageMainView 표시에 따라 조정
+                .fadeIn(delay: 0.5)
                 .padding([.leading, .trailing], 25)
             
             Spacer()
             
         }
         .background(Color.gray5)
+        .onAppear {
+            // 여기서 조금 지연 후에 EncourageMainView를 표시
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                withAnimation {
+                    self.showEncourageView = true
+                }
+            }
+        }
     }
 }
 
@@ -217,6 +238,39 @@ struct HealthMainView: View {
         }
         .cornerRadius(8)
         .frame(maxWidth: .infinity, minHeight: 80, maxHeight: 80)
+    }
+}
+
+// MARK: - EncourageMainView
+
+struct EncourageMainView: View {
+    
+    // MARK: - Properties
+    
+    var mainTitle: String = "오늘 많이 걸으셨나요?"
+    var subTitle: String = "50대 평균보다 300보 덜 걸으셨어요."
+    
+    // MARK: - body
+    
+    var body: some View {
+        HStack {
+            Image("ic_dose_filled")
+                .frame(width: 50, height: 50)
+            
+            VStack(alignment: .leading) {
+                Text(mainTitle)
+                    .font(.logo4Medium)
+                    .foregroundStyle(Color.gray90)
+                    .padding(.bottom, 1)
+                
+                Text(subTitle)
+                    .font(.body2Medium)
+                    .foregroundStyle(Color.gray50)
+            }
+        }
+        .frame(maxWidth: .infinity, minHeight: 90, maxHeight: 90)
+        .background(Color.white)
+        .cornerRadius(8)
     }
 }
 

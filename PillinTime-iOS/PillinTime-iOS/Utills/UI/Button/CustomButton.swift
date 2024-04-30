@@ -32,6 +32,7 @@ struct CustomButton<Content>: View where Content: View {
     var tintColor: Color = .primary5
     var buttonColor: Color = .primary60
     var subject: Subjected<Void>?
+    var onTap: PassthroughSubject<Void, Never>?
     
     let action: () -> Void
     @ViewBuilder let content: Content
@@ -56,5 +57,6 @@ struct CustomButton<Content>: View where Content: View {
                 .cornerRadius(8)
         }
         .disabled(isDisabled)
+        .pressable()
     }
 }

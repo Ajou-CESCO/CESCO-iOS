@@ -28,6 +28,7 @@ struct MyPageView: View {
                     .padding(.bottom, 6)
                     .frame(maxWidth: .infinity,
                            alignment: .leading)
+                    .fadeIn(delay: 0.1)
                 
                 Text("세스코 님, 안녕하세요!")
                     .font(.logo2Medium)
@@ -36,6 +37,7 @@ struct MyPageView: View {
                     .padding(.bottom, 36)
                     .frame(maxWidth: .infinity,
                            alignment: .leading)
+                    .fadeIn(delay: 0.2)
                 
                 HStack {
                     Spacer()
@@ -57,6 +59,7 @@ struct MyPageView: View {
                     
                 }
                 .frame(maxWidth: .infinity)
+                .fadeIn(delay: 0.3)
             }
             .frame(maxWidth: .infinity,
                    minHeight: 264,
@@ -104,11 +107,10 @@ struct SettingList: View {
                             
                             Spacer()
                         }
-                        
                     }
-                    
                 }
             }
+            .fadeIn(delay: 0.4)
             .listStyle(.sidebar)
             .background(Color.clear)
         }

@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum PillinTimeError: Error {
+    case networkFail
+    case etc
+}
+
 final class UserManager {
     static let shared = UserManager()
     

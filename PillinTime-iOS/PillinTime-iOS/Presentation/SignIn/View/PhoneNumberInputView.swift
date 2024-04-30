@@ -58,8 +58,7 @@ struct PhoneNumberInputView: View {
                     Text("다음")
                 }, isDisabled: !validationViewModel.infoErrorState.phoneNumberErrorMessage.isEmpty || validationViewModel.infoState.phoneNumber.isEmpty)
                 
-                NavigationLink(destination: VerificationCodeInputView(text: $validationViewModel.infoState.phoneNumber, 
-                                                                      isError: .isErrorBinding(for: $validationViewModel.infoErrorState.phoneNumberErrorMessage))
+                NavigationLink(destination: CreateUserProfileView()
                                 .navigationBarBackButtonHidden(true)
                                 .navigationBarHidden(true),
                                isActive: $navigateToVerificationCodeInputView) {

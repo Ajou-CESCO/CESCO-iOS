@@ -12,8 +12,6 @@ import Moya
 /// 로그인, 회원가입 관련 Service 입니다.
 protocol AuthServiceType {
     
-    // 에러 처리 이후에 AuthError로 변경, 임시로 PillinTimeError throw
-    
     /// 인증코드를 담은 메일을 발송하는 요청을 보냅니다.
     ///
     /// - Parameters:
@@ -26,10 +24,12 @@ protocol AuthServiceType {
     /// - Parameters:
     ///     - SignUpRequestModel: 회원가입에 필요한 정보들을 담은 Model입니다.
     /// - Returns: 요청에 성공 시, SignUpResponseModel을 반환합니다. 실패 시 AuthError를 throw합니다.
-    func requestSignUp(signUpRequestModel: SignUpRequestModel) -> AnyPublisher<SignUpResponseModel, PillinTimeError>
+    func requestSignUp(signUpRequestModel: SignUpRequestModel) -> AnyPublisher<SignUpResponseModel, AuthError>
     
     /// 로그인 요청을 보냅니다.
     ///
     /// - Parameters:
-    ///
+    ///     - SignInRequestModel: 로그인에 필요한 정보들을 담은 Model입니다.
+    /// - Returns: 요청에 성공 시, SignInResponseModel을 반환합니다. 실패 시 AuthError를 throw합니다.
+    func requestSignIn(signInRequestModel: SignInRequestModel) -> AnyPublisher<SignInResponseModel, AuthError>
 }

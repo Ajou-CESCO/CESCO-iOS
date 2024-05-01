@@ -9,10 +9,15 @@ import Foundation
 
 struct SignUpResponseModel: Codable {
     let status: Int
-    let message: String?
-    let data: DataClass?
+    let message: String
+    let result: SignUpResponseModelResult
 }
 
-// MARK: - DataClass
-struct DataClass: Codable {
+// MARK: - Result
+struct SignUpResponseModelResult: Codable {
+    let accessToken: String
+
+    enum CodingKeys: String, CodingKey {
+        case accessToken = "access_token"
+    }
 }

@@ -79,11 +79,14 @@ class UserProfileValidationViewModel: ObservableObject {
     
     func bindEvent() {
         eventFromRequestViewModel?.sink { [weak self] (event: SignUpRequestViewModelEvent) in
-            guard let self = self else { return }
+            guard let self = self else { print("zzz") 
+                return }
             switch event {
             case .signUp:
                 self.eventToRequestViewModel.send(.sendInfoForSignUp(info: self.infoState))
-                break
+            case .signIn:
+                self.eventToRequestViewModel.send(.sendInfoForSignIn(info: self.infoState))
+
             }
         }.store(in: &cancellables)
     }

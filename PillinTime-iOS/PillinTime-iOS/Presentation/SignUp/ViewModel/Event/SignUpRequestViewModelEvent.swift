@@ -9,4 +9,5 @@ import Foundation
 
 enum SignUpRequestViewModelEvent {
     case signUp
+    case signIn
 }

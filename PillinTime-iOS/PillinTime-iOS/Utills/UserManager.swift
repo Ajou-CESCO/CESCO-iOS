@@ -20,7 +20,7 @@ final class UserManager {
     @UserDefaultWrapper<String>(key: "name") public var name
     @UserDefaultWrapper<String>(key: "phoneNumber") public var phoneNumber
     @UserDefaultWrapper<String>(key: "ssn") public var ssn
-    @UserDefaultWrapper<String>(key: "userType") public var userType
+    @UserDefaultWrapper<Int>(key: "userType") public var userType
 
     var hasAccessToken: Bool { return self.accessToken != nil }
     

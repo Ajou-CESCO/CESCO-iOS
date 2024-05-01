@@ -8,7 +8,7 @@
 import Foundation
 
 struct InfoState {
-    var name: String = String()
-    var phoneNumber: String = String()
-    var ssn: String = String()
+    var name: String = ""
+    var phoneNumber: String = ""
+    var ssn: String = ""
 }

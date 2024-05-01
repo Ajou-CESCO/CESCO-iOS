@@ -20,8 +20,29 @@ class AuthService: AuthServiceType {
         self.cancellables = cancellables
     }
     
+    /// 로그인 요청
+    func requestSignIn(signInRequestModel: SignInRequestModel) -> AnyPublisher<SignInResponseModel, AuthError> {
+        return provider.requestPublisher(.signIn(signInRequestModel))
+            .tryMap { response in
+                let decodedData = try response.map(SignInResponseModel.self)
+                if decodedData.status == 404 {
+                    throw AuthError.signIn(.userNotFound)
+                }
+                return decodedData
+            }
+            .mapError { error in
+                print("error:", error)
+                if error is MoyaError {
+                    return AuthError.signIn(.userNotFound)
+                } else {
+                    return error as! AuthError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
     /// 회원가입 요청
-    func requestSignUp(signUpRequestModel: SignUpRequestModel) -> AnyPublisher<SignUpResponseModel, PillinTimeError> {
+    func requestSignUp(signUpRequestModel: SignUpRequestModel) -> AnyPublisher<SignUpResponseModel, AuthError> {
         return provider.requestPublisher(.signUp(signUpRequestModel))
             .tryMap { response in
                 let decodedData = try response.map(SignUpResponseModel.self)
@@ -32,7 +53,11 @@ class AuthService: AuthServiceType {
             }
             .mapError { error in
                 print("error:", error)
-                return error as! PillinTimeError
+                if error is MoyaError {
+                    return AuthError.signUp(.userNotFound)
+                } else {
+                    return error as! AuthError
+                }
             }
             .eraseToAnyPublisher()
     }

@@ -30,7 +30,7 @@ struct MyPageView: View {
                            alignment: .leading)
                     .fadeIn(delay: 0.1)
                 
-                Text("세스코 님, 안녕하세요!")
+                Text("\(UserManager.shared.name ?? "null") 님, 안녕하세요!")
                     .font(.logo2Medium)
                     .foregroundStyle(Color.gray90)
                     .padding(.leading, 32)

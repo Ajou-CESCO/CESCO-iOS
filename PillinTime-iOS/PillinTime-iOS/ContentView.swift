@@ -7,11 +7,18 @@
 
 import SwiftUI
 
+import LinkNavigator
+
 struct ContentView: View {
     
     // MARK: - Properties
     
+    let navigator: LinkNavigatorType
     @State private var selectedTab: TabBarType = .home
+    
+    init(navigator: LinkNavigatorType) {
+        self.navigator = navigator
+    }
 
     // MARK: - body
     
@@ -37,9 +44,16 @@ struct ContentView: View {
                     .tag(TabBarType.myPage)
             }
         }
+        /// access token이 없다면 로그인 페이지로 넘어갑니다.
+        .onAppear {
+            if !UserManager.shared.hasAccessToken {
+                navigator.fullSheet(paths: ["signup"], items: [:], isAnimated: false, prefersLargeTitles: .none)
+            }
+        }
+        .navigationBarHidden(true)
     }
 }
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    ContentView(navigator: Na)
+//}

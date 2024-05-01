@@ -9,6 +9,7 @@ import Foundation
 import Moya
 
 enum AuthAPI {
+    case signIn(_ signInModel: SignInRequestModel)
     case signUp(_ signUpModel: SignUpRequestModel)
 }
 
@@ -23,20 +24,24 @@ extension AuthAPI: TargetType {
     
     var path: String {
         switch self {
+        case .signIn:
+            return "/api/auth"
         case .signUp:
-            return "/api/user/signup"
+            return "/api/user"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .signUp:
+        case .signUp, .signIn:
             return .post
         }
     }
     
     var task: Moya.Task {
         switch self {
+        case .signIn(let signInModel):
+            return .requestJSONEncodable(signInModel)
         case .signUp(let signUpModel):
             return .requestJSONEncodable(signUpModel)
         }

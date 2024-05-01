@@ -58,12 +58,12 @@ struct PhoneNumberInputView: View {
                     Text("다음")
                 }, isDisabled: !validationViewModel.infoErrorState.phoneNumberErrorMessage.isEmpty || validationViewModel.infoState.phoneNumber.isEmpty)
                 
-                NavigationLink(destination: CreateUserProfileView()
-                                .navigationBarBackButtonHidden(true)
-                                .navigationBarHidden(true),
-                               isActive: $navigateToVerificationCodeInputView) {
-                    EmptyView()
-                }
+//                NavigationLink(destination: SignUpView()
+//                                .navigationBarBackButtonHidden(true)
+//                                .navigationBarHidden(true),
+//                               isActive: $navigateToVerificationCodeInputView) {
+//                    EmptyView()
+//                }
             }
             .onTapGesture {
                 hideKeyboard()

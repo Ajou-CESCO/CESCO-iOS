@@ -15,4 +15,5 @@ enum SignUpValidationViewModelEvent {
     case ssnValid(ssn: String)
     case ssnInvalid
     case sendInfoForSignUp(info: InfoState)
+    case sendInfoForSignIn(info: InfoState)
 }

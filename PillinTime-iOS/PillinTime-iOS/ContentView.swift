@@ -7,19 +7,53 @@
 
 import SwiftUI
 
+import LinkNavigator
+
 struct ContentView: View {
+    
+    // MARK: - Properties
+    
+    let navigator: LinkNavigatorType
+    @State private var selectedTab: TabBarType = .home
+    
+    init(navigator: LinkNavigatorType) {
+        self.navigator = navigator
+    }
+
+    // MARK: - body
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-                .font(/*@START_MENU_TOKEN@*/.title/*@END_MENU_TOKEN@*/)
+        NavigationView {
+            TabView(selection: $selectedTab) {
+                DoseScheduleView()
+                    .tabItem {
+                        Image(selectedTab == .doseSchedule ? "ic_dose_filled" : "ic_dose_unfilled")
+                    }
+                    .tag(TabBarType.doseSchedule)
+                
+                HomeView(selectedClient: 0)
+                    .tabItem {
+                        Image(selectedTab == .home ? "ic_home_filled" : "ic_home_unfilled")
+                    } 
+                    .tag(TabBarType.home)
+                
+                MyPageView()
+                    .tabItem {
+                        Image(selectedTab == .myPage ? "ic_user_filled" : "ic_user_unfilled")
+                    }
+                    .tag(TabBarType.myPage)
+            }
         }
-        .padding()
+        /// access token이 없다면 로그인 페이지로 넘어갑니다.
+        .onAppear {
+            if !UserManager.shared.hasAccessToken {
+                navigator.fullSheet(paths: ["signup"], items: [:], isAnimated: false, prefersLargeTitles: .none)
+            }
+        }
+        .navigationBarHidden(true)
     }
 }
 
-#Preview {
-    ContentView()
-}
+//#Preview {
+//    ContentView(navigator: Na)
+//}

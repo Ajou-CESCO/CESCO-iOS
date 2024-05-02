@@ -8,7 +8,7 @@
 import Foundation
 
 // 명세 확정 이후에 수정할 것
-struct TodayDoseLogModel {
+struct TodayDoseLogModel: Hashable {
     var pillName: String
     var doseTime: String
     var doseStatus: DoseStatus

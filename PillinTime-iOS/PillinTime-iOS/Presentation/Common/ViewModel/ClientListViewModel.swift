@@ -52,4 +52,11 @@ class ClientListViewModel: ObservableObject {
             TodayDoseLogModel(pillName: "항생제", doseTime: "오후 9시", doseStatus: .scheduled)
         ]
     }
+    
+    func countLogs(filteringBy status: DoseStatus?) -> Int {
+        guard let status = status else {
+            return todayDoesLog.count
+        }
+        return todayDoesLog.filter { $0.doseStatus == status }.count
+    }
 }

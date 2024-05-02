@@ -33,3 +33,4 @@ protocol AuthServiceType {
     /// - Returns: 요청에 성공 시, SignInResponseModel을 반환합니다. 실패 시 AuthError를 throw합니다.
     func requestSignIn(signInRequestModel: SignInRequestModel) -> AnyPublisher<SignInResponseModel, AuthError>
 }
+

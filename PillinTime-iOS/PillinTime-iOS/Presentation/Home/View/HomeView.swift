@@ -35,31 +35,63 @@ struct HomeView: View {
     
     // MARK: - Properties
     
-    @ObservedObject var viewModel = ClientListViewModel()
-    @State var userStatus: UserStatus      // 사용자 상태값
-    @State var selectedClient: Int  // 선택된 Client
+    @ObservedObject var clientListViewModel = ClientListViewModel()
+    @State var selectedClient: Int?  // 선택된 Client
     @State private var showEncourageView: Bool = false
     
     // MARK: - body
     
     var body: some View {
         VStack(alignment: .leading) {
-            if userStatus == .manager {
-                ClientListView(viewModel: viewModel,
-                               selectedClient: selectedClient)
+            /// 보호자일 경우
+            if (UserManager.shared.userType == 0) {
+                ClientListView(viewModel: clientListViewModel,
+                               selectedClient: $selectedClient)
                     .padding(.bottom, 17)
                     .fadeIn(delay: 0.1)
                 
-                Text.multiColoredText("오늘 이재현 님의 약속시간은?", coloredSubstrings: [("이재현", Color.primary60),
-                                                                                    ("약", Color.primary60)])
-                    .foregroundStyle(Color.gray90)
-                    .font(.logo3Medium)
-                    .padding(.leading, 33)
-                    .fadeIn(delay: 0.2)
-
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 0) {
+                        ForEach(0..<clientListViewModel.clients.count, id: \.self) { index in
+                            
+                            VStack(alignment: .leading) {
+                                Text.multiColoredText("오늘 \(clientListViewModel.clients[index].relatedUserName) 님의 약속시간은?",
+                                                      coloredSubstrings: [(clientListViewModel.clients[index].relatedUserName, Color.primary60),
+                                                                        ("약", Color.primary60)])
+                                    .foregroundStyle(Color.gray90)
+                                    .font(.logo3Medium)
+                                    .padding(.leading, 33)
+                                    .fadeIn(delay: 0.2)
+                                
+                                DoesHomeView(isPillCaseExist: true)
+                                    .padding([.top, .bottom], 10)
+                                    .padding([.leading, .trailing], 25)
+                                .fadeIn(delay: 0.3)
+                                
+                                if showEncourageView {
+                                    EncourageMainView()
+                                        .transition(.move(edge: .top))
+                                        .scaleFadeIn(delay: 0.4)
+                                        .padding([.leading, .trailing], 25)
+                                }
+                                
+                                HealthMainView()
+                                    .padding(.top, showEncourageView ? 14 : 0) // EncourageMainView 표시에 따라 조정
+                                    .fadeIn(delay: 0.5)
+                                    .padding([.leading, .trailing], 25)
+                                
+                                Spacer()
+                            }
+                            .containerRelativeFrame(.horizontal)
+                        }
+                    }
+                    .scrollTargetLayout(isEnabled: true)
+                }
+                .scrollTargetBehavior(.viewAligned)
+                .scrollPosition(id: $selectedClient)
             } else {
                 HStack {
-                    Text.multiColoredText("이재현 님,\n오늘 하루도 화이팅이에요!", coloredSubstrings: [("이재현", Color.primary60)])
+                    Text.multiColoredText("\(UserManager.shared.name ?? "null") 님,\n오늘 하루도 화이팅이에요!", coloredSubstrings: [(UserManager.shared.name ?? "null", Color.primary60)])
                         .foregroundStyle(Color.gray90)
                         .font(.logo3Medium)
                         .lineSpacing(3)
@@ -76,31 +108,30 @@ struct HomeView: View {
                 }
                 .padding([.leading, .trailing], 33)
                 .padding(.top, 23)
-            }
-            
-            DoesHomeView(isPillCaseExist: true)
-                .padding([.top, .bottom], 18)
-                .padding([.leading, .trailing], 25)
-                .fadeIn(delay: 0.3)
-            
-            if showEncourageView {
-                EncourageMainView()
-                    .transition(.move(edge: .top))
-                    .scaleFadeIn(delay: 0.4)
+                
+                DoesHomeView(isPillCaseExist: true)
+                    .padding([.top, .bottom], 18)
                     .padding([.leading, .trailing], 25)
+                    .fadeIn(delay: 0.3)
+                
+                if showEncourageView {
+                    EncourageMainView()
+                        .transition(.move(edge: .top))
+                        .scaleFadeIn(delay: 0.4)
+                        .padding([.leading, .trailing], 25)
+                }
+                
+                HealthMainView()
+                    .padding(.top, showEncourageView ? 17 : 0) // EncourageMainView 표시에 따라 조정
+                    .fadeIn(delay: 0.5)
+                    .padding([.leading, .trailing], 25)
+                
+                Spacer()
             }
-            
-            HealthMainView()
-                .padding(.top, showEncourageView ? 17 : 0) // EncourageMainView 표시에 따라 조정
-                .fadeIn(delay: 0.5)
-                .padding([.leading, .trailing], 25)
-            
-            Spacer()
-            
         }
         .background(Color.gray5)
         .onAppear {
-            // 여기서 조금 지연 후에 EncourageMainView를 표시
+            // 여기서 조금 지연된 후에 EncourageMainView를 표시
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                 withAnimation {
                     self.showEncourageView = true
@@ -254,8 +285,8 @@ struct EncourageMainView: View {
     
     var body: some View {
         HStack {
-            Image("ic_dose_filled")
-                .frame(width: 50, height: 50)
+            LottieView(lottieFile: "pie-chart")
+                .frame(width: 70, height: 70)
             
             VStack(alignment: .leading) {
                 Text(mainTitle)
@@ -275,5 +306,5 @@ struct EncourageMainView: View {
 }
 
 #Preview {
-    HomeView(userStatus: .manager, selectedClient: 0)
+    HomeView(selectedClient: 0)
 }

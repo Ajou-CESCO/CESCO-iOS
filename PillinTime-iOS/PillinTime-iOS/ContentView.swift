@@ -31,7 +31,7 @@ struct ContentView: View {
                     }
                     .tag(TabBarType.doseSchedule)
                 
-                HomeView(userStatus: .manager, selectedClient: 0)
+                HomeView(selectedClient: 0)
                     .tabItem {
                         Image(selectedTab == .home ? "ic_home_filled" : "ic_home_unfilled")
                     } 

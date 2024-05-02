@@ -13,7 +13,7 @@ struct ClientListView: View {
 
     @ObservedObject var viewModel = ClientListViewModel()
     
-    @State var selectedClient: Int
+    @Binding var selectedClient: Int?
     
     // MARK: - body
     
@@ -37,8 +37,8 @@ struct ClientListView: View {
             
         }
         .frame(maxWidth: .infinity,
-               minHeight: 110,
-               maxHeight: 110)
+               minHeight: 100,
+               maxHeight: 100)
     }
 }
 
@@ -65,5 +65,5 @@ struct ClientView: View {
 }
 
 #Preview {
-    ClientListView(selectedClient: 0)
+    ClientListView(selectedClient: .constant(0))
 }

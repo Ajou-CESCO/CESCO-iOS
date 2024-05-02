@@ -20,7 +20,7 @@ struct MyPageView: View {
         
         VStack {
             VStack {
-                Text("보호자")
+                Text(UserManager.shared.userType == 0 ? "보호자" : "피보호자")
                     .font(.body1Medium)
                     .foregroundStyle(Color.primary40)
                     .padding(.leading, 32)

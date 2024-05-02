@@ -53,7 +53,6 @@ struct SignUpView: View {
             })
             
             VStack(alignment: .leading) {
-                
                 Text(userProfileViewModel.mainText)
                     .font(.logo2ExtraBold)
                     .foregroundStyle(Color.gray100)
@@ -114,7 +113,9 @@ struct SignUpView: View {
                     if (self.selectedRole == 0) {   // 보호자라면
                         EmptyView()
                     } else {    // 피보호자라면
-                        RelationRequestView()
+                        RelationRequestView(finishSelectRelation: {
+                            self.isAuthSuccessed = true
+                        })
                     }
                 }
                 
@@ -126,7 +127,6 @@ struct SignUpView: View {
                     CustomButton(buttonSize: .regular,
                                  buttonStyle: .filled,
                                  action: {
-                        
                         switch userProfileViewModel.step {
                         case 2:
                             // 로그인 요청
@@ -156,7 +156,7 @@ struct SignUpView: View {
                     }, isDisabled: isButtonDisabled)
                 }
                 
-            }
+            } // Todo: ViewModel로 분리할 것
             .onReceive(userProfileViewModel.$step) { _ in
                 updateButtonState()
             }
@@ -232,6 +232,8 @@ struct RelationRequestView: View {
     
     @State private var isModalPresented = false
     @State private var selectedIndex: Int = 0
+    @State private var isClinetSelectedRelation: Bool = false
+    var finishSelectRelation: () -> Void
     
     let mockData: [RequestList] = [
         RequestList(requestId: 1, name: "이재현", phoneNumber: "0001"),
@@ -254,7 +256,10 @@ struct RelationRequestView: View {
                 ForEach(0..<mockData.count, id: \.self) { index in
                     Button(action: {
                         self.selectedIndex = index
-                        isModalPresented.toggle()
+                        self.isModalPresented = true
+                        print(self.selectedIndex)
+                        print(index)
+                        print(mockData[selectedIndex].name)
                     }, label: {
                         HStack {
                             Text(mockData[index].name)
@@ -282,15 +287,23 @@ struct RelationRequestView: View {
                         CustomPopUpView(mainText: "\(mockData[selectedIndex].name) 님을 보호자로\n수락하시겠어요?",
                                         subText: "수락을 선택하면 \(mockData[selectedIndex].name) 님이 회원님의\n약 복용 현황과 건강 상태를 관리할 수 있어요.",
                                         leftButtonText: "거절할게요",
-                                        rightButtonText: "수락할게요")
+                                        rightButtonText: "수락할게요", 
+                                        leftButtonAction: { self.isModalPresented = false },
+                                        rightButtonAction: { 
+                                            finishSelectRelation() })
+                        .background(ClearBackgroundView())
+                        .background(Material.ultraThin)
+                        
                     })
+                    .transaction { transaction in   // 모달 애니메이션 삭제
+                        transaction.disablesAnimations = true
+                    }
                 }
                 .padding(.bottom, 12)
             }
             .padding(.top, 30)
         }
     }
-        
 }
 
 // MARK: - SuccessSignUpView
@@ -303,17 +316,22 @@ struct SuccessSignUpView: View {
     var onDismiss: () -> Void
     
     var body: some View {
-        VStack {
-            LottieView(lottieFile: "signup")
-                .frame(width: 200, height: 200)
+        ZStack {
+            Color.white
+                .ignoresSafeArea()
             
-            Text("\(self.name) 님,\n만나서 반갑습니다!")
-                .font(.logo2ExtraBold)
-                .multilineTextAlignment(.center)
-                .lineSpacing(2)
-                .foregroundStyle(Color.gray100)
-                .frame(alignment: .center)
-                .fadeIn(delay: 0.7)
+            VStack {
+                LottieView(lottieFile: "signup")
+                    .frame(width: 200, height: 200)
+                
+                Text("\(self.name) 님,\n만나서 반갑습니다!")
+                    .font(.logo2ExtraBold)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(2)
+                    .foregroundStyle(Color.gray100)
+                    .frame(alignment: .center)
+                    .fadeIn(delay: 0.7)
+            }
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
@@ -325,6 +343,6 @@ struct SuccessSignUpView: View {
     
 }
 
-//#Preview {
-//    SignUpView(navigator: navigator)
-//}
+#Preview {
+        SuccessSignUpView(onDismiss: {})
+}

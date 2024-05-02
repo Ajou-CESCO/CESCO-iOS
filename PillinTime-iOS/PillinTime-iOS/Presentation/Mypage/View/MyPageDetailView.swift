@@ -161,7 +161,7 @@ struct ManagementMyInformationView: View {
         case .phoneNumber:
             return self.phoneNumber
         case .ssn:
-            return self.ssn
+            return self.ssn.prefix(8) + "●●●●●●"
         }
         
     }

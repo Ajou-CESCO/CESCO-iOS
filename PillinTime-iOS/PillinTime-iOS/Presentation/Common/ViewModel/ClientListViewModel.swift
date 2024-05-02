@@ -13,6 +13,7 @@ class ClientListViewModel: ObservableObject {
     
     @Published var clients: [ClientListModel] = []
     @Published var todayDoesLog: [TodayDoseLogModel] = []
+    @Published var selectedUserId: Int = Int()
     
     // MARK: - Initalizer
     
@@ -21,6 +22,14 @@ class ClientListViewModel: ObservableObject {
     }
     
     // MARK: - Methods
+    
+    func fetchDataForClient(clientId: Int) {
+        if let index = clients.firstIndex(where: { $0.relatedUserId == clientId }) {
+            let selectedClient = clients[index]
+            clients.remove(at: index)
+            clients.insert(selectedClient, at: 0)
+        }
+    }
     
     func mockClientList() {
         self.clients = [

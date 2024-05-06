@@ -25,7 +25,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             TabView(selection: $selectedTab) {
-                DoseScheduleView()
+                DoseScheduleView(navigator: navigator)
                     .tabItem {
                         Image(selectedTab == .doseSchedule ? "ic_dose_filled" : "ic_dose_unfilled")
                     }

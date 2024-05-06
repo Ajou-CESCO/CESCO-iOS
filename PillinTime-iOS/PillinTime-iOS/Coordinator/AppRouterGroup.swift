@@ -12,7 +12,9 @@ struct AppRouterGroup {
     var routers: [RouteBuilder] {
         [
             ContentRouteBuilder(),
-            SignUpRouteBuilder()
+            SignUpRouteBuilder(),
+            DoseScheduleRouteBuilder(),
+            DoseAddRouteBuilder()
         ]
     }
 }

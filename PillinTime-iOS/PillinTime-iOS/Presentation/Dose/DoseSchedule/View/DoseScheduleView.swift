@@ -68,7 +68,7 @@ struct DoseScheduleView: View {
                                                             .padding(.trailing, 2)
                                                     }
                                                 }
-                                                .padding(7)
+                                                .padding(5)
                                                 .background(Color.white)
                                                 .cornerRadius(8)
                                                 .overlay(RoundedRectangle(cornerRadius: 8)
@@ -77,7 +77,6 @@ struct DoseScheduleView: View {
 
                                             })
                                             .disabled(isUserPoked)
-                                            .padding(.top, 10)
                                             .padding(.trailing, 25)
                                             .fadeIn(delay: 0.3)
                                         }

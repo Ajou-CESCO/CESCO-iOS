@@ -13,6 +13,7 @@ struct CustomWeekCalendarView: View {
     
     let week: [String] = ["월", "화", "수", "목", "금", "토", "일"]
     let day: String = DateHelper().day
+    var isSelectDisabled: Bool = true
 
     // MARK: - body
     
@@ -32,7 +33,7 @@ struct CustomWeekCalendarView: View {
                     .cornerRadius(10)
                     .frame(width: 38, height: 42)
                 })
-                .disabled(true)
+                .disabled(isSelectDisabled)
                 .padding(1)
             }
         }

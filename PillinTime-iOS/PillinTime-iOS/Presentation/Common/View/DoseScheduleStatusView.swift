@@ -17,6 +17,7 @@ struct DoseScheduleStatusView: View {
     let itemHeight: CGFloat = 55
     @ObservedObject var viewModel = ClientListViewModel()
     let doseStatus: DoseStatus?
+    @State var showAddPillCaseView: Bool = false
     
     var body: some View {
         /// 약통이 존재할 경우, 오늘의 약 복용 일정이 보임
@@ -79,15 +80,15 @@ struct DoseScheduleStatusView: View {
                         .padding(.bottom, 20)
                     
                     Button(action: {
-                        
+                        self.showAddPillCaseView = true
                     }, label: {
                         Text("기기 등록하기")
                             .font(.body1Medium)
                             .foregroundStyle(Color.primary90)
                     })
-                    .cornerRadius(8)
                     .frame(width: 127, height: 48)
                     .background(Color.white)
+                    .cornerRadius(8)
                     .padding()
                 }
             }
@@ -95,6 +96,10 @@ struct DoseScheduleStatusView: View {
             .frame(maxWidth: .infinity,
                    minHeight: 220,
                    maxHeight: 220)
+            .fullScreenCover(isPresented: $showAddPillCaseView,
+                             content: {
+                AddPillCaseView()
+            })
         }
     }
     
@@ -107,6 +112,64 @@ struct DoseScheduleStatusView: View {
             return Color.error60
         case .scheduled:
             return Color.gray30
+        }
+    }
+}
+
+// MARK: - AddPillCaseView
+
+struct AddPillCaseView: View {
+    
+    // MARK: - Properties
+    
+    @ObservedObject var addPillCaseViewModel: AddPillCaseViewModel
+    @State private var textInput: String = String()
+    
+    // MARK: - Initializer
+    
+    init() {
+        self.addPillCaseViewModel = AddPillCaseViewModel()
+    }
+    
+    // MARK: - body
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            CustomNavigationBar()
+            
+            VStack(alignment: .leading) {
+                Text(addPillCaseViewModel.mainText)
+                    .font(.logo2ExtraBold)
+                    .foregroundStyle(Color.gray100)
+                    .padding(.bottom, 5)
+                    .fadeIn(delay: 0.1)
+                
+                Text(addPillCaseViewModel.subText)
+                    .font(.body1Regular)
+                    .foregroundStyle(Color.gray70)
+                    .fadeIn(delay: 0.2)
+                
+                CustomTextInput(placeholder: addPillCaseViewModel.placeholder,
+                                text: $addPillCaseViewModel.infoState.serialNumber,
+                                isError: .constant(false),
+                                errorMessage: addPillCaseViewModel.infoErrorState.serialNumberErrorMessage,
+                                textInputStyle: .text)
+                    .fadeIn(delay: 0.3)
+                
+                Spacer()
+                
+                CustomButton(buttonSize: .regular,
+                             buttonStyle: .filled,
+                             action: {
+                    self.addPillCaseViewModel.$tapAddPillCaseButton.send()
+                }, content: {
+                    Text("확인")
+                }, isDisabled: !addPillCaseViewModel.infoErrorState.serialNumberErrorMessage.isEmpty || addPillCaseViewModel.infoState.serialNumber.isEmpty)
+                    .fadeIn(delay: 0.4)
+            }
+            .padding([.leading, .trailing], 33)
+            
+            Spacer()
         }
     }
 }

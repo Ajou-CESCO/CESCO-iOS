@@ -14,6 +14,7 @@ enum CustomTextInputStyle {
     case verificationCode   // 인증코드 입력
     case ssn                // 주민번호 입력
     case text               // 일반 입력
+    case search             // 찾기
 }
 
 struct CustomTextInput: View {
@@ -83,7 +84,7 @@ extension CustomTextInput {
                        switch textInputStyle {
                        case .phoneNumber, .ssn, .verificationCode:
                            return .numberPad
-                       case .text:
+                       case .text, .search:
                            return .default
                        }
                    }())
@@ -107,15 +108,26 @@ extension CustomTextInput {
                 
                 Spacer()
                 
-                /// 텍스트 필드가 비어있지 않을 경우, clear 버튼 추가
-                if !text.isEmpty {
+                switch textInputStyle {
+                case .search:
                     Button(action: {
-                        self.text = String()
+                        
                     }, label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(Color.gray70)
+                        Image("ic_search")
+                            .frame(width: 30, height: 30)
                             .padding()
                     })
+                default:
+                    /// 텍스트 필드가 비어있지 않을 경우, clear 버튼 추가
+                    if !text.isEmpty {
+                        Button(action: {
+                            self.text = String()
+                        }, label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(Color.gray70)
+                                .padding()
+                        })
+                    }
                 }
             }
         }

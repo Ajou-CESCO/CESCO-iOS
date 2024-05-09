@@ -49,6 +49,8 @@ struct SignUpView: View {
             CustomNavigationBar(previousAction: {
                 if userProfileViewModel.step > 1 {
                     userProfileViewModel.previousStep()
+                } else {
+                    dismiss()
                 }
             })
             
@@ -128,7 +130,7 @@ struct SignUpView: View {
                                  buttonStyle: .filled,
                                  action: {
                         switch userProfileViewModel.step {
-                        case 2:
+                        case 3:
                             // 로그인 요청
                             signUpRequestViewModel.$tapSignInButton.send()
                             // 만약 로그인이 성공적으로 이루어졌다면

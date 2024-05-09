@@ -63,7 +63,7 @@ struct HomeView: View {
                                     .padding(.leading, 33)
                                     .fadeIn(delay: 0.2)
                                 
-                                DoseScheduleStatusView(isPillCaseExist: true, 
+                                DoseScheduleStatusView(isPillCaseExist: false,
                                                        doseStatus: nil)
                                     .padding([.top, .bottom], 10)
                                     .padding([.leading, .trailing], 25)
@@ -110,7 +110,7 @@ struct HomeView: View {
                 .padding([.leading, .trailing], 33)
                 .padding(.top, 23)
                 
-                DoseScheduleStatusView(isPillCaseExist: true, doseStatus: nil)
+                DoseScheduleStatusView(isPillCaseExist: false, doseStatus: nil)
                     .padding([.top, .bottom], 18)
                     .padding([.leading, .trailing], 25)
                     .fadeIn(delay: 0.3)
@@ -208,8 +208,4 @@ struct EncourageMainView: View {
         .background(Color.white)
         .cornerRadius(8)
     }
-}
-
-#Preview {
-    HomeView(selectedClient: 0)
 }

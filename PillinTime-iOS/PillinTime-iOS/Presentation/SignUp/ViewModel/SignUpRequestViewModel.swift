@@ -79,7 +79,8 @@ class SignUpRequestViewModel: ObservableObject {
                                                       userType: UserManager.shared.userType ?? 0))
             case .sendInfoForSignIn(let info):
                 self.requestSignIn(SignInRequestModel(name: info.name,
-                                                      phone: info.phoneNumber))
+                                                      phone: info.phoneNumber,
+                                                      ssn: String(info.ssn.prefix(8))))
             }
         }
         .store(in: &cancellables)
@@ -112,7 +113,9 @@ class SignUpRequestViewModel: ObservableObject {
                 let userManager = UserManager.shared
                 userManager.name = signInModel.name
                 userManager.phoneNumber = signInModel.phone
+                userManager.ssn = String(signInModel.ssn.prefix(8))
                 userManager.accessToken = result.result.accessToken
+                // 유저타입 저장하기 추가
                 self.signUpState.failMessage = String()
             })
             .store(in: &cancellables)
@@ -137,8 +140,9 @@ class SignUpRequestViewModel: ObservableObject {
                 let userManager = UserManager.shared
                 userManager.name = signUpModel.name
                 userManager.phoneNumber = signUpModel.phone
-                userManager.ssn = signUpModel.ssn
+                userManager.ssn = String(signUpModel.ssn.prefix(8))
                 userManager.accessToken = result.result.accessToken
+                userManager.userType = signUpModel.userType
                 self.signUpState.failMessage = String()
             })
             .store(in: &cancellables)

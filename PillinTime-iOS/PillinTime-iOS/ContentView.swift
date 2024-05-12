@@ -46,9 +46,12 @@ struct ContentView: View {
         }
         /// access token이 없다면 로그인 페이지로 넘어갑니다.
         .onAppear {
+            print(UserManager.shared.accessToken)
+            
             if !UserManager.shared.hasAccessToken {
                 navigator.fullSheet(paths: ["signup"], items: [:], isAnimated: false, prefersLargeTitles: .none)
             }
+            
         }
         .navigationBarHidden(true)
     }

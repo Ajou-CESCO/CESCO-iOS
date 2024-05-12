@@ -29,6 +29,7 @@ struct CustomTextInput: View {
     var textInputStyle: CustomTextInputStyle
     
     var onFocusOut: PassthroughSubject<String, Never>?
+    var searchButtonAction: (() -> Void)?
     
     @FocusState private var isFocused: Bool
     
@@ -111,7 +112,8 @@ extension CustomTextInput {
                 switch textInputStyle {
                 case .search:
                     Button(action: {
-                        
+                        guard let searchButtonAction = searchButtonAction else { return }
+                        searchButtonAction()
                     }, label: {
                         Image("ic_search")
                             .frame(width: 30, height: 30)

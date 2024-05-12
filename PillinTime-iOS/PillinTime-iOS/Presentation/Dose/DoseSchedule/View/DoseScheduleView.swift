@@ -103,7 +103,7 @@ struct DoseScheduleView: View {
                 .scrollPosition(id: $selectedClient)
                 
                 if isUserPoked {
-                    ToastView(description: "\(clientListViewModel.clients[selectedClient ?? 0].relatedUserName) 님을 콕 찔렀어요.", 
+                    ToastView(description: "\(clientListViewModel.clients[selectedClient ?? 0].userName) 님을 콕 찔렀어요.",
                               show: $isUserPoked)
                         .padding(.bottom, 20)
                 }

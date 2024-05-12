@@ -40,7 +40,7 @@ class AddPillCaseViewModel: ObservableObject {
     // MARK: - Properties
 
     let mainText: String = "약통의 시리얼 넘버"
-    let subText: String = "약통에 적힌 시리얼 넘버를 입력해주세요."
+    let subText: String = "약통에 적힌 시리얼 넘버 16자리를 입력해주세요."
     let placeholder: String = "시리얼 넘버 입력 (ex. 000000)"
     
     // MARK: - Input State

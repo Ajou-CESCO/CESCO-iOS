@@ -56,4 +56,10 @@ extension String {
 
         return false
     }
+    
+    /// 글자별 줄바꿈 메서드
+    /// Reference: https://woozoobro.medium.com/swiftui-%EA%B8%80%EC%9E%90%EB%B3%84-%EC%A4%84%EB%B0%94%EA%BF%88%ED%95%98%EA%B8%B0-6bb4c33f7d9d
+    func splitCharacter() -> String {
+        return self.split(separator: "").joined(separator: "\u{200B}")
+    }
 }

@@ -55,8 +55,8 @@ struct HomeView: View {
                         ForEach(0..<clientListViewModel.clients.count, id: \.self) { index in
                             
                             VStack(alignment: .leading) {
-                                Text.multiColoredText("오늘 \(clientListViewModel.clients[index].relatedUserName) 님의 약속시간은?",
-                                                      coloredSubstrings: [(clientListViewModel.clients[index].relatedUserName, Color.primary60),
+                                Text.multiColoredText("오늘 \(clientListViewModel.clients[index].userName) 님의 약속시간은?",
+                                                      coloredSubstrings: [(clientListViewModel.clients[index].userName, Color.primary60),
                                                                         ("약", Color.primary60)])
                                     .foregroundStyle(Color.gray90)
                                     .font(.logo3Medium)

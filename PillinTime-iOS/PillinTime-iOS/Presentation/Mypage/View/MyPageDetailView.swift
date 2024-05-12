@@ -30,6 +30,8 @@ enum UserProfile {
     ]
 }
 
+// MARK: - MyPageDetailView
+
 struct MyPageDetailView: View {
     
     // MARK: - Properties
@@ -53,6 +55,8 @@ struct MyPageDetailView: View {
                 CustomerServiceCenterView()
             case .withdrawal:
                 WithdrawalView()
+            case .clientManage:
+                ClientManageView()
             }
             
             Spacer()
@@ -257,6 +261,84 @@ struct WithdrawalView: View {
     }
 }
 
+// MARK: - ClientManageView
+
+struct ClientManageView: View {
+    
+    // MARK: - Properties
+
+    @ObservedObject var clientListViewModel = ClientListViewModel()
+    @State var isDeletePopUp: Bool = false
+    @State var clientIndex: Int = 0
+    
+    // MARK: - body
+    
+    var body: some View {
+        VStack {
+            Text("총 10명")
+                .font(.h5Bold)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.leading, 32)
+                .padding([.top, .bottom], 20)
+            
+            List {
+                ForEach(0..<clientListViewModel.clients.count, id: \.self) { index in
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(clientListViewModel.clients[index].userName)
+                                .font(.h5Bold)
+                                .foregroundStyle(Color.gray90)
+                                .padding(.bottom, 3)
+
+                            Text(clientListViewModel.clients[index].userPhone)
+                                .font(.body2Medium)
+                                .foregroundStyle(Color.gray70)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(clientListViewModel.clients[index].caseId.isEmpty ? "ic_cabnet_disconnected" : "ic_cabnet_connected")
+                            .resizable()
+                            .frame(width: 50, height: 50)
+                    }
+                    .swipeActions {
+                        Button("삭제") {
+                            self.isDeletePopUp = true
+                            self.clientIndex = index
+                        }
+                        .tint(.error90)
+                    }
+                    .ignoresSafeArea(edges: .all)
+                    .frame(height: 70)
+                    .padding([.leading, .trailing], 30)
+                    .fullScreenCover(isPresented: $isDeletePopUp,
+                                     content: {
+                        CustomPopUpView(mainText: "\(clientListViewModel.clients[clientIndex].userName) 님을\n삭제하시겠어요?",
+                                        subText: "삭제하면 \(clientListViewModel.clients[clientIndex].userName) 님은 새로운 보호자가 케어를\n요청할 때까지 서비스를 이용할 수 없어요.",
+                                        leftButtonText: "취소할래요",
+                                        rightButtonText: "삭제할래요",
+                                        leftButtonAction: {
+                            
+                        },
+                                        rightButtonAction: {
+                            
+                        })
+                        .background(ClearBackgroundView())
+                        .background(Material.ultraThin)
+                       
+                    })
+                    .transaction { transaction in   // 모달 애니메이션 삭제
+                        transaction.disablesAnimations = true
+                    }
+                }
+                
+            }
+            .listStyle(.plain)
+        }
+        
+    }
+}
+
 #Preview {
-    MyPageDetailView(settingListElement: .managementMyInformation)
+    ClientManageView()
 }

@@ -38,4 +38,12 @@ extension Container {
         }
         .singleton
     }
+    
+    var etcService: Factory<EtcServiceType> {
+        Factory(self) {
+            EtcService(provider: MoyaProvider<EtcAPI>())
+        }
+        .singleton
+    }
+    
 }

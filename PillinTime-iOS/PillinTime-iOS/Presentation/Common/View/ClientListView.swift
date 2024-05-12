@@ -56,7 +56,7 @@ struct ClientView: View {
                 .scaledToFill()
                 .frame(width: 45, height: 45)
             
-            Text(client.relatedUserName)
+            Text(client.userName)
                 .font(isSelected ? .caption2Bold : .caption2Regular)
                 .foregroundStyle(Color.gray90)
         }

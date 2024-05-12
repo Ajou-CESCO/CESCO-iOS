@@ -23,25 +23,18 @@ class ClientListViewModel: ObservableObject {
     
     // MARK: - Methods
     
-    func fetchDataForClient(clientId: Int) {
-        if let index = clients.firstIndex(where: { $0.relatedUserId == clientId }) {
-            let selectedClient = clients[index]
-            clients.remove(at: index)
-            clients.insert(selectedClient, at: 0)
-        }
-    }
-    
     func mockClientList() {
         self.clients = [
-            ClientListModel(relationshipId: 1, relatedUserId: 101, relatedUserName: "이재현", relatedUserAge: 28),
-            ClientListModel(relationshipId: 2, relatedUserId: 102, relatedUserName: "김종명", relatedUserAge: 35),
-            ClientListModel(relationshipId: 3, relatedUserId: 103, relatedUserName: "노수인", relatedUserAge: 24),
-            ClientListModel(relationshipId: 4, relatedUserId: 104, relatedUserName: "김학준", relatedUserAge: 31),
-            ClientListModel(relationshipId: 5, relatedUserId: 105, relatedUserName: "심재민", relatedUserAge: 29),
-            ClientListModel(relationshipId: 5, relatedUserId: 105, relatedUserName: "이몽이", relatedUserAge: 38),
-            ClientListModel(relationshipId: 5, relatedUserId: 105, relatedUserName: "서영자", relatedUserAge: 90),
-            ClientListModel(relationshipId: 5, relatedUserId: 105, relatedUserName: "박정혜", relatedUserAge: 29),
-            ClientListModel(relationshipId: 5, relatedUserId: 105, relatedUserName: "이용섭", relatedUserAge: 29)
+            ClientListModel(userId: 1, userName: "김철수", userSsn: "010101-0", userPhone: "010-1234-5678", userType: 1, caseId: ""),
+            ClientListModel(userId: 2, userName: "박지민", userSsn: "020202-0", userPhone: "010-2345-6789", userType: 1, caseId: "C002"),
+            ClientListModel(userId: 3, userName: "이하늘", userSsn: "030303-0", userPhone: "010-3456-7890", userType: 1, caseId: "C003"),
+            ClientListModel(userId: 4, userName: "정수미", userSsn: "040404-0", userPhone: "010-4567-8901", userType: 1, caseId: ""),
+            ClientListModel(userId: 5, userName: "송다은", userSsn: "050505-0", userPhone: "010-5678-9012", userType: 1, caseId: "C005"),
+            ClientListModel(userId: 6, userName: "천우희", userSsn: "060606-0", userPhone: "010-6789-0123", userType: 1, caseId: "C006"),
+            ClientListModel(userId: 7, userName: "김혜수", userSsn: "070707-0", userPhone: "010-7890-1234", userType: 1, caseId: ""),
+            ClientListModel(userId: 8, userName: "정우성", userSsn: "080808-0", userPhone: "010-8901-2345", userType: 1, caseId: "C008"),
+            ClientListModel(userId: 9, userName: "한지민", userSsn: "090909-0", userPhone: "010-9012-3456", userType: 1, caseId: "C009"),
+            ClientListModel(userId: 10, userName: "조인성", userSsn: "101010-0", userPhone: "010-0123-4567", userType: 1, caseId: "")
         ]
         
         self.todayDoesLog = [

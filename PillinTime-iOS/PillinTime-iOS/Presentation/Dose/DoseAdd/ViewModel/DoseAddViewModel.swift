@@ -5,9 +5,37 @@
 //  Created by Jae Hyun Lee on 5/7/24.
 //
 
+import Foundation
 import Combine
 
+import Factory
+
 class DoseAddViewModel: ObservableObject {
+    
+    // MARK: - Dependency
+    
+    @Injected(\.planService) var planService: PlanServiceType
+    
+    // MARK: - Input State
+    
+    /// 검색하고자 하는 약물
+    @Published var searchDose: String = String()
+    /// 추가하고자 하는 복약 일정
+    @Published var dosePlan: AddDosePlanRequestModel = AddDosePlanRequestModel()
+    
+    // MARK: - Output State
+    
+    // MARK: - Cancellable Bag
+    
+    private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Constructor
+    
+    init(planService: PlanService) {
+        self.planService = planService
+    }
+    
+    // MARK: - Other Data
     
     /// 사용자 입력 단계를 추적하는 변수
     ///
@@ -16,9 +44,8 @@ class DoseAddViewModel: ObservableObject {
     /// - 3: 복용 시간 선택
     @Published var step: Int = 1
     
-    /// 검색하고자 하는 약물
-    @Published var searchDose: String = String()
-    
+    @Published var isDoseSelected: Bool = false
+
     /// 각 단계에서의 텍스트
     var mainText: String {
         switch step {

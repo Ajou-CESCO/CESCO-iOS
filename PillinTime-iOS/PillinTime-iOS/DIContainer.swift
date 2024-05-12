@@ -39,6 +39,13 @@ extension Container {
         .singleton
     }
     
+    var planService: Factory<PlanServiceType> {
+        Factory(self) {
+            PlanService(provider: MoyaProvider<PlanAPI>())
+        }
+        .singleton
+    }
+    
     var etcService: Factory<EtcServiceType> {
         Factory(self) {
             EtcService(provider: MoyaProvider<EtcAPI>())

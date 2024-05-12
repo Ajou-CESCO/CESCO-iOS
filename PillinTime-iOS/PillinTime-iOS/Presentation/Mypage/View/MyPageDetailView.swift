@@ -275,7 +275,7 @@ struct ClientManageView: View {
     
     var body: some View {
         VStack {
-            Text("총 10명")
+            Text("총 \(clientListViewModel.clients.count)명")
                 .font(.h5Bold)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.leading, 32)
@@ -334,6 +334,7 @@ struct ClientManageView: View {
                 
             }
             .listStyle(.plain)
+            .fadeIn(delay: 0.1)
         }
         
     }

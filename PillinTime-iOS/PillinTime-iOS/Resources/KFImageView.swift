@@ -13,7 +13,6 @@ struct KFImageView: View {
     var emptyPlaceholder: String = "img_placeholder"
     var loadingPlaceholder: String = "img_loading"
     
-
     var body: some View {
         if urlString.isEmpty {
             Image(emptyPlaceholder)

@@ -27,6 +27,8 @@ class SignUpRequestViewModel: ObservableObject {
     
     // MARK: - Other Data
     @Published var isLoginSucced: Bool = false
+    @Published var isLoginFailed: Bool = false
+    @Published var isNetworking: Bool = false
     
     // MARK: - Cancellable Bag
     private var cancellables = Set<AnyCancellable>()
@@ -90,9 +92,11 @@ class SignUpRequestViewModel: ObservableObject {
     
     func requestSignIn(_ signInModel: SignInRequestModel) {
         print("로그인 요청 시작: \(signInModel)")
+        self.isNetworking = true
         authService.requestSignIn(signInRequestModel: signInModel)
             .sink(receiveCompletion: { [weak self] completion in
                 guard let self = self else { return }
+                self.isNetworking = false
                 switch completion {
                 case .finished:
                     print("로그인 요청 완료")
@@ -102,6 +106,7 @@ class SignUpRequestViewModel: ObservableObject {
                     /// 사용자가 회원가입 절차가 필요한 경우
                     if case AuthError.signIn(.userNotFound) = error {
                         self.isLoginSucced = false
+                        self.isLoginFailed = true
                         print(AuthError.signIn(.userNotFound).description)
                     }
                     self.signUpState.failMessage = error.localizedDescription

@@ -133,11 +133,6 @@ struct SignUpView: View {
                         case 3:
                             // 로그인 요청
                             signUpRequestViewModel.$tapSignInButton.send()
-                            // 만약 로그인이 성공적으로 이루어졌다면
-                            if signUpRequestViewModel.isLoginSucced == true {
-                                self.isAuthSuccessed = true
-                            }
-                            userProfileViewModel.step += 1
                         case 4:
                             // userType 로컬에 저장
                             UserManager.shared.userType = self.selectedRole
@@ -155,7 +150,7 @@ struct SignUpView: View {
                         }
                     }, content: {
                         Text("다음")
-                    }, isDisabled: isButtonDisabled)
+                    }, isDisabled: isButtonDisabled, isLoading: signUpRequestViewModel.isNetworking)
                 }
                 
             } // Todo: ViewModel로 분리할 것
@@ -168,16 +163,20 @@ struct SignUpView: View {
             .onReceive(validationViewModel.$infoErrorState) { _ in
                 updateButtonState()
             }
+            .onReceive(signUpRequestViewModel.$isLoginSucced) { isSucceeded in
+                if isSucceeded {
+                    navigator.next(paths: ["successSignUp"], items: [:], isAnimated: true)
+                }
+            }
+            .onReceive(signUpRequestViewModel.$isLoginFailed) { isLoginFailed in
+                if isLoginFailed {
+                    // 만약 로그인이 성공적으로 이루어졌다면
+                    userProfileViewModel.step += 1
+                }
+            }
             .padding([.leading, .trailing], 32)
             
             Spacer()
-        }
-        .fullScreenCover(isPresented: $isAuthSuccessed) {
-            SuccessSignUpView(onDismiss: {
-                navigator.close(isAnimated: false) {
-                    print("finished sign up")
-                }
-            })
         }
     }
     
@@ -306,56 +305,4 @@ struct RelationRequestView: View {
             .padding(.top, 30)
         }
     }
-}
-
-// MARK: - SuccessSignUpView
-
-/// 회원가입을 성공적으로 마치면 띄워줄 화면입니다.
-struct SuccessSignUpView: View {
-
-    @Environment(\.dismiss) private var dismiss
-    var name: String = (UserManager.shared.name) ?? "null"
-    var onDismiss: () -> Void
-    
-    var body: some View {
-        ZStack {
-            LottieView(lottieFile: "background")
-                .ignoresSafeArea()
-                        
-            VStack {
-                LottieView(lottieFile: "signup")
-                    .frame(width: 250, height: 250)
-                    .fadeIn(delay: 0.4)
-                    .padding()
-                
-                Text("로그인 완료!")
-                    .font(.h5Bold)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(2)
-                    .foregroundStyle(Color.gray70)
-                    .frame(alignment: .center)
-                    .padding(.bottom, 10)
-                    .fadeIn(delay: 0.6)
-                
-                Text("\(self.name) 님,\n만나서 반갑습니다!")
-                    .font(.logo2ExtraBold)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(2)
-                    .foregroundStyle(Color.gray100)
-                    .frame(alignment: .center)
-                    .fadeIn(delay: 0.8)
-            }
-        }
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                dismiss()
-                onDismiss()
-            }
-        }
-    }
-    
-}
-
-#Preview {
-        SuccessSignUpView(onDismiss: {})
 }

@@ -49,7 +49,7 @@ struct ContentView: View {
             print(UserManager.shared.accessToken)
             
             if !UserManager.shared.hasAccessToken {
-                navigator.fullSheet(paths: ["signup"], items: [:], isAnimated: false, prefersLargeTitles: .none)
+                navigator.next(paths: ["signup"], items: [:], isAnimated: false)
             }
             
         }

@@ -13,6 +13,7 @@ struct AppRouterGroup {
         [
             ContentRouteBuilder(),
             SignUpRouteBuilder(),
+            SuccessSignUpRouteBuilder(),
             DoseScheduleRouteBuilder(),
             DoseAddRouteBuilder()
         ]

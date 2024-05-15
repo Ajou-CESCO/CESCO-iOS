@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import CodeScanner
+
 // MARK: - DoseScheduleStatusView
 
 struct DoseScheduleStatusView: View {
@@ -124,6 +126,8 @@ struct AddPillCaseView: View {
     
     @ObservedObject var addPillCaseViewModel: AddPillCaseViewModel
     @State private var textInput: String = String()
+    @State private var showQRCodeScanningView: Bool = false
+    @State private var scannedCode: String?
     
     // MARK: - Initializer
     
@@ -156,6 +160,14 @@ struct AddPillCaseView: View {
                                 textInputStyle: .text)
                     .fadeIn(delay: 0.3)
                 
+                Button(action: {
+                    self.showQRCodeScanningView = true
+                }, label: {
+                    Text("QR 코드로 등록하기")
+                        .font(.body2Medium)
+                        .foregroundStyle(Color.gray90)
+                })
+                
                 Spacer()
                 
                 CustomButton(buttonSize: .regular,
@@ -171,5 +183,22 @@ struct AddPillCaseView: View {
             
             Spacer()
         }
+        .fullScreenCover(isPresented: $showQRCodeScanningView,
+                         content: {
+            VStack {
+                HStack {
+                    Text("약통 QR 코드 스캔")
+                        .font(.body2Medium)
+                        .foregroundStyle(Color.gray90)
+                }
+                
+                CodeScannerView(codeTypes: [.qr]) { response in
+                    if case let .success(result) = response {
+                        scannedCode = result.string
+                        showQRCodeScanningView = false
+                    }
+                }
+            }
+        })
     }
 }

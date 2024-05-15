@@ -13,6 +13,7 @@ struct DoseScheduleView: View {
     
     // MARK: - Properties
     
+    @State private var selectedDays = Set<String>()
     @ObservedObject var clientListViewModel = ClientListViewModel()
     @State var selectedClient: Int?  // 선택된 Client
     @State var isUserPoked: Bool = false
@@ -31,7 +32,7 @@ struct DoseScheduleView: View {
                         .fadeIn(delay: 0.1)
                 }
                 
-                CustomWeekCalendarView()
+                CustomWeekCalendarView(selectedDays: $selectedDays)
                     .padding(.top, 17)
                     .fadeIn(delay: 0.2)
                     .frame(maxWidth: .infinity, minHeight: 80, maxHeight: 80)

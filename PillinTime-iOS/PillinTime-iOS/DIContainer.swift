@@ -12,11 +12,26 @@ import Factory
 import Moya
 
 extension Container {
+    
     // MARK: - ViewModel
+    
+    var doseAddViewModel: Factory<DoseAddViewModel> {
+        Factory(self) {
+            DoseAddViewModel(planService: PlanService(provider: MoyaProvider<PlanAPI>()))
+        }
+        .singleton
+    }
     
     // MARK: - Moya
     
     // MARK: - Service
+    
+    var caseService: Factory<CaseServiceType> {
+        Factory(self) {
+            CaseService()
+        }
+        .singleton
+    }
     
     var userService: Factory<UserServiceType> {
         Factory(self) {
@@ -35,6 +50,13 @@ extension Container {
     var validationService: Factory<ValidationServiceType> {
         Factory(self) {
             ValidationService()
+        }
+        .singleton
+    }
+    
+    var requestServie: Factory<RequestServiceType> {
+        Factory(self) {
+            RequestService(provider: MoyaProvider<RequestAPI>())
         }
         .singleton
     }

@@ -74,7 +74,8 @@ extension CustomTextInput {
                           minHeight: 64,
                           maxHeight: 64)
                    .focused($isFocused)
-                   .padding()
+                   .padding(7)
+                   .padding(.leading, 10)
                    .onSubmit {
                        onFocusOut?.send(text)
                    }

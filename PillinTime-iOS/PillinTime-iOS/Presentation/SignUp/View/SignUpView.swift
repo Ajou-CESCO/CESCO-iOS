@@ -319,12 +319,23 @@ struct SuccessSignUpView: View {
     
     var body: some View {
         ZStack {
-            Color.white
+            LottieView(lottieFile: "background")
                 .ignoresSafeArea()
-            
+                        
             VStack {
                 LottieView(lottieFile: "signup")
-                    .frame(width: 200, height: 200)
+                    .frame(width: 250, height: 250)
+                    .fadeIn(delay: 0.4)
+                    .padding()
+                
+                Text("로그인 완료!")
+                    .font(.h5Bold)
+                    .multilineTextAlignment(.center)
+                    .lineSpacing(2)
+                    .foregroundStyle(Color.gray70)
+                    .frame(alignment: .center)
+                    .padding(.bottom, 10)
+                    .fadeIn(delay: 0.6)
                 
                 Text("\(self.name) 님,\n만나서 반갑습니다!")
                     .font(.logo2ExtraBold)
@@ -332,11 +343,11 @@ struct SuccessSignUpView: View {
                     .lineSpacing(2)
                     .foregroundStyle(Color.gray100)
                     .frame(alignment: .center)
-                    .fadeIn(delay: 0.7)
+                    .fadeIn(delay: 0.8)
             }
         }
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 dismiss()
                 onDismiss()
             }

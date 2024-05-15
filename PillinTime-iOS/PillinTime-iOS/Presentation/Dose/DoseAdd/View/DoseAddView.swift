@@ -8,31 +8,32 @@
 import SwiftUI
 import Combine
 
-import Moya
+import Factory
 import LinkNavigator
+import Moya
 
 struct DoseAddView: View {
     
     // MARK: - Properties
     
+    @ObservedObject var doseAddViewModel = Container.shared.doseAddViewModel.resolve()
     @Environment(\.dismiss) var dismiss
     let navigator: LinkNavigatorType
     
-    @State private var isButtonDisabled: Bool = false
-    @ObservedObject var doseAddViewModel: DoseAddViewModel
+    @State private var isButtonDisabled: Bool = true
+    @State private var selectedDays: Set<String> = Set<String>()
     
     // MARK: - Initializer
     
     init(navigator: LinkNavigatorType) {
         self.navigator = navigator
-        self.doseAddViewModel = DoseAddViewModel(planService: PlanService(provider: MoyaProvider<PlanAPI>()))
     }
     
     // MARK: - body
     
     var body: some View {
         VStack {
-            ProgressView(value: Float(doseAddViewModel.step / 3))
+            ProgressView(value: doseAddViewModel.progress)
                 .tint(Color.primary60)
 
             CustomNavigationBar(previousAction: {
@@ -59,36 +60,44 @@ struct DoseAddView: View {
             /// - 1: 의약품명 검색
             /// - 2: 복용 요일 선택
             /// - 3: 복용 시간 선택
+            /// - 4: 복용 기간 선택
             switch doseAddViewModel.step {
             case 1:
                 SearchDoseView()
             case 2, 3:
                 VStack {
-                    Text("복용하는 요일을 선택해주세요.")
+                    Text("복용하는 요일을 선택해주세요")
                          .font(.body1Medium)
                          .foregroundStyle(Color.gray70)
                          .frame(maxWidth: .infinity, alignment: .leading)
                          .padding(.top, 50)
+                         .fadeIn(delay: 0.1)
                      
-                    CustomWeekCalendarView(isSelectDisabled: false)
+                    CustomWeekCalendarView(isSelectDisabled: false, 
+                                           isDoseAdd: true,
+                                           selectedDays: $selectedDays)
+                        .fadeIn(delay: 0.2)
+                        .onAppear {
+                            selectedDays = Set(doseAddViewModel.dosePlan.weekday)
+                        }
                     
-                    Text("*요일을 1개 이상 선택해주세요.")
-                         .font(.body1Regular)
-                         .foregroundStyle(Color.error90)
-                         .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    Text("복용하는 시간대를 선택해주세요.")
-                         .font(.body1Medium)
-                         .foregroundStyle(Color.gray70)
-                         .frame(maxWidth: .infinity, alignment: .leading)
-                         .padding(.top, 20)
-                    
-                    SelectDoseTimeView()
-                        .padding(.top, 5)
-                    
+                    if doseAddViewModel.step == 3 {
+                        Text("복용하는 시간대를 선택해주세요")
+                             .font(.body1Medium)
+                             .foregroundStyle(Color.gray70)
+                             .frame(maxWidth: .infinity, alignment: .leading)
+                             .padding(.top, 30)
+                             .fadeIn(delay: 0.1)
+                        
+                        SelectDoseTimeView()
+                            .padding(.top, 8)
+                            .fadeIn(delay: 0.2)
+                    }
                 }
                 .padding([.leading, .trailing], 30)
                 
+            case 4:
+                SelectDosePeriodView()
             default:
                 EmptyView()
             }
@@ -98,23 +107,37 @@ struct DoseAddView: View {
             CustomButton(buttonSize: .regular,
                          buttonStyle: .filled,
                          action: {
+                self.isButtonDisabled = true
                 self.doseAddViewModel.step += 1
             }, content: {
                 Text("다음")
-            }, isDisabled: false)
+            }, isDisabled: isButtonDisabled)
             .padding([.leading, .trailing], 32)
 
         }
-
+        .onReceive(doseAddViewModel.$searchDose, perform: { _ in
+            updateButtonState()
+        })
+        .onReceive(doseAddViewModel.$dosePlan, perform: { _ in
+            updateButtonState()
+        })
+        .onChange(of: selectedDays, {
+            if selectedDays.count >= 1 {
+                doseAddViewModel.step = 3
+                doseAddViewModel.dosePlan.weekday = Array(selectedDays)
+            }
+        })
+        .onTapGesture {
+            hideKeyboard()
+        }
     }
     
     /// 버튼의 상태를 업데이트
     private func updateButtonState() {
         switch doseAddViewModel.step {
         case 1:
-            self.isButtonDisabled = (doseAddViewModel.dosePlan.medicineId.isEmpty ? true : true)
-            print(doseAddViewModel.dosePlan.medicineId.isEmpty)
-            print(self.isButtonDisabled)
+            /// medicineId나 textfield가 비어있을 경우, 버튼 disabled
+            self.isButtonDisabled = (doseAddViewModel.dosePlan.medicineId.isEmpty || doseAddViewModel.searchDose.isEmpty ? true : false)
         default:
             self.isButtonDisabled = false
         }
@@ -127,16 +150,9 @@ struct SearchDoseView: View {
     
     // MARK: - Properties
 
-    @ObservedObject var doseAddViewModel: DoseAddViewModel
-    @ObservedObject var searchDoseViewModel: SearchDoseRequestViewModel
-    
-    // MARK: - Initializer
-    
-    init() {
-        self.doseAddViewModel = DoseAddViewModel(planService: PlanService(provider: MoyaProvider<PlanAPI>()))
-        self.searchDoseViewModel = SearchDoseRequestViewModel(etcService: EtcService(provider: MoyaProvider<EtcAPI>()))
-    }
-    
+    @ObservedObject var doseAddViewModel = Container.shared.doseAddViewModel.resolve()
+    @StateObject var searchDoseViewModel = SearchDoseRequestViewModel(etcService: EtcService(provider: MoyaProvider<EtcAPI>()))
+
     // MARK: - body
     
     var body: some View {
@@ -156,7 +172,7 @@ struct SearchDoseView: View {
                 LoadingView()
             }
             
-            ScrollView {
+            ScrollView(showsIndicators: false){
                 if (searchDoseViewModel.isNetworkSucceed) {
                     ForEach(searchDoseViewModel.searchResults, id: \.medicineCode) { result in
                         SearchDoseElementView(doseAddViewModel: doseAddViewModel,
@@ -167,12 +183,31 @@ struct SearchDoseView: View {
                                                           if isSelected {
                                                               doseAddViewModel.dosePlan.medicineId = result.medicineCode
                                                           }
-                                                      }
+                                                       }
                                                   ))
                     }
                     .fadeIn(delay: 0.1)
                 }
+                
+                if (searchDoseViewModel.isResultEmpty) {
+                    VStack {
+                        Image("ic_empty")
+                            .resizable()
+                            .frame(width: 100, height: 100)
+                            .padding()
+                        
+                        Text("검색어를 다시 확인해주세요")
+                            .font(.caption1Bold)
+                            .foregroundStyle(Color.gray90)
+                            .padding(.bottom, 2)
+                        
+                        Text("검색 결과가 없습니다.")
+                            .font(.caption1Regular)
+                            .foregroundStyle(Color.gray90)
+                    }
+                }
             }
+
         }
         .padding([.leading, .trailing], 33)
         .onTapGesture {
@@ -187,11 +222,11 @@ struct SearchDoseElementView: View {
     
     // MARK: - Properties
     
-    @ObservedObject var doseAddViewModel: DoseAddViewModel
+    @ObservedObject var doseAddViewModel = Container.shared.doseAddViewModel.resolve()
     @Binding var searchDoseResponseModelResult: SearchDoseResponseModelResult
     @State var showDoseElementDetail: Bool = false
     @Binding var isDoseSelected: Bool
-    
+
     // MARK: - body
     
     var body: some View {
@@ -221,11 +256,16 @@ struct SearchDoseElementView: View {
             SearchDoseElementDetailPopUpView(viewModel: $searchDoseResponseModelResult,
                                              leftButtonAction: {},
                                              rightButtonAction: {
+                self.doseAddViewModel.isDoseSelected = true
                 self.doseAddViewModel.dosePlan.medicineId = searchDoseResponseModelResult.medicineCode
+                print(self.doseAddViewModel.dosePlan.medicineId)
             })
                 .background(ClearBackgroundView())
                 .background(Material.ultraThin)
         })
+        .transaction { transaction in
+            transaction.disablesAnimations = true
+        }
         .onTapGesture {
             self.showDoseElementDetail.toggle()
         }
@@ -279,7 +319,7 @@ struct SearchDoseElementDetailPopUpView: View {
     var body: some View {
         ZStack {
             VStack(alignment: .leading) {
-                ScrollView {
+                ScrollView(showsIndicators: false) {
                     KFImageView(urlString: viewModel.medicineImage)
                         .aspectRatio(contentMode: .fill)
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -408,7 +448,7 @@ struct SelectDoseTimeView: View {
                     }
                     
                     if isExpanded {
-                        ScrollView {
+                        ScrollView(showsIndicators: false) {
                             VStack(alignment: .leading) {
                                 Text("오전")
                                     .font(.body1Bold)
@@ -461,6 +501,8 @@ struct SelectDoseTimeView: View {
     }
 }
 
+// MARK: - TimeButton
+
 struct TimeButton: View {
     let time: String
     var isSelected: Bool
@@ -482,6 +524,79 @@ struct TimeButton: View {
     }
 }
 
-//#Preview {
-//    SearchDoseView()
-//}
+// MARK: - SelectDosePeriodView
+
+// MARK: - SelectDosePeriodView
+
+struct SelectDosePeriodView: View {
+    
+    // MARK: - Properties
+    
+    @State private var startDate = Date()
+    @State private var endDate = Date()
+    @State private var endDateExist: Bool = false
+    
+    private var defaultEndDateRange: ClosedRange<Date> {
+        let farFuture = Calendar.current.date(byAdding: .year, value: 5, to: Date())!
+        return Date()...farFuture
+    }
+    
+    private var endDateRange: ClosedRange<Date> {
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: startDate)!
+        let farFuture = Calendar.current.date(byAdding: .year, value: 5, to: tomorrow)!
+        return tomorrow...farFuture
+    }
+    
+    // MARK: - body
+    
+    var body: some View {
+        
+        VStack(alignment: .leading, spacing: 20) {
+            datePickerField(title: "복용 시작일", date: $startDate, symbolName: "calendar", range: nil)
+            datePickerField(title: "복용 종료일", date: $endDate, symbolName: "calendar", range: endDateExist ? defaultEndDateRange : endDateRange)
+            
+            Toggle("종료일 없음", isOn: $endDateExist.animation())
+                .onChange(of: endDateExist) { _ in
+                    if endDateExist {
+                        endDate = Calendar.current.date(byAdding: .year, value: 5, to: startDate)!
+                    }
+                }
+                .frame(width: 125)
+                .font(.body2Regular)
+                .toggleStyle(SwitchToggleStyle(tint: Color.primary60))
+        }
+        .padding(.horizontal, 30)
+    }
+    
+    @ViewBuilder
+    private func datePickerField(title: String, date: Binding<Date>, symbolName: String, range: ClosedRange<Date>? = nil) -> some View {
+        VStack(alignment: .leading) {
+            Text(title)
+                .font(.body1Medium)
+                .foregroundStyle(Color.gray70)
+            
+            HStack {
+                Image(systemName: symbolName)
+                    .padding()
+                
+                Text(DateHelper().formattedDate(for: date.wrappedValue))
+                    .font(.h5Medium)
+                    .foregroundStyle(Color.gray90)
+                
+                Spacer()
+            }
+            .overlay {
+                DatePicker("", selection: date, in: range ?? Date.distantPast...Date.distantFuture, displayedComponents: .date)
+                    .contentShape(Rectangle())
+                    .opacity(0.011)
+            }
+            .frame(height: 64)
+            .background(Color.gray.opacity(0.1))
+            .cornerRadius(10)
+        }
+    }
+}
+
+#Preview {
+    SelectDosePeriodView()
+}

@@ -31,6 +31,7 @@ class SearchDoseRequestViewModel: ObservableObject {
     @Published var searchResults: [SearchDoseResponseModelResult] = []
     @Published var isNetworking: Bool = false
     @Published var isNetworkSucceed: Bool = false
+    @Published var isResultEmpty: Bool = false
     
     // MARK: - Cancellable Bag
     
@@ -56,8 +57,10 @@ class SearchDoseRequestViewModel: ObservableObject {
     
     func requestSearchDose(_ name: String) {
         print("약물 검색 요청 시작: \(name)")
+        self.isNetworkSucceed = false
+        self.isResultEmpty = false
         self.isNetworking = true
-        etcService.searchDose(name: name)
+        etcService.searchDose(name: name.trimmingCharacters(in: [" "]))
             .sink(receiveCompletion: { [weak self] completion in
                 guard let self = self else { return }
                 self.isNetworking = false
@@ -66,12 +69,15 @@ class SearchDoseRequestViewModel: ObservableObject {
                     print("약물 검색 요청 완료")
                 case .failure(let error):
                     print("약물 검색 요청 실패: \(error)")
+                    self.isNetworkSucceed = false
+                    self.isResultEmpty = true
                     self.searchDoseState.failMessage = error.localizedDescription
                 }
             }, receiveValue: { [weak self] result in
                 guard let self = self else { return }
                 self.isNetworkSucceed = true
                 self.searchResults = result.result  // 검색 결과 업데이트
+                if result.result.isEmpty { self.isResultEmpty = true }
             })
             .store(in: &cancellables)
     }

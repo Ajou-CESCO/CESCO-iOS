@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// mock list
 struct RequestList {
     let requestId: Int
     let name: String

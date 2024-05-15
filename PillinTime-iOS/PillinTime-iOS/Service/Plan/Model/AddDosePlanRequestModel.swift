@@ -10,6 +10,6 @@ import Foundation
 struct AddDosePlanRequestModel: Encodable {
     var memberId: Int = 0
     var medicineId: String = ""
-    var weekday: [Int] = []
+    var weekday: [String] = []
     var time: [Int] = []
 }

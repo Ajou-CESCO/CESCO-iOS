@@ -19,4 +19,11 @@ protocol EtcServiceType {
     /// - Returns:
     ///     - SearchDoseResponseModel: 검색 결과 정보를 담은 Model입니다.
     func searchDose(name: String) -> AnyPublisher<SearchDoseResponseModel, PillinTimeError>
+    
+    /// 사용자에 대한 초기 정보를 받아옵니다.
+    ///
+    /// - Parameters: 없음
+    /// - Returns:
+    ///     - InitResponseModel: 사용자에 대한 초기 정보를 담은 Model입니다.
+    func initClient() -> AnyPublisher<InitResponseModel, PillinTimeError>
 }

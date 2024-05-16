@@ -11,7 +11,6 @@ import CombineMoya
 import Combine
 
 class EtcService: EtcServiceType {
-    
     let provider: MoyaProvider<EtcAPI>
     var cancellables = Set<AnyCancellable>()
     
@@ -25,6 +24,24 @@ class EtcService: EtcServiceType {
         return provider.requestPublisher(.searchDose(name))
             .tryMap { response in
                 let decodeData = try response.map(SearchDoseResponseModel.self)
+                return decodeData
+            }
+            .mapError { error in
+                print("error:", error)
+                if error is MoyaError {
+                    return PillinTimeError.networkFail
+                } else {
+                    return error as! PillinTimeError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    /// 사용자 초기 정보
+    func initClient() -> AnyPublisher<InitResponseModel, PillinTimeError> {
+        return provider.requestPublisher(.initClient)
+            .tryMap { response in
+                let decodeData = try response.map(InitResponseModel.self)
                 return decodeData
             }
             .mapError { error in

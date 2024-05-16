@@ -8,16 +8,18 @@
 import SwiftUI
 
 import LinkNavigator
+import Factory
 
 struct DoseScheduleView: View {
     
     // MARK: - Properties
     
     @State private var selectedDays = Set<String>()
-    @ObservedObject var clientListViewModel = ClientListViewModel()
-    @State var selectedClient: Int?  // 선택된 Client
+    @State var selectedClientId: Int?  // 선택된 Client
     @State var isUserPoked: Bool = false
     let navigator: LinkNavigatorType
+    @ObservedObject var doseScheduleViewModel = DoseScheduleViewModel()
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     
     init(navigator: LinkNavigatorType) {
         self.navigator = navigator
@@ -26,9 +28,9 @@ struct DoseScheduleView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack {
-                if (UserManager.shared.userType == 0) {
-                    ClientListView(viewModel: clientListViewModel,
-                                   selectedClient: $selectedClient)
+                if (UserManager.shared.isManager ?? true) {
+                    ClientListView(relationLists: doseScheduleViewModel.relationLists,
+                                   selectedClientId: $selectedClientId)
                         .fadeIn(delay: 0.1)
                 }
                 
@@ -36,16 +38,18 @@ struct DoseScheduleView: View {
                     .padding(.top, 17)
                     .fadeIn(delay: 0.2)
                     .frame(maxWidth: .infinity, minHeight: 80, maxHeight: 80)
-                    .background(UserManager.shared.userType == 0 ? .clear : .white)
+                    .background(UserManager.shared.isManager ?? true ? .clear : .white)
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack(spacing: 0) {
-                        ForEach(0..<clientListViewModel.clients.count, id: \.self) { index in
+                        ForEach(doseScheduleViewModel.relationLists, id: \.memberID) { relation in
                             ScrollView(.vertical, showsIndicators: false) {
                                 VStack {
                                     ZStack(alignment: .topTrailing) {
-                                        DoseScheduleSubView(doseStatus: .scheduled)
-                                            .padding(.top, UserManager.shared.userType == 0 ? 5 : 20)
+                                        DoseScheduleSubView(takenStatus: 0,
+                                                            memberId: relation.memberID,
+                                                            isCabinetExist: relation.cabinetID != 0)
+                                            .padding(.top, UserManager.shared.isManager ?? true ? 5 : 20)
                                             .padding(.bottom, 20)
                                             .fadeIn(delay: 0.3)
                                         // 이후에 수정할 것
@@ -83,11 +87,15 @@ struct DoseScheduleView: View {
                                         }
                                     }
                                     
-                                    DoseScheduleSubView(doseStatus: .missed)
+                                    DoseScheduleSubView(takenStatus: 2,
+                                                        memberId: relation.memberID,
+                                                        isCabinetExist: relation.cabinetID != 0)
                                         .padding(.bottom, 20)
                                         .fadeIn(delay: 0.4)
                                     
-                                    DoseScheduleSubView(doseStatus: .taken)
+                                    DoseScheduleSubView(takenStatus: 1,
+                                                        memberId: relation.memberID,
+                                                        isCabinetExist: relation.cabinetID != 0)
                                         .padding(.bottom, 20)
                                         .fadeIn(delay: 0.5)
                                     
@@ -101,10 +109,10 @@ struct DoseScheduleView: View {
                     .scrollTargetLayout(isEnabled: true)
                 }
                 .scrollTargetBehavior(.viewAligned)
-                .scrollPosition(id: $selectedClient)
+                .scrollPosition(id: $selectedClientId)
                 
                 if isUserPoked {
-                    ToastView(description: "\(clientListViewModel.clients[selectedClient ?? 0].userName) 님을 콕 찔렀어요.",
+                    ToastView(description: "김철수 님을 콕 찔렀어요.",
                               show: $isUserPoked)
                         .padding(.bottom, 20)
                 }
@@ -133,6 +141,9 @@ struct DoseScheduleView: View {
             .padding(.bottom, 25)
             .fadeIn(delay: 0.6)
         }
+        .onReceive(homeViewModel.$isDataReady) { _ in
+            self.selectedClientId = homeViewModel.relationLists.first?.memberID
+        }
     }
 }
 
@@ -142,13 +153,16 @@ struct DoseScheduleSubView: View {
     
     // MARK: - body
     
-    let doseStatus: DoseStatus
+    let takenStatus: Int
+    let memberId: Int
+    let isCabinetExist: Bool
+    @State private var showAddPillCaseView: Bool = false
     
     var body: some View {
         VStack(alignment: .center) {
             HStack {
-                switch doseStatus {
-                case .taken:
+                switch takenStatus {
+                case 1:
                     Image("ic_dose_blue")
                         .frame(width: 20, height: 20)
                         .padding(.leading, 25)
@@ -159,7 +173,7 @@ struct DoseScheduleSubView: View {
                         .foregroundStyle(Color.gray70)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                case .missed:
+                case 2:
                     Image("ic_dose_red")
                         .frame(width: 20, height: 20)
                         .padding(.leading, 25)
@@ -170,8 +184,8 @@ struct DoseScheduleSubView: View {
                         .foregroundStyle(Color.gray70)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
-                case .scheduled:
-                    Image("ic_dose_gray")                        
+                case 0:
+                    Image("ic_dose_gray")
                         .frame(width: 20, height: 20)
                         .padding(.leading, 25)
                         .padding(.trailing, 1)
@@ -180,13 +194,23 @@ struct DoseScheduleSubView: View {
                         .font(.body2Medium)
                         .foregroundStyle(Color.gray70)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                default:
+                    EmptyView()
                 }
+                
             }
             
-            DoseScheduleStatusView(isPillCaseExist: true, doseStatus: doseStatus)
+            DoseScheduleStatusView(memberId: memberId,
+                                   isCabinetExist: isCabinetExist,
+                                   takenStatus: takenStatus,
+                                   showAddPillCaseView: $showAddPillCaseView)
                 .padding([.top, .bottom], 15)
                 .padding([.leading, .trailing], 25)
         }
+        .sheet(isPresented: $showAddPillCaseView, content: {
+            AddPillCaseView(selectedManagerId: memberId)
+        })
     }
 }
 

@@ -8,10 +8,12 @@
 import Foundation
 import Combine
 import SwiftUI
+import Factory
 
 // MARK: - PillCaseInfoState
 
 struct PillCaseInfoState {
+    var ownerId: Int = Int()
     var serialNumber: String = String()
 }
 
@@ -26,7 +28,7 @@ struct PillCaseInfoErrorState {
 @frozen
 enum AddPillCaseEventModel {
     case pillCaseInvalid
-    case sendInfoForAddPillCase
+    case sendInfoForAddPillCase(_ info: PillCaseInfoState)
 }
 
 // MARK: - AddPillCaseViewModel
@@ -35,6 +37,7 @@ class AddPillCaseViewModel: ObservableObject {
     
     // MARK: - Dependency
     
+    @Injected(\.caseService) var caseService: CaseServiceType
     var addPillCaseEventModel = PassthroughSubject<AddPillCaseEventModel, Never>()
     
     // MARK: - Properties
@@ -46,10 +49,12 @@ class AddPillCaseViewModel: ObservableObject {
     // MARK: - Input State
 
     @Published var infoState: PillCaseInfoState = PillCaseInfoState()
-    @Subject var tapAddPillCaseButton: Void = ()
+    @Subject var tapAddPillCaseButton: PillCaseInfoState = PillCaseInfoState()
     
     // MARK: - Output State
     
+    @Published var isNetworking: Bool = false
+    @Published var isNetworkSucceed: Bool = false
     @Published var infoErrorState: PillCaseInfoErrorState = PillCaseInfoErrorState()
     
     // MARK: - Other Data
@@ -63,50 +68,49 @@ class AddPillCaseViewModel: ObservableObject {
     
     // MARK: - Initializer
     
-    init() {
+    init(caseService: CaseService) {
+        self.caseService = caseService
         self.bindState()
-        self.bindEvent()
     }
     
     // MARK: - Methods
     
     private func bindState() {
         /// 약통 등록 요청
-        $tapAddPillCaseButton.sink { [weak self] in
-            self?.addPillCaseEventModel.send(.sendInfoForAddPillCase)
-        }
-        .store(in: &cancellables)
-        
-        /// 버튼 활성화 여부
-//        $infoState.sink { [weak self] state in
-//            guard let self = self else { return }
-//            
-//            if state.serialNumber.isEmpty {
-//                self.isAddButtonEnabled = false
-//            }
-//        }
-//        .store(in: &cancellables)
-    }
-    
-    private func bindEvent() {
-        addPillCaseEventModel.sink { [weak self] (event: AddPillCaseEventModel) in
-            guard let self = self else { return }
-            
-            switch event {
-            case .pillCaseInvalid:
-                
-                return
-            case .sendInfoForAddPillCase:
-                return requestAddPillCase()
-            }
+        $tapAddPillCaseButton.sink { [weak self] info in
+            self?.requestAddPillCase(CreatePillCaseRequestModel(serial: info.serialNumber,
+                                                                ownerID: info.ownerId))
         }
         .store(in: &cancellables)
     }
     
     // MARK: - Request Methods
     
-    func requestAddPillCase() {
-        // MARK: - TODO
-        print("서버 요청")
+    func requestAddPillCase(_ createPillCaseModel: CreatePillCaseRequestModel) {
+        print("약통 생성 요청 시작")
+        print(createPillCaseModel)
+        self.isNetworking = true
+        caseService.createPillCaseRequest(createPillCaseRequestModel: createPillCaseModel)
+            .sink(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .finished:
+                    print("약통 생성 요청 완료")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        self.isNetworking = false
+                        self.isNetworkSucceed = true
+                    }
+                case .failure(let error):
+                    print("--------------------")
+                    print("약통 생성 요청 실패: \(error)")
+                    self.isNetworking = false
+                    self.infoErrorState.serialNumberErrorMessage = error.localizedDescription
+                }
+            }, receiveValue: { [weak self] result in
+                guard let result = self else { return }
+                print(result)
+            })
+            .store(in: &cancellables)
+        
     }
 }

@@ -17,10 +17,11 @@ final class UserManager {
     
     @UserDefaultWrapper<String>(key: "accessToken") public var accessToken
     @UserDefaultWrapper<String>(key: "refreshToken") public var refreshToken
+    @UserDefaultWrapper<Int>(key: "memberId") public var memberId   // 자기 자신의 id
     @UserDefaultWrapper<String>(key: "name") public var name
     @UserDefaultWrapper<String>(key: "phoneNumber") public var phoneNumber
     @UserDefaultWrapper<String>(key: "ssn") public var ssn
-    @UserDefaultWrapper<Int>(key: "userType") public var userType
+    @UserDefaultWrapper<Bool>(key: "isManager") public var isManager
 
     var hasAccessToken: Bool { return self.accessToken != nil }
     

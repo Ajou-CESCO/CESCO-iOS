@@ -8,6 +8,7 @@
 import SwiftUI 
 
 import Moya
+import Factory
 
 // MARK: - ClientManageView
 
@@ -15,10 +16,10 @@ struct ClientManageView: View {
     
     // MARK: - Properties
 
-    @ObservedObject var clientListViewModel = ClientListViewModel()
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     @State var isDeletePopUp: Bool = false
     @State var isRequestRelationPopUp: Bool = false
-    @State var clientIndex: Int = 0
+    @State var memberId: Int = 0
     @State var showToastView: Bool = false
     
     // MARK: - body
@@ -27,7 +28,7 @@ struct ClientManageView: View {
         ZStack {
             VStack {
                 HStack {
-                    Text("총 \(clientListViewModel.clients.count)명")
+                    Text("총 \(homeViewModel.relationLists.count)명")
                         .font(.h5Bold)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding([.top, .bottom], 20)
@@ -45,29 +46,29 @@ struct ClientManageView: View {
                 .padding([.leading, .trailing], 32)
         
                 List {
-                    ForEach(0..<clientListViewModel.clients.count, id: \.self) { index in
+                    ForEach(homeViewModel.relationLists, id: \.memberID) { relation in
                         HStack {
                             VStack(alignment: .leading) {
-                                Text(clientListViewModel.clients[index].userName)
+                                Text(relation.memberName)
                                     .font(.h5Bold)
                                     .foregroundStyle(Color.gray90)
                                     .padding(.bottom, 3)
 
-                                Text(clientListViewModel.clients[index].userPhone)
+                                Text(relation.memberPhone)
                                     .font(.body2Medium)
                                     .foregroundStyle(Color.gray70)
                             }
                             
                             Spacer()
                             
-                            Image(clientListViewModel.clients[index].caseId.isEmpty ? "ic_cabnet_disconnected" : "ic_cabnet_connected")
+                            Image(relation.cabinetID == 0 ? "ic_cabnet_disconnected" : "ic_cabnet_connected")
                                 .resizable()
                                 .frame(width: 50, height: 50)
                         }
                         .swipeActions {
                             Button("삭제") {
                                 self.isDeletePopUp = true
-                                self.clientIndex = index
+                                self.memberId = relation.memberID
                             }
                             .tint(.error90)
                         }
@@ -76,8 +77,8 @@ struct ClientManageView: View {
                         .padding([.leading, .trailing], 30)
                         .fullScreenCover(isPresented: $isDeletePopUp,
                                          content: {
-                            CustomPopUpView(mainText: "\(clientListViewModel.clients[clientIndex].userName) 님을\n삭제하시겠어요?",
-                                            subText: "삭제하면 \(clientListViewModel.clients[clientIndex].userName) 님은 새로운 보호자가 케어를\n요청할 때까지 서비스를 이용할 수 없어요.",
+                            CustomPopUpView(mainText: "\(relation.memberName) 님을\n삭제하시겠어요?",
+                                            subText: "삭제하면 \(relation.memberName) 님은 새로운 보호자가 케어를\n요청할 때까지 서비스를 이용할 수 없어요.",
                                             leftButtonText: "취소할래요",
                                             rightButtonText: "삭제할래요",
                                             leftButtonAction: {

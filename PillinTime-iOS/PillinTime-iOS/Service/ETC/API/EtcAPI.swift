@@ -10,6 +10,7 @@ import Moya
 
 enum EtcAPI {
     case searchDose(_ name: String)
+    case initClient
 }
 
 extension EtcAPI: TargetType {
@@ -25,12 +26,14 @@ extension EtcAPI: TargetType {
         switch self {
         case .searchDose:
             return "/api/medicine"
+        case .initClient:
+            return "/api/init"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .searchDose:
+        case .searchDose, .initClient:
             return .get
         }
     }
@@ -40,6 +43,8 @@ extension EtcAPI: TargetType {
         case .searchDose(let name):
             return .requestParameters(parameters: ["name": name],
                                       encoding: URLEncoding.queryString)
+        case .initClient:
+            return .requestPlain
         }
     }
     

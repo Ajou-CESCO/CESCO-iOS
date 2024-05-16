@@ -7,6 +7,16 @@
 
 import SwiftUI
 
+class ToastManager: ObservableObject {
+    @Published var show: Bool = false
+    @Published var description: String = ""
+    
+    func showToast(description: String) {
+        self.description = description
+        self.show = true
+    }
+}
+
 struct ToastView: View {
     
     // MARK: - Properties

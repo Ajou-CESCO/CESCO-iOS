@@ -11,6 +11,7 @@ import CombineMoya
 import Combine
 
 class PlanService: PlanServiceType {
+
     let provider: MoyaProvider<PlanAPI>
     var cancellables = Set<AnyCancellable>()
     
@@ -23,4 +24,23 @@ class PlanService: PlanServiceType {
     func addDosePlan(addDosePlanModel: AddDosePlanRequestModel) -> Bool {
         return true
     }
+    
+    /// 약물 일정 조회
+    func getDoseLog(memberId: Int) -> AnyPublisher<GetDoseLogResponseModel, PillinTimeError> {
+        return provider.requestPublisher(.getDoseLog(memberId))
+            .tryMap { response in
+                let decodeData = try response.map(GetDoseLogResponseModel.self)
+                return decodeData
+            }
+            .mapError { error in
+                print("error:", error)
+                if error is MoyaError {
+                    return PillinTimeError.networkFail
+                } else {
+                    return error as! PillinTimeError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
 }
+

@@ -78,7 +78,7 @@ class SignUpRequestViewModel: ObservableObject {
                 self.requestSignUp(SignUpRequestModel(name: info.name,
                                                       ssn: String(info.ssn.prefix(8)),
                                                       phone: info.phoneNumber,
-                                                      userType: UserManager.shared.userType ?? 0))
+                                                      isManager: UserManager.shared.isManager ?? true))
             case .sendInfoForSignIn(let info):
                 self.requestSignIn(SignInRequestModel(name: info.name,
                                                       phone: info.phoneNumber,
@@ -147,7 +147,7 @@ class SignUpRequestViewModel: ObservableObject {
                 userManager.phoneNumber = signUpModel.phone
                 userManager.ssn = String(signUpModel.ssn.prefix(8))
                 userManager.accessToken = result.result.accessToken
-                userManager.userType = signUpModel.userType
+                userManager.isManager = signUpModel.isManager
                 self.signUpState.failMessage = String()
             })
             .store(in: &cancellables)

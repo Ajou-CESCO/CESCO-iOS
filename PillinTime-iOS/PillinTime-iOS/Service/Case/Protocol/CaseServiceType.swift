@@ -15,7 +15,7 @@ protocol CaseServiceType {
     /// 약통 생성 요청을 보냅니다.
     ///
     /// - Parameters:
-    ///     - createUserRequestModel: 회원가입에 필요한 정보들을 담은 Model입니다.
-    /// - Returns: 이후 수정
-    func createPillCaseRequest(addDosePlanModel: AddDosePlanRequestModel) -> Bool
+    ///     - createPillCaseRequestModel: 약통 생성에 필요한 정보들을 담은 Model입니다.
+    /// - Returns: bool
+    func createPillCaseRequest(createPillCaseRequestModel: CreatePillCaseRequestModel) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
 }

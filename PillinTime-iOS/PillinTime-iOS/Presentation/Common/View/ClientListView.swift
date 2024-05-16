@@ -11,9 +11,9 @@ struct ClientListView: View {
     
     // MARK: - Properties
 
-    @ObservedObject var viewModel = ClientListViewModel()
+    var relationLists: [RelationList]
     
-    @Binding var selectedClient: Int?
+    @Binding var selectedClientId: Int?
     
     // MARK: - body
     
@@ -23,11 +23,11 @@ struct ClientListView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 15) {
-                    ForEach(0..<viewModel.clients.count, id: \.self) { index in
-                        ClientView(client: viewModel.clients[index],
-                                   isSelected: index == selectedClient)
+                    ForEach(relationLists, id: \.memberID) { relation in
+                        ClientView(client: relation,
+                                   isSelected: relation.memberID == selectedClientId)
                             .onTapGesture {
-                                self.selectedClient = index
+                                self.selectedClientId = relation.memberID
                             }
                     }
                 }
@@ -46,7 +46,7 @@ struct ClientListView: View {
 
 struct ClientView: View {
     
-    var client: ClientListModel
+    var client: RelationList
     var isSelected: Bool
     
     var body: some View {
@@ -56,14 +56,10 @@ struct ClientView: View {
                 .scaledToFill()
                 .frame(width: 45, height: 45)
             
-            Text(client.userName)
+            Text(client.memberName)
                 .font(isSelected ? .caption2Bold : .caption2Regular)
                 .foregroundStyle(Color.gray90)
         }
         .frame(width: 45, height: 64)
     }
-}
-
-#Preview {
-    ClientListView(selectedClient: .constant(0))
 }

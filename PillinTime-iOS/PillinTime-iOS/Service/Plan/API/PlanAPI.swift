@@ -10,6 +10,7 @@ import Moya
 
 enum PlanAPI {
     case addDosePlan(_ addDosePlanModel: AddDosePlanRequestModel)
+    case getDoseLog(_ memberId: Int)
 }
 
 extension PlanAPI: TargetType {
@@ -22,17 +23,30 @@ extension PlanAPI: TargetType {
     }
     
     var path: String {
-        return ""
+        switch self {
+        case .addDosePlan:
+            return ""
+        case .getDoseLog:
+            return "/api/dose/log"
+        }
     }
     
     var method: Moya.Method {
-        return .post
+        switch self {
+        case .addDosePlan:
+            return .post
+        case .getDoseLog:
+            return .get
+        }
     }
     
     var task: Moya.Task {
         switch self {
         case .addDosePlan(let addDosePlanModel):
             return .requestJSONEncodable(addDosePlanModel)
+        case .getDoseLog(let memberId):
+            return .requestParameters(parameters: ["memberId": memberId],
+                                      encoding: URLEncoding.queryString)
         }
     }
     

@@ -22,13 +22,30 @@ extension Container {
         .singleton
     }
     
+    var homeViewModel: Factory<HomeViewModel> {
+        Factory(self) {
+            HomeViewModel(etcService: EtcService(provider: MoyaProvider<EtcAPI>()), 
+                          planService: PlanService(provider: MoyaProvider<PlanAPI>()))
+        }
+        .singleton
+    }
+    
     // MARK: - Moya
+    
+    // MARK: - Etc
+    
+    var toastManager: Factory<ToastManager> {
+        Factory(self) {
+            ToastManager()
+        }
+        .singleton
+    }
     
     // MARK: - Service
     
     var caseService: Factory<CaseServiceType> {
         Factory(self) {
-            CaseService()
+            CaseService(provider: MoyaProvider<CaseAPI>())
         }
         .singleton
     }

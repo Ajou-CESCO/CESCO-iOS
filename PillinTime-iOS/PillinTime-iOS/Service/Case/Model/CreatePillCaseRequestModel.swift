@@ -6,3 +6,15 @@
 //
 
 import Foundation
+
+// MARK: - CreatePillCaseRequestModel
+
+struct CreatePillCaseRequestModel: Codable {
+    let serial: String
+    let ownerID: Int
+
+    enum CodingKeys: String, CodingKey {
+        case serial
+        case ownerID = "ownerId"
+    }
+}

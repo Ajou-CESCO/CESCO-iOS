@@ -135,7 +135,12 @@ struct SignUpView: View {
                             signUpRequestViewModel.$tapSignInButton.send()
                         case 4:
                             // userType 로컬에 저장
-                            UserManager.shared.userType = self.selectedRole
+                            if selectedRole == 0 {
+                                UserManager.shared.isManager = true
+                            } else if selectedRole == 1 {
+                                UserManager.shared.isManager = false
+                            }
+                            
                             // 회원가입 요청
                             signUpRequestViewModel.$tapSignUpButton.send()
                             // 만약 보호자라면

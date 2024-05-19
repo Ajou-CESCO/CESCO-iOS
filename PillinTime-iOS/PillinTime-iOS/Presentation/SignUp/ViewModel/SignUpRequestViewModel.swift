@@ -21,14 +21,20 @@ class SignUpRequestViewModel: ObservableObject {
     // MARK: - Input State
     @Subject var tapSignUpButton: Void = ()
     @Subject var tapSignInButton: Void = ()
+    @Subject var tapPhoneNumberVerificationButton: Void = ()
+    @Published var inputVerificationCode: String = String()
     
     // MARK: - Output State
     @Published var signUpState: SignUpState = SignUpState()
+    @Published var verificationCode: String = String()
+    @Published var phoneNumberVerificationErrorState: String = String()
     
     // MARK: - Other Data
     @Published var isLoginSucced: Bool = false
     @Published var isLoginFailed: Bool = false
     @Published var isNetworking: Bool = false
+    @Published var isNetworkSucceed: Bool = false
+    @Published var isVerificationSucced: Bool = false
     
     // MARK: - Cancellable Bag
     private var cancellables = Set<AnyCancellable>()
@@ -55,6 +61,13 @@ class SignUpRequestViewModel: ObservableObject {
             self?.eventToValidationViewModel.send(.signIn)
         }
         .store(in: &cancellables)
+        
+        // 전화번호 인증에 해당하는 버튼
+        $tapPhoneNumberVerificationButton.sink { [weak self] in
+            self?.eventToValidationViewModel.send(.phoneNumberVerification)
+        }
+        .store(in: &cancellables)
+
     }
     
     func bindEvent() {
@@ -83,6 +96,8 @@ class SignUpRequestViewModel: ObservableObject {
                 self.requestSignIn(SignInRequestModel(name: info.name,
                                                       phone: info.phoneNumber,
                                                       ssn: String(info.ssn.prefix(8))))
+            case .sendPhoneNumberForVerification(let phone):
+                self.requestPhoneNumberConfirmToServer(phone)
             }
         }
         .store(in: &cancellables)
@@ -151,5 +166,42 @@ class SignUpRequestViewModel: ObservableObject {
                 self.signUpState.failMessage = String()
             })
             .store(in: &cancellables)
+    }
+    
+    func requestPhoneNumberConfirmToServer(_ phoneNumber: String) {
+        print("전화번호 인증 요청 시작: \(phoneNumber)")
+        self.isNetworking = true
+        authService.requestPhoneNumberConfirm(phoneNumber: phoneNumber)
+            .sink(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                self.isNetworking = false
+                switch completion {
+                case .finished:
+                    print("전화번호 인증 요청 완료")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        self.isNetworkSucceed = true
+                    }
+                case .failure(let error):
+                    print("전화번호 인증 요청 실패: \(error)")
+                    self.signUpState.failMessage = error.localizedDescription
+                }
+            }, receiveValue: { [weak self] result in
+                print("전화번호 인증 요청 성공: ", result)
+                guard let self = self else { return }
+                /// 전화번호 인증 코드 저장
+                self.verificationCode = result.result.code
+                self.signUpState.failMessage = String()
+            })
+            .store(in: &cancellables)
+    }
+    
+    /// 사용자 입력값과 인증코드 비교
+    func compareToVerificationCode() {
+        if inputVerificationCode == verificationCode {
+            self.phoneNumberVerificationErrorState = ""
+            self.isVerificationSucced = true
+        } else {
+            self.phoneNumberVerificationErrorState = "인증에 실패했어요. 입력한 정보를 다시 확인해주세요."
+        }
     }
 }

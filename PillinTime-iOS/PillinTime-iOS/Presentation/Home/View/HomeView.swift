@@ -10,12 +10,6 @@ import SwiftUI
 import Moya
 import Factory
 
-@frozen
-enum UserStatus {   // 이후 옮길 것 (사용자의 유형 분류)
-    case manager
-    case client
-}
-
 struct HomeView: View {
     
     // MARK: - Properties
@@ -120,13 +114,14 @@ struct HomeView: View {
                     Spacer()
                 }
             } else {
-                ProgressView("데이터 로딩 중...")
+                LoadingView()
+                    .background(Color.white)
             }
         }
         .background(Color.gray5)
         .onReceive(homeViewModel.$isDataReady) { _ in
             self.selectedClientId = homeViewModel.relationLists.first?.memberID
-            homeViewModel.$requestGetDoseLog.send(self.selectedClientId ?? 0)
+//            homeViewModel.$requestGetDoseLog.send(self.selectedClientId ?? 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                 withAnimation {
                     self.showEncourageView = true

@@ -8,23 +8,27 @@
 import Foundation
 
 struct DateHelper {
-    var day: String {
-        get {
-            let dateFormatter = DateFormatter()
-            dateFormatter.locale = Locale(identifier:"ko_KR")
-            dateFormatter.dateFormat = "EE"
-            return dateFormatter.string(from: Date())
-        }
-        set {
-            // 요일 값을 설정할 필요가 없을 때는 set 블록을 비워둘 수 있습니다.
-        }
+    static let koreanLocaleFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter
+    }()
+    
+    /// 오늘의 요일을 문자열로 반환
+    static var todayDay: String {
+        koreanLocaleFormatter.dateFormat = "EEEEE"
+        return koreanLocaleFormatter.string(from: Date())
+    }
+    
+    /// 날짜를 문자열로 변경
+    static func dateString(_ date: Date) -> String {
+        koreanLocaleFormatter.dateFormat = "yyyy-MM-dd"
+        return koreanLocaleFormatter.string(from: date)
     }
     
     /// 년,월,일 formatter
-    func formattedDate(for date: Date) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "ko_KR")
-        dateFormatter.dateFormat = "yyyy년 MM월 dd일"
-        return dateFormatter.string(from: date)
+    static var yearMonthDayFormatter: DateFormatter {
+        koreanLocaleFormatter.dateFormat = "yyyy년 MM월 dd일"
+        return koreanLocaleFormatter
     }
 }

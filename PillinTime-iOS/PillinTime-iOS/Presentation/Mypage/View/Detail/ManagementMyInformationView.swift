@@ -15,17 +15,11 @@ struct ManagementMyInformationView: View {
     
     @State private var showToast: Bool = false
 
-    @ObservedObject var myPageViewModel: MyPageViewModel
+    @ObservedObject var myPageViewModel: MyPageViewModel = MyPageViewModel()
     
-    @State private var name: String = (UserManager.shared.name ?? "null")
-    @State private var phoneNumber: String = (UserManager.shared.phoneNumber ?? "null")
-    @State private var ssn: String = (UserManager.shared.ssn ?? "null")
-     
-    // MARK: - Initializer
-
-    init() {
-        self.myPageViewModel = MyPageViewModel()
-    }
+    var name: String
+    var phoneNumber: String
+    var ssn: String
     
     // MARK: - body
     
@@ -73,4 +67,3 @@ struct ManagementMyInformationView: View {
         
     }
 }
-

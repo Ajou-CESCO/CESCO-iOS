@@ -14,7 +14,7 @@ struct CustomWeekCalendarView: View {
     // MARK: - Properties
     
     let week: [String] = ["월", "화", "수", "목", "금", "토", "일"]
-    var day: String? = DateHelper().day
+    var day: String? = DateHelper.todayDay
     @State var isSelectDisabled: Bool = true
     var isDoseAdd: Bool = false // ^^.. doseAdd일 때만 다른 경우가 있어서. .. 이후에 case 추가 시 리팩
     @Binding var selectedDays: Set<String>
@@ -64,15 +64,6 @@ struct CustomWeekCalendarView: View {
             }
         }
     }
-    
-    func getDayOfWeek(date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "EEEEEE"
-        formatter.locale = Locale(identifier: "ko_KR")
-        let convertStr = formatter.string(from: date)
-        return convertStr
-    }
-
 }
 
 //#Preview {

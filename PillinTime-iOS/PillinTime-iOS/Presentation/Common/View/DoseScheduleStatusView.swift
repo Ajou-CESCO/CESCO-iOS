@@ -24,52 +24,90 @@ struct DoseScheduleStatusView: View {
     /// HomeViewModel의 dose log
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
 
-    let itemHeight: CGFloat = 55
+    let itemHeight: CGFloat = 45
     let takenStatus: Int?
     @Binding var showAddPillCaseView: Bool
     
     var body: some View {
         /// 약통이 존재할 경우, 오늘의 약 복용 일정이 보임
         if isCabinetExist {
-            ScrollView {
-                ZStack {
+            if !homeViewModel.doseLog.isEmpty {
+                ZStack(alignment: .bottom) {
                     Color.white
-                        
-                    VStack(alignment: .leading) {
-                        ForEach(homeViewModel.doseLog.filter({ log in
-                            if let filterStatus = takenStatus {
-                                return log.takenStatus == filterStatus
-                            } else {
-                                return true
-                            }
-                        }), id: \.id) { log in
-                            HStack {
-                                Text(log.medicineName)
-                                    .font(.h5Bold)
-                                    .foregroundStyle(Color.gray90)
-                                    .padding(.bottom, 2)
-                                
-                                Spacer()
-                                
-                                Text(formatTime(log.plannedAt))
-                                    .font(.body1Bold)
-                                    .foregroundStyle(Color.gray70)
-                                    .padding(.trailing, 10)
-                                
-                                Text(textForTakenStatus(log.takenStatus))
-                                    .font(.logo4ExtraBold)
-                                    .foregroundColor(colorForDoseStatus(log.takenStatus))
-                                    .frame(width: 50)
-                            }
+                    
+                    let filteredLogs = homeViewModel.doseLog.filter { log in
+                        if let filterStatus = takenStatus {
+                            return log.takenStatus == filterStatus
+                        } else {
+                            return true
                         }
-                        .padding(7)
                     }
-                    .padding([.leading, .trailing], 20)
+                    
+                    // 로그가 비어 있는 경우 처리
+                    if filteredLogs.isEmpty {
+                        VStack {
+                            Text("조회 결과가 없습니다.")
+                                .font(.body1Medium)
+                                .foregroundColor(Color.gray90)
+                                .padding()
+                        }
+                    } else {
+                        ScrollView {
+                            ForEach(filteredLogs, id: \.id) { log in
+                                
+                                HStack {
+                                    Text(log.medicineName)
+                                        .font(.h5Bold)
+                                        .foregroundStyle(Color.gray90)
+                                        .lineLimit(1)
+                                        .truncationMode(.tail)
+                                        .padding(.leading, 3)
+                                    
+                                    Spacer()
+                                    
+                                    Text(formatTime(log.plannedAt))
+                                        .font(.body1Bold)
+                                        .foregroundStyle(Color.gray70)
+                                        .padding(.trailing, 10)
+                                    
+                                    Text(textForTakenStatus(log.takenStatus))
+                                        .font(.logo4ExtraBold)
+                                        .foregroundColor(colorForDoseStatus(log.takenStatus))
+                                        .frame(width: 50)
+                                }
+                                .padding(5)
+
+                            }
+                            .padding(15)
+
+                        }
+                    }
+
                 }
                 .cornerRadius(8)
                 .frame(maxWidth: .infinity,
-                       minHeight: itemHeight * CGFloat(homeViewModel.countLogs(filteringBy: takenStatus)),
-                       maxHeight: itemHeight * CGFloat(homeViewModel.countLogs(filteringBy: takenStatus)))
+                       minHeight: 45,
+                       maxHeight: max(30, itemHeight * CGFloat(max(homeViewModel.countLogs(filteringBy: takenStatus), 0)) + 15))
+            } else {
+                ZStack {
+                    Color.gray10
+                    
+                    VStack {
+                        Text("오늘 등록된 복약 일정이 없어요")
+                            .font(.body1Bold)
+                            .foregroundColor(Color.gray90)
+                            .padding(.bottom, 3)
+                        
+                        Text("복약 일정을 등록하고 알림을 받아보세요")
+                            .font(.caption1Medium)
+                            .foregroundColor(Color.gray60)
+                    }
+                    
+                }
+                .cornerRadius(8)
+                .frame(maxWidth: .infinity,
+                       minHeight: 150,
+                       maxHeight: 150)
             }
         } else {
             /// 약통이 존재하지 않을 경우, 약통 등록 유도
@@ -246,7 +284,6 @@ struct AddPillCaseView: View {
                         switch response {
                         case .success(let result):
                             scannedCode = result.string
-                            print("scannedCode \(scannedCode)")
                             showQRCodeScanningView = false
                             requestToAddPillCase(serialNumber: scannedCode ?? "nil")
                         case .failure(let error):

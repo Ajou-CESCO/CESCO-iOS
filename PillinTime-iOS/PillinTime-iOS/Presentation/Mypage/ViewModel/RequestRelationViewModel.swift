@@ -5,7 +5,7 @@
 //  Created by Jae Hyun Lee on 5/15/24.
 //
 
-import Foundation
+import SwiftUI
 import Combine
 
 import Factory
@@ -30,6 +30,7 @@ class RequestRelationViewModel: ObservableObject {
     @Published var requestRelationResult: RequestRelationResponseModelResult?
     @Published var isNetworking: Bool = false
     @Published var isNetworkSucceed: Bool = false
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
 
     // MARK: - Cancellable Bag
     
@@ -68,6 +69,7 @@ class RequestRelationViewModel: ObservableObject {
                     }
                 case .failure(let error):
                     print("보호관계 요청 실패: \(error)")
+                    self.toastManager.showToast(description: "보호관계 요청 실패")
                     self.isNetworking = false
                     self.requestRelationState.failMessage = error.localizedDescription
                 }

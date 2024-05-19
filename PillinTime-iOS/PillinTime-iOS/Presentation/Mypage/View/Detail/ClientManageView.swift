@@ -10,6 +10,12 @@ import SwiftUI
 import Moya
 import Factory
 
+struct SelectedRelation {
+    var name: String = String()
+    var ssn: String = String()
+    var phone: String = String()
+}
+
 // MARK: - ClientManageView
 
 struct ClientManageView: View {
@@ -19,7 +25,8 @@ struct ClientManageView: View {
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     @State var isDeletePopUp: Bool = false
     @State var isRequestRelationPopUp: Bool = false
-    @State var memberId: Int = 0
+    @State var showInformationView: Bool = false
+    @State var selectedRelation: SelectedRelation = SelectedRelation()
     @State var showToastView: Bool = false
     
     // MARK: - body
@@ -53,7 +60,7 @@ struct ClientManageView: View {
                                     .font(.h5Bold)
                                     .foregroundStyle(Color.gray90)
                                     .padding(.bottom, 3)
-
+                                
                                 Text(relation.memberPhone)
                                     .font(.body2Medium)
                                     .foregroundStyle(Color.gray70)
@@ -65,35 +72,24 @@ struct ClientManageView: View {
                                 .resizable()
                                 .frame(width: 50, height: 50)
                         }
+                        .onTapGesture {
+                            self.selectedRelation = SelectedRelation(name: relation.memberName,
+                                                                     ssn: relation.memberPhone,
+                                                                     phone: relation.memberPhone)
+                            self.showInformationView = true
+                        }
                         .swipeActions {
                             Button("삭제") {
                                 self.isDeletePopUp = true
-                                self.memberId = relation.memberID
+                                self.selectedRelation = SelectedRelation(name: relation.memberName,
+                                                                         ssn: relation.memberPhone,
+                                                                         phone: relation.memberPhone)
                             }
                             .tint(.error90)
                         }
                         .ignoresSafeArea(edges: .all)
                         .frame(height: 70)
                         .padding([.leading, .trailing], 30)
-                        .fullScreenCover(isPresented: $isDeletePopUp,
-                                         content: {
-                            CustomPopUpView(mainText: "\(relation.memberName) 님을\n삭제하시겠어요?",
-                                            subText: "삭제하면 \(relation.memberName) 님은 새로운 보호자가 케어를\n요청할 때까지 서비스를 이용할 수 없어요.",
-                                            leftButtonText: "취소할래요",
-                                            rightButtonText: "삭제할래요",
-                                            leftButtonAction: {
-                                
-                            },
-                                            rightButtonAction: {
-                                
-                            })
-                            .background(ClearBackgroundView())
-                            .background(Material.ultraThin)
-                           
-                        })
-                        .transaction { transaction in   // 모달 애니메이션 삭제
-                            transaction.disablesAnimations = true
-                        }
                     }
                     
                 }
@@ -115,11 +111,30 @@ struct ClientManageView: View {
                 .background(ClearBackgroundView())
                 .background(Material.ultraThin)
         })
+        .fullScreenCover(isPresented: $isDeletePopUp,
+                         content: {
+            CustomPopUpView(mainText: "\(selectedRelation.name) 님을\n삭제하시겠어요?",
+                            subText: "삭제하면 \(selectedRelation.name) 님은 새로운 보호자가 케어를\n요청할 때까지 서비스를 이용할 수 없어요.",
+                            leftButtonText: "취소할래요",
+                            rightButtonText: "삭제할래요",
+                            leftButtonAction: {
+                
+            },
+                            rightButtonAction: {
+                
+            })
+            .background(ClearBackgroundView())
+            .background(Material.ultraThin)
+           
+        })
+        .sheet(isPresented: $showInformationView,
+               content: {
+            ManagementMyInformationView(name: selectedRelation.name,
+                                        phoneNumber: selectedRelation.phone,
+                                        ssn: selectedRelation.ssn)
+        })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true
-        }
-        .onTapGesture {
-            hideKeyboard()
         }
     }
 }

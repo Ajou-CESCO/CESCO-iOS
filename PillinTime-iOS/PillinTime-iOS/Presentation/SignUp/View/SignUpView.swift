@@ -67,9 +67,10 @@ struct SignUpView: View {
                     .fadeIn(delay: 0.2)
 
                 /// - 1: 전화번호
-                /// - 2: 이름
-                /// - 3: 주민번호
-                /// - 4: 보호자, 피보호자 선택
+                /// - 2: 6자리 인증코드 입력
+                /// - 3: 이름 입력
+                /// - 4: 주민번호
+                /// - 5: 보호자, 피보호자 선택
                 /// 여기까지 회원가입 완료
                 switch userProfileViewModel.step {
                 case 1: // 전화번호
@@ -78,20 +79,26 @@ struct SignUpView: View {
                                     isError: .isErrorBinding(for: $validationViewModel.infoErrorState.phoneNumberErrorMessage),
                                     errorMessage: validationViewModel.infoErrorState.phoneNumberErrorMessage,
                                     textInputStyle: .phoneNumber)
+                case 2: // 인증코드 입력
+                    CustomTextInput(placeholder: "인증번호 입력 (ex. 000000)",
+                                    text: $signUpRequestViewModel.inputVerificationCode,
+                                    isError: .isErrorBinding(for: $signUpRequestViewModel.signUpState.failMessage),
+                                    errorMessage: signUpRequestViewModel.phoneNumberVerificationErrorState,
+                                    textInputStyle: .verificationCode)
                     
-                case 2: // 이름
+                case 3: // 이름
                     CustomTextInput(placeholder: "본명 입력 (ex. 홍길동)",
                                     text: $validationViewModel.infoState.name,
                                     isError: .isErrorBinding(for: $validationViewModel.infoErrorState.nameErrorMessage),
                                     errorMessage: validationViewModel.infoErrorState.nameErrorMessage,
                                     textInputStyle: .text)
-                case 3: // 주민등록번호
+                case 4: // 주민등록번호
                     CustomTextInput(placeholder: "주민번호 입력",
                                     text: $validationViewModel.infoState.ssn,
                                     isError: .isErrorBinding(for: $validationViewModel.infoErrorState.ssnErrorMessage),
                                     errorMessage: validationViewModel.infoErrorState.ssnErrorMessage,
                                     textInputStyle: .ssn)
-                case 4: // 피보호자, 보호자 선택
+                case 5: // 피보호자, 보호자 선택
                     UserRoleView(role: "피보호자",
                                  description: "약 복용 및 건강 관리를 받아요.",
                                  isSelected: selectedRole == 1)
@@ -123,24 +130,27 @@ struct SignUpView: View {
                 
                 Spacer()
                 
-                if (userProfileViewModel.step == 5) {
+                if (userProfileViewModel.step == 7) {
                     EmptyView()
                 } else {
                     CustomButton(buttonSize: .regular,
                                  buttonStyle: .filled,
                                  action: {
                         switch userProfileViewModel.step {
-                        case 3:
+                        case 1: // 전화번호
+                            signUpRequestViewModel.$tapPhoneNumberVerificationButton.send()
+                        case 2:
+                            signUpRequestViewModel.compareToVerificationCode()
+                        case 4:
                             // 로그인 요청
                             signUpRequestViewModel.$tapSignInButton.send()
-                        case 4:
+                        case 5:
                             // userType 로컬에 저장
                             if selectedRole == 0 {
                                 UserManager.shared.isManager = true
                             } else if selectedRole == 1 {
                                 UserManager.shared.isManager = false
                             }
-                            
                             // 회원가입 요청
                             signUpRequestViewModel.$tapSignUpButton.send()
                             // 만약 보호자라면
@@ -155,13 +165,17 @@ struct SignUpView: View {
                         }
                     }, content: {
                         Text("다음")
-                    }, isDisabled: isButtonDisabled, isLoading: signUpRequestViewModel.isNetworking)
+                    }, isDisabled: isButtonDisabled, 
+                    isLoading: signUpRequestViewModel.isNetworking)
                 }
                 
             } // Todo: ViewModel로 분리할 것
             .onReceive(userProfileViewModel.$step) { _ in
                 updateButtonState()
             }
+            .onReceive(signUpRequestViewModel.$isVerificationSucced, perform: { _ in
+                updateButtonState()
+            })
             .onReceive(validationViewModel.$infoState) { _ in
                 updateButtonState()
             }
@@ -191,10 +205,12 @@ struct SignUpView: View {
         case 1:
             isButtonDisabled = !validationViewModel.infoErrorState.phoneNumberErrorMessage.isEmpty || validationViewModel.infoState.phoneNumber.isEmpty
         case 2:
-            isButtonDisabled = !validationViewModel.infoErrorState.nameErrorMessage.isEmpty || validationViewModel.infoState.name.isEmpty
+            isButtonDisabled = !signUpRequestViewModel.isVerificationSucced
         case 3:
-            isButtonDisabled = !validationViewModel.infoErrorState.ssnErrorMessage.isEmpty || validationViewModel.infoState.ssn.isEmpty
+            isButtonDisabled = !validationViewModel.infoErrorState.nameErrorMessage.isEmpty || validationViewModel.infoState.name.isEmpty
         case 4:
+            isButtonDisabled = !validationViewModel.infoErrorState.ssnErrorMessage.isEmpty || validationViewModel.infoState.ssn.isEmpty
+        case 5:
             isButtonDisabled = (selectedRole == 2)
         default:
             isButtonDisabled = true
@@ -227,87 +243,5 @@ struct UserRoleView: View {
         .padding(.leading, 22)
         .background(isSelected ? Color.primary60 : Color.primary5)
         .cornerRadius(15)
-    }
-}
-
-// MARK: - RelationRequestView
-
-struct RelationRequestView: View {
-    
-    // MARK: - Properties
-    
-    @State private var isModalPresented = false
-    @State private var selectedIndex: Int = 0
-    @State private var isClinetSelectedRelation: Bool = false
-    var finishSelectRelation: () -> Void
-    
-    let mockData: [RequestList] = [
-        RequestList(requestId: 1, name: "이재현", phoneNumber: "0001"),
-        RequestList(requestId: 2, name: "김서영", phoneNumber: "0002"),
-        RequestList(requestId: 3, name: "박준호", phoneNumber: "0003"),
-        RequestList(requestId: 4, name: "최윤아", phoneNumber: "0004"),
-        RequestList(requestId: 5, name: "정다빈", phoneNumber: "0005"),
-        RequestList(requestId: 6, name: "한지수", phoneNumber: "0006"),
-        RequestList(requestId: 7, name: "유현석", phoneNumber: "0007"),
-        RequestList(requestId: 8, name: "송민재", phoneNumber: "0008"),
-        RequestList(requestId: 9, name: "김태희", phoneNumber: "0009"),
-        RequestList(requestId: 10, name: "정우성", phoneNumber: "0010")
-    ]
-    
-    // MARK: - body
-    
-    var body: some View {
-        ScrollView {
-            VStack {
-                ForEach(0..<mockData.count, id: \.self) { index in
-                    Button(action: {
-                        self.selectedIndex = index
-                        self.isModalPresented = true
-                        print(self.selectedIndex)
-                        print(index)
-                        print(mockData[selectedIndex].name)
-                    }, label: {
-                        HStack {
-                            Text(mockData[index].name)
-                                .font(.h4Bold)
-                                .foregroundStyle(Color.gray90)
-                                .padding(.leading, 22)
-                            
-                            Spacer()
-                            
-                            Text(mockData[index].phoneNumber)
-                                .font(.h5Regular)
-                                .foregroundStyle(Color.gray70)
-                                .padding(.trailing, 22)
-                        }
-                        
-                    })
-                    .frame(maxWidth: .infinity,
-                           minHeight: 73, maxHeight: 73)
-                    .background(Color.primary5)
-                    .cornerRadius(15)
-                    .fadeIn(delay: Double(index) * 0.1)
-                    .padding(.bottom, 3)
-                    .fullScreenCover(isPresented: $isModalPresented,
-                                     content: {
-                        CustomPopUpView(mainText: "\(mockData[selectedIndex].name) 님을 보호자로\n수락하시겠어요?",
-                                        subText: "수락을 선택하면 \(mockData[selectedIndex].name) 님이 회원님의\n약 복용 현황과 건강 상태를 관리할 수 있어요.",
-                                        leftButtonText: "거절할게요",
-                                        rightButtonText: "수락할게요", 
-                                        leftButtonAction: { self.isModalPresented = false },
-                                        rightButtonAction: { 
-                                            finishSelectRelation() })
-                        .background(ClearBackgroundView())
-                        .background(Material.ultraThin)
-                        
-                    })
-                    .transaction { transaction in   // 모달 애니메이션 삭제
-                        transaction.disablesAnimations = true
-                    }
-                }
-                .padding(.bottom, 12)
-            }
-            .padding(.top, 30)
-        }
     }
 }

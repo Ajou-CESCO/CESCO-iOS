@@ -15,12 +15,16 @@ enum AuthError: Error {
     case signIn(_: LoginError)
     /// Auth API SignUp Error
     case signUp(_: LoginError)
+    /// Auth API PhoneNumberVerification Error
+    case phoneNumberVerification(_: PhoneNumberVerificationError)
     
     var description: String {
         switch self {
         case .signIn(let error):
             return error.description
         case .signUp(let error):
+            return error.description
+        case .phoneNumberVerification(let error):
             return error.description
         }
     }

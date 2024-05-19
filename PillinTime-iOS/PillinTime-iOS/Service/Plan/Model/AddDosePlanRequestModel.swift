@@ -7,9 +7,19 @@
 
 import Foundation
 
-struct AddDosePlanRequestModel: Encodable {
-    var memberId: Int = 0
-    var medicineId: String = ""
-    var weekday: [String] = []
-    var time: [Int] = []
+// MARK: - AddDosePlanRequestModel
+
+struct AddDosePlanRequestModel: Codable {
+    let memberID: Int
+    let medicineID: String
+    let weekdayList: [Int]
+    let timeList: [String]
+    let startAt, endAt: String
+    let cabinetIndex: Int
+
+    enum CodingKeys: String, CodingKey {
+        case memberID = "memberId"
+        case medicineID = "medicineId"
+        case weekdayList, timeList, startAt, endAt, cabinetIndex
+    }
 }

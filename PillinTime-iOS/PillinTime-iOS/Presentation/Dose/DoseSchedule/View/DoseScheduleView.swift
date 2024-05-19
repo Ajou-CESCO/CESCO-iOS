@@ -20,6 +20,7 @@ struct DoseScheduleView: View {
     let navigator: LinkNavigatorType
     @ObservedObject var doseScheduleViewModel = DoseScheduleViewModel()
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
+    @ObservedObject var doseAddViewModel = Container.shared.doseAddViewModel.resolve()
     
     init(navigator: LinkNavigatorType) {
         self.navigator = navigator
@@ -49,7 +50,7 @@ struct DoseScheduleView: View {
                                         DoseScheduleSubView(takenStatus: 0,
                                                             memberId: relation.memberID,
                                                             isCabinetExist: relation.cabinetID != 0)
-                                            .padding(.top, UserManager.shared.isManager ?? true ? 5 : 20)
+                                            .padding(.top, UserManager.shared.isManager ?? true ? 10 : 20)
                                             .padding(.bottom, 20)
                                             .fadeIn(delay: 0.3)
                                         // 이후에 수정할 것
@@ -120,6 +121,7 @@ struct DoseScheduleView: View {
             .background(Color.gray5)
             
             Button(action: {
+                self.doseAddViewModel.dosePlanInfoState.memberID = self.selectedClientId ?? 0
                 self.navigator.next(paths: ["doseAdd"], items: [:], isAnimated: true)
             }, label: {
                 HStack {
@@ -135,14 +137,21 @@ struct DoseScheduleView: View {
                 }
             })
             .padding([.top, .bottom], 15)
-            .background(Color.primary60)
+            .background(isSelectedMemberHasntPillCase() ? Color.gray70 :Color.primary60)
             .cornerRadius(30)
             .padding(.trailing, 20)
             .padding(.bottom, 25)
             .fadeIn(delay: 0.6)
+            .disabled(isSelectedMemberHasntPillCase())
         }
         .onReceive(homeViewModel.$isDataReady) { _ in
             self.selectedClientId = homeViewModel.relationLists.first?.memberID
+        }
+    }
+    
+    private func isSelectedMemberHasntPillCase() -> Bool {
+        homeViewModel.relationLists.contains { relation in
+            relation.memberID == selectedClientId && relation.cabinetID == 0
         }
     }
 }

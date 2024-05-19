@@ -25,7 +25,7 @@ extension PlanAPI: TargetType {
     var path: String {
         switch self {
         case .addDosePlan:
-            return ""
+            return "/api/dose/plan"
         case .getDoseLog:
             return "/api/dose/log"
         }

@@ -86,7 +86,8 @@ class UserProfileValidationViewModel: ObservableObject {
                 self.eventToRequestViewModel.send(.sendInfoForSignUp(info: self.infoState))
             case .signIn:
                 self.eventToRequestViewModel.send(.sendInfoForSignIn(info: self.infoState))
-
+            case .phoneNumberVerification:
+                self.eventToRequestViewModel.send(.sendPhoneNumberForVerification(phone: self.infoState.phoneNumber))
             }
         }.store(in: &cancellables)
     }

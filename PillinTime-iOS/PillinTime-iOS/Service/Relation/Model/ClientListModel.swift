@@ -8,8 +8,10 @@
 import Foundation
 
 struct ClientListModel {
-    var relationshipId: Int
-    var relatedUserId: Int
-    var relatedUserName: String
-    var relatedUserAge: Int
+    var userId: Int
+    var userName: String
+    var userSsn: String
+    var userPhone: String
+    var userType: Int
+    var caseId: String
 }

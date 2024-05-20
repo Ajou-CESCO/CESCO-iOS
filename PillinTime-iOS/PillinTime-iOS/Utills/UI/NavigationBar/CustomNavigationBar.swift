@@ -10,6 +10,7 @@ import SwiftUI
 struct CustomNavigationBar: View {
     
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) var dismiss
     
     var title: String = String()
     var previousAction: (() -> Void)?   // 이전 동작을 설정하고 싶다면 사용

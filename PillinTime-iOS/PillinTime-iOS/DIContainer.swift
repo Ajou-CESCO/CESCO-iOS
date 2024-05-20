@@ -12,11 +12,43 @@ import Factory
 import Moya
 
 extension Container {
+    
     // MARK: - ViewModel
+    
+    var doseAddViewModel: Factory<DoseAddViewModel> {
+        Factory(self) {
+            DoseAddViewModel(planService: PlanService(provider: MoyaProvider<PlanAPI>()))
+        }
+        .singleton
+    }
+    
+    var homeViewModel: Factory<HomeViewModel> {
+        Factory(self) {
+            HomeViewModel(etcService: EtcService(provider: MoyaProvider<EtcAPI>()), 
+                          planService: PlanService(provider: MoyaProvider<PlanAPI>()))
+        }
+        .singleton
+    }
     
     // MARK: - Moya
     
+    // MARK: - Etc
+    
+    var toastManager: Factory<ToastManager> {
+        Factory(self) {
+            ToastManager()
+        }
+        .singleton
+    }
+    
     // MARK: - Service
+    
+    var caseService: Factory<CaseServiceType> {
+        Factory(self) {
+            CaseService(provider: MoyaProvider<CaseAPI>())
+        }
+        .singleton
+    }
     
     var userService: Factory<UserServiceType> {
         Factory(self) {
@@ -38,4 +70,26 @@ extension Container {
         }
         .singleton
     }
+    
+    var requestServie: Factory<RequestServiceType> {
+        Factory(self) {
+            RequestService(provider: MoyaProvider<RequestAPI>())
+        }
+        .singleton
+    }
+    
+    var planService: Factory<PlanServiceType> {
+        Factory(self) {
+            PlanService(provider: MoyaProvider<PlanAPI>())
+        }
+        .singleton
+    }
+    
+    var etcService: Factory<EtcServiceType> {
+        Factory(self) {
+            EtcService(provider: MoyaProvider<EtcAPI>())
+        }
+        .singleton
+    }
+    
 }

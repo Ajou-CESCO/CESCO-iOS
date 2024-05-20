@@ -11,6 +11,7 @@ import Moya
 enum AuthAPI {
     case signIn(_ signInModel: SignInRequestModel)
     case signUp(_ signUpModel: SignUpRequestModel)
+    case requestPhoneNumberConfirm(_ phoneNumber: String)
 }
 
 extension AuthAPI: TargetType {
@@ -28,12 +29,14 @@ extension AuthAPI: TargetType {
             return "/api/auth"
         case .signUp:
             return "/api/user"
+        case.requestPhoneNumberConfirm:
+            return "/api/auth/sms"
         }
     }
     
     var method: Moya.Method {
         switch self {
-        case .signUp, .signIn:
+        case .signUp, .signIn, .requestPhoneNumberConfirm:
             return .post
         }
     }
@@ -44,6 +47,8 @@ extension AuthAPI: TargetType {
             return .requestJSONEncodable(signInModel)
         case .signUp(let signUpModel):
             return .requestJSONEncodable(signUpModel)
+        case .requestPhoneNumberConfirm(let phoneNumber):
+            return .requestJSONEncodable(["phone": phoneNumber])
         }
     }
     

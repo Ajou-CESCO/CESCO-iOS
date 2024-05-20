@@ -7,12 +7,22 @@
 
 import SwiftUI
 
+import LinkNavigator
+
 struct MyPageView: View {
     
     // MARK: - Properties
     
-    let mainText: [String] = ["예정된 횟수", "완료한 횟수", "미완료 횟수"]
-    let subText: [String] = ["12회", "23회", "70회"]
+    let mainImage: [String] = ["ic_people", "ic_people", "ic_schedule"]
+    let subText: [String] = ["피보호자 관리", "연결된 기기", "복약 일정 관리"]
+    
+    @State var showMyPageDetailView: Bool = false
+    
+    let navigator: LinkNavigatorType
+    
+    init(navigator: LinkNavigatorType) {
+        self.navigator = navigator
+    }
     
     // MARK: - body
     
@@ -20,7 +30,7 @@ struct MyPageView: View {
         
         VStack {
             VStack {
-                Text(UserManager.shared.userType == 0 ? "보호자" : "피보호자")
+                Text(UserManager.shared.isManager ?? true ? "보호자" : "피보호자")
                     .font(.body1Medium)
                     .foregroundStyle(Color.primary40)
                     .padding(.leading, 32)
@@ -43,16 +53,19 @@ struct MyPageView: View {
                     Spacer()
                     
                     ForEach(0..<3, id: \.self) { index in
-                        VStack {
-                            Text(mainText[index])
-                                .font(.body2Regular)
-                                .foregroundStyle(Color.gray90)
-                                .padding(.bottom, 5)
-                            
-                            Text(subText[index])
-                                .font(.h5Bold)
-                                .foregroundStyle(Color.gray70)
-                        }
+                        Button(action: {
+                            self.showMyPageDetailView = true
+                        }, label: {
+                            VStack {
+                                Image(mainImage[index])
+                                    .frame(width: 36, height: 36)
+                                    .padding(.bottom, 4)
+                                
+                                Text(subText[index])
+                                    .font(.body2Regular)
+                                    .foregroundStyle(Color.gray90)
+                            }
+                        })
                         
                         Spacer()
                     }
@@ -66,7 +79,15 @@ struct MyPageView: View {
                    maxHeight: 264)
             .background(Color.white)
             
-            SettingList()
+            SettingList(navigator: navigator)
+        }
+        .fullScreenCover(isPresented: $showMyPageDetailView,
+                         content: {
+            MyPageDetailView(navigator: navigator,
+                             settingListElement: .clientManage)
+        })
+        .transaction { transaction in   // 모달 애니메이션 삭제
+            transaction.disablesAnimations = true
         }
     }
 }
@@ -79,8 +100,11 @@ struct SettingList: View {
     @State private var selectedElement: SettingListElement?
     @ObservedObject var myPageViewModel: MyPageViewModel
     
-    init() {
+    let navigator: LinkNavigatorType
+    
+    init(navigator: LinkNavigatorType) {
         self.myPageViewModel = MyPageViewModel()
+        self.navigator = navigator
     }
         
     var body: some View {
@@ -88,9 +112,9 @@ struct SettingList: View {
             Color.gray5
             
             List {
-                ForEach(SettingListElement.allCases, id: \.self) { element in
+                ForEach(SettingListElement.listCases, id: \.self) { element in
                     ZStack {
-                        NavigationLink(destination: MyPageDetailView(settingListElement: element)) {
+                        NavigationLink(destination: MyPageDetailView(navigator: navigator, settingListElement: element)) {
                             EmptyView()
                         }
                         .opacity(0.0)
@@ -115,8 +139,4 @@ struct SettingList: View {
             .background(Color.clear)
         }
     }
-}
-
-#Preview {
-    MyPageView()
 }

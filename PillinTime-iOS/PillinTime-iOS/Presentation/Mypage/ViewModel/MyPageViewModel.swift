@@ -13,6 +13,8 @@ enum SettingListElement {
     case subscriptionPaymentHistory
     case customerServiceCenter
     case withdrawal
+    case clientManage
+    case logout
 
     var description: String {
         switch self {
@@ -24,13 +26,18 @@ enum SettingListElement {
             return "고객 센터"
         case .withdrawal:
             return "회원 탈퇴"
+        case .clientManage:
+            return "피보호자 관리"
+        case .logout:
+            return "로그아웃"
         }
     }
     
-    static let allCases: [SettingListElement] = [
+    static let listCases: [SettingListElement] = [
         .managementMyInformation,
         .subscriptionPaymentHistory,
         .customerServiceCenter,
+        .logout,
         .withdrawal
     ]
 }

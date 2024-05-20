@@ -9,5 +9,5 @@ import Foundation
 
 struct SignUpRequestModel: Encodable {
     let name, ssn, phone: String
-    let userType: Int
+    let isManager: Bool
 }

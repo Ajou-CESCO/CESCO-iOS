@@ -61,4 +61,22 @@ class AuthService: AuthServiceType {
             }
             .eraseToAnyPublisher()
     }
+    
+    /// 전화번호 인증 요청
+    func requestPhoneNumberConfirm(phoneNumber: String) -> AnyPublisher<PhoneNumberVerificationResponseModel, AuthError> {
+        return provider.requestPublisher(.requestPhoneNumberConfirm(phoneNumber))
+            .tryMap { response in
+                let decodedData = try response.map(PhoneNumberVerificationResponseModel.self)
+                return decodedData
+            }
+            .mapError { error in
+                print("error:", error)
+                if error is MoyaError {
+                    return AuthError.phoneNumberVerification(.sendPhoneNumberConfirmFailed)
+                } else {
+                    return error as! AuthError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
 }

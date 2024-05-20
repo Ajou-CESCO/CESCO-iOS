@@ -8,5 +8,5 @@
 import Foundation
 
 struct SignInRequestModel: Encodable {
-    let name, phone: String
+    let name, phone, ssn: String
 }

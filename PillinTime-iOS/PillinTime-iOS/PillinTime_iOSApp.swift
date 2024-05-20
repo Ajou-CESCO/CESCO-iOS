@@ -12,7 +12,7 @@ import LinkNavigator
 struct PillinTime_iOSApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    
+
     var navigator: LinkNavigator {
         appDelegate.navigator
     }

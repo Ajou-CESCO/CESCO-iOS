@@ -38,14 +38,14 @@ class UserProfileValidationViewModel: ObservableObject {
         self.bindEvent()
     }
     
-    // MARK: - Method
+    // MARK: - Methods
     
     /// UserMager에서 값을 읽어와 초기값을 설정하기 위한 함수입니다.
     func setInitValue() {
         let userManager = UserManager.shared
         infoState.name = userManager.name ?? "null"
         infoState.phoneNumber = userManager.phoneNumber ?? "null"
-        infoState.ssn = userManager.ssn ?? "null"
+        infoState.ssn = (userManager.ssn ?? "null").prefix(8) + "●●●●●●"
     }
     
     private func bindState() {
@@ -86,7 +86,8 @@ class UserProfileValidationViewModel: ObservableObject {
                 self.eventToRequestViewModel.send(.sendInfoForSignUp(info: self.infoState))
             case .signIn:
                 self.eventToRequestViewModel.send(.sendInfoForSignIn(info: self.infoState))
-
+            case .phoneNumberVerification:
+                self.eventToRequestViewModel.send(.sendPhoneNumberForVerification(phone: self.infoState.phoneNumber))
             }
         }.store(in: &cancellables)
     }

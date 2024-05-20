@@ -1,0 +1,23 @@
+disabled_rules:
+  - trailing_whitespace
+  - identifier_name
+  - line_length
+  - type_name
+  - legacy_constructor
+  - unused_setter_value
+  - nesting
+  - shorthand_operator
+
+opt_in_rules: # some rules are only opt-in
+  - empty_count
+  - missing_docs
+  - accessibility_label_for_image
+  - accessibility_trait_for_button
+
+
+included:
+  - PillinTime-iOS
+excluded:
+  - Modules
+
+force_cast: warning

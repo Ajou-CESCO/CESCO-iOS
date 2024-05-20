@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import LinkNavigator
+
 struct MyPageView: View {
     
     // MARK: - Properties
@@ -15,6 +17,12 @@ struct MyPageView: View {
     let subText: [String] = ["피보호자 관리", "연결된 기기", "복약 일정 관리"]
     
     @State var showMyPageDetailView: Bool = false
+    
+    let navigator: LinkNavigatorType
+    
+    init(navigator: LinkNavigatorType) {
+        self.navigator = navigator
+    }
     
     // MARK: - body
     
@@ -71,11 +79,12 @@ struct MyPageView: View {
                    maxHeight: 264)
             .background(Color.white)
             
-            SettingList()
+            SettingList(navigator: navigator)
         }
         .fullScreenCover(isPresented: $showMyPageDetailView,
                          content: {
-            MyPageDetailView(settingListElement: .clientManage)
+            MyPageDetailView(navigator: navigator,
+                             settingListElement: .clientManage)
         })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true
@@ -91,8 +100,11 @@ struct SettingList: View {
     @State private var selectedElement: SettingListElement?
     @ObservedObject var myPageViewModel: MyPageViewModel
     
-    init() {
+    let navigator: LinkNavigatorType
+    
+    init(navigator: LinkNavigatorType) {
         self.myPageViewModel = MyPageViewModel()
+        self.navigator = navigator
     }
         
     var body: some View {
@@ -102,7 +114,7 @@ struct SettingList: View {
             List {
                 ForEach(SettingListElement.listCases, id: \.self) { element in
                     ZStack {
-                        NavigationLink(destination: MyPageDetailView(settingListElement: element)) {
+                        NavigationLink(destination: MyPageDetailView(navigator: navigator, settingListElement: element)) {
                             EmptyView()
                         }
                         .opacity(0.0)
@@ -127,8 +139,4 @@ struct SettingList: View {
             .background(Color.clear)
         }
     }
-}
-
-#Preview {
-    MyPageView()
 }

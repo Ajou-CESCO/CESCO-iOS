@@ -135,7 +135,6 @@ class DoseAddViewModel: ObservableObject {
         planService.addDosePlan(addDosePlanModel: addDosePlanModel)
             .sink(receiveCompletion: { [weak self] completion in
                 guard let self = self else { return }
-                self.isNetworking = false
                 switch completion {
                 case .finished:
                     print("복용 계획 생성 요청 완료")
@@ -147,6 +146,8 @@ class DoseAddViewModel: ObservableObject {
                     print("복용 계획 생성 요청 요청 실패: \(error)")
                     self.toastManager.showToast(description: "복용 계획 생성 요청 요청 실패")
                     self.requestAddDosePlanState.failMessage = error.localizedDescription
+                    self.isNetworking = false
+
                 }
             }, receiveValue: { [weak self] _ in
                 guard let self = self else { return }

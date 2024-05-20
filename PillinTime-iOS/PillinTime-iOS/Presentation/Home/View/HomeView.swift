@@ -34,47 +34,56 @@ struct HomeView: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         LazyHStack(spacing: 0) {
                             ForEach(homeViewModel.relationLists, id: \.memberID) { relation in
-                                VStack(alignment: .leading) {
-                                    Text.multiColoredText("오늘 \(relation.memberName) 님의 약속시간은?",
-                                                          coloredSubstrings: [(relation.memberName, Color.primary60),
-                                                                            ("약", Color.primary60)])
-                                        .foregroundStyle(Color.gray90)
-                                        .font(.logo3Medium)
-                                        .padding(.leading, 33)
-                                        .fadeIn(delay: 0.2)
-                                    
-                                    DoseScheduleStatusView(memberId: relation.memberID,
-                                                           isCabinetExist: relation.cabinetID != 0,
-                                                           takenStatus: nil, 
-                                                           showAddPillCaseView: $showAddPillCaseView)
-                                        .padding([.top, .bottom], 10)
-                                        .padding([.leading, .trailing], 25)
-                                        .fadeIn(delay: 0.3)
-                                    
-                                    if showEncourageView {
-                                        EncourageMainView()
-                                            .transition(.move(edge: .top))
-                                            .scaleFadeIn(delay: 0.4)
+                                ScrollView {
+                                    VStack(alignment: .leading) {
+                                        Text.multiColoredText("오늘 \(relation.memberName) 님의 약속시간은?",
+                                                              coloredSubstrings: [(relation.memberName, Color.primary60),
+                                                                                ("약", Color.primary60)])
+                                            .foregroundStyle(Color.gray90)
+                                            .font(.logo3Medium)
+                                            .padding(.leading, 33)
+                                            .fadeIn(delay: 0.2)
+                                        
+                                        DoseScheduleStatusView(memberId: relation.memberID,
+                                                               isCabinetExist: relation.cabinetID != 0,
+                                                               takenStatus: nil,
+                                                               showAddPillCaseView: $showAddPillCaseView)
+                                            .padding([.top, .bottom], 10)
                                             .padding([.leading, .trailing], 25)
+                                            .fadeIn(delay: 0.3)
+                                        
+                                        if showEncourageView {
+                                            EncourageMainView()
+                                                .transition(.move(edge: .top))
+                                                .scaleFadeIn(delay: 0.4)
+                                                .padding([.leading, .trailing], 25)
+                                        }
+                                        
+                                        HealthMainView()
+                                            .padding(.top, showEncourageView ? 14 : 0) // EncourageMainView 표시에 따라 조정
+                                            .fadeIn(delay: 0.5)
+                                            .padding([.leading, .trailing], 25)
+                                        
+                                        Spacer()
                                     }
-                                    
-                                    HealthMainView()
-                                        .padding(.top, showEncourageView ? 14 : 0) // EncourageMainView 표시에 따라 조정
-                                        .fadeIn(delay: 0.5)
-                                        .padding([.leading, .trailing], 25)
-                                    
-                                    Spacer()
+                                    .containerRelativeFrame(.horizontal)
                                 }
-                                .containerRelativeFrame(.horizontal)
+                                .refreshable {
+                                    homeViewModel.$requestGetDoseLog.send(self.selectedClientId!)
+                                    homeViewModel.$requestInitClient.send(true)
+                                }
                             }
                         }
                         .scrollTargetLayout(isEnabled: true)
+                        
                     }
                     .scrollTargetBehavior(.viewAligned)
                     .scrollPosition(id: $selectedClientId)
+                    
                 } else {
                     HStack {
-                        Text.multiColoredText("\(UserManager.shared.name ?? "null") 님,\n오늘 하루도 화이팅이에요!", coloredSubstrings: [(UserManager.shared.name ?? "null", Color.primary60)])
+                        Text.multiColoredText("\(UserManager.shared.name ?? "null") 님,\n오늘 하루도 화이팅이에요!", 
+                                              coloredSubstrings: [(UserManager.shared.name ?? "null", Color.primary60)])
                             .foregroundStyle(Color.gray90)
                             .font(.logo3Medium)
                             .lineSpacing(3)
@@ -119,23 +128,35 @@ struct HomeView: View {
             }
         }
         .background(Color.gray5)
-        .onReceive(homeViewModel.$isDataReady) { _ in
-            self.selectedClientId = homeViewModel.relationLists.first?.memberID
-//            homeViewModel.$requestGetDoseLog.send(self.selectedClientId ?? 0)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                withAnimation {
-                    self.showEncourageView = true
-                }
-            }
+        .onChange(of: homeViewModel.isDataReady, {
+            refresh()
+        })
+        .onAppear {
+            refresh()
         }
         .onChange(of: selectedClientId, {
             if homeViewModel.isDataReady {
-                homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
+                if selectedClientId == nil {
+                    selectedClientId = homeViewModel.relationLists.first?.memberID
+                }
+                homeViewModel.$requestGetDoseLog.send(selectedClientId!)
             }
         })
         .sheet(isPresented: $showAddPillCaseView, content: {
             AddPillCaseView(selectedManagerId: selectedClientId ?? 0)
         })
+    }
+    
+    private func refresh() {
+        if selectedClientId == 0 && homeViewModel.isDataReady {
+            selectedClientId = homeViewModel.relationLists.first?.memberID
+        }
+        homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+            withAnimation {
+                self.showEncourageView = true
+            }
+        }
     }
 }
 
@@ -187,7 +208,7 @@ struct EncourageMainView: View {
     
     var body: some View {
         HStack {
-            LottieView(lottieFile: "pie-chart")
+            LottieView(lottieFile: "pie-chart", loopMode: .loop)
                 .frame(width: 70, height: 70)
             
             VStack(alignment: .leading) {

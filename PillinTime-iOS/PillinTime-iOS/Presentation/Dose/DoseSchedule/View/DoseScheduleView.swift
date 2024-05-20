@@ -103,8 +103,11 @@ struct DoseScheduleView: View {
                                     Spacer()
                                 }
                                 .containerRelativeFrame(.horizontal)
+                                
                             }
-                            
+                            .refreshable {
+                                refresh()
+                            }
                         }
                     }
                     .scrollTargetLayout(isEnabled: true)
@@ -147,12 +150,30 @@ struct DoseScheduleView: View {
         .onReceive(homeViewModel.$isDataReady) { _ in
             self.selectedClientId = homeViewModel.relationLists.first?.memberID
         }
+        .onAppear {
+            refresh()
+        }
+        .onChange(of: selectedClientId, {
+            if homeViewModel.isDataReady {
+                if selectedClientId == nil {
+                    selectedClientId = homeViewModel.relationLists.first?.memberID
+                }
+                homeViewModel.$requestGetDoseLog.send(selectedClientId!)
+            }
+        })
     }
     
     private func isSelectedMemberHasntPillCase() -> Bool {
         homeViewModel.relationLists.contains { relation in
             relation.memberID == selectedClientId && relation.cabinetID == 0
         }
+    }
+    
+    private func refresh() {
+        if selectedClientId == 0 && homeViewModel.isDataReady {
+            selectedClientId = homeViewModel.relationLists.first?.memberID
+        }
+        homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
     }
 }
 

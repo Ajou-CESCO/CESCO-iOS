@@ -87,7 +87,7 @@ struct DoseScheduleStatusView: View {
                 .cornerRadius(8)
                 .frame(maxWidth: .infinity,
                        minHeight: 45,
-                       maxHeight: max(30, itemHeight * CGFloat(max(homeViewModel.countLogs(filteringBy: takenStatus), 0)) + 15))
+                       maxHeight: min(itemHeight * CGFloat(max(homeViewModel.countLogs(filteringBy: takenStatus), 0)) + 15, 240))
             } else {
                 ZStack {
                     Color.gray10
@@ -280,17 +280,30 @@ struct AddPillCaseView: View {
                             .foregroundStyle(Color.gray90)
                     }
                     
-                    CodeScannerView(codeTypes: [.qr]) { response in
-                        switch response {
-                        case .success(let result):
-                            scannedCode = result.string
-                            showQRCodeScanningView = false
-                            requestToAddPillCase(serialNumber: scannedCode ?? "nil")
-                        case .failure(let error):
-                            print("스캔 실패: \(error)")
-                            self.toastManager.showToast(description: "스캔에 실패했습니다.")
+                    ZStack(alignment: .topTrailing) {
+                        CodeScannerView(codeTypes: [.qr]) { response in
+                            switch response {
+                            case .success(let result):
+                                scannedCode = result.string
+                                showQRCodeScanningView = false
+                                requestToAddPillCase(serialNumber: scannedCode ?? "nil")
+                            case .failure(let error):
+                                print("스캔 실패: \(error)")
+                                self.toastManager.showToast(description: "스캔에 실패했습니다.")
+                            }
                         }
+                        
+                        Button(action: {
+                            self.showQRCodeScanningView = false
+                        }, label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .resizable()
+                                .foregroundStyle(Color.white)
+                                .frame(width: 20, height: 20)
+                        })
+                        .padding()
                     }
+                    
                 }
                 
                 VStack {
@@ -319,6 +332,7 @@ struct AddPillCaseView: View {
                 dismiss()
             }
         })
+
     }
     
     private func requestToAddPillCase(serialNumber: String) {

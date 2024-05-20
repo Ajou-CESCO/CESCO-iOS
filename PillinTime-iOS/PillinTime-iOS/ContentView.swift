@@ -42,7 +42,7 @@ struct ContentView: View {
                         }
                         .tag(TabBarType.home)
                     
-                    MyPageView()
+                    MyPageView(navigator: navigator)
                         .tabItem {
                             Image(selectedTab == .myPage ? "ic_user_filled" : "ic_user_unfilled")
                         }
@@ -59,7 +59,6 @@ struct ContentView: View {
         .background(.clear)
         /// access token이 없다면 로그인 페이지로 넘어갑니다.
         .onAppear {
-            print(UserManager.shared.accessToken)
             if !UserManager.shared.hasAccessToken {
                 navigator.next(paths: ["signup"], items: [:], isAnimated: false)
             }

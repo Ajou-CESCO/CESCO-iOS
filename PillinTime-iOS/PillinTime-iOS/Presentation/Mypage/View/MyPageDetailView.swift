@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import LinkNavigator
+
 // 이후 다른 곳으로 이동할 것
 @frozen
 enum UserProfile {
@@ -39,6 +41,13 @@ struct MyPageDetailView: View {
     @State var isEditing: Bool = false
     @State var settingListElement: SettingListElement
     
+    let navigator: LinkNavigatorType
+    
+    init(navigator: LinkNavigatorType, settingListElement: SettingListElement) {
+        self.navigator = navigator
+        self.settingListElement = settingListElement
+    }
+    
     // MARK: - body
     
     var body: some View {
@@ -59,6 +68,8 @@ struct MyPageDetailView: View {
                 WithdrawalView()
             case .clientManage:
                 ClientManageView()
+            case .logout:
+                LogoutView(navigator: navigator)
             }
             
             Spacer()
@@ -80,5 +91,26 @@ struct SubscriptionPaymentHistoryView: View {
 struct CustomerServiceCenterView: View {
     var body: some View {
         /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Hello, world!@*/Text("Hello, world!")/*@END_MENU_TOKEN@*/
+    }
+}
+
+// MARK: - LogoutView
+
+struct LogoutView: View {
+    
+    let navigator: LinkNavigatorType
+    
+    init(navigator: LinkNavigatorType) {
+        self.navigator = navigator
+    }
+
+    var body: some View {
+        Button(action: {
+            // 액세스 토큰 삭제
+            UserManager.shared.accessToken = nil
+            navigator.next(paths: ["content"], items: [:], isAnimated: true)
+        }, label: {
+            Text("로구아웃 버튼 ㅋ.ㅋ")
+        })
     }
 }

@@ -32,45 +32,46 @@ struct SearchDoseView: View {
                                 hideKeyboard()
                                 searchDoseViewModel.$tapSearchButton.send(doseAddViewModel.searchDose)
                             })
-            .fadeIn(delay: 0.3)
             
             if (searchDoseViewModel.isNetworking) {
                 LoadingView()
             }
             
-            ScrollView(showsIndicators: false){
-                if (searchDoseViewModel.isNetworkSucceed) {
-                    ForEach(searchDoseViewModel.searchResults, id: \.medicineCode) { result in
-                        SearchDoseElementView(doseAddViewModel: doseAddViewModel,
-                                              searchDoseResponseModelResult: .constant(result),
-                                              isDoseSelected: Binding<Bool>(
-                                                      get: { doseAddViewModel.dosePlanInfoState.medicineID == result.medicineCode },
-                                                      set: { isSelected in
-                                                          if isSelected {
-                                                              doseAddViewModel.dosePlanInfoState.medicineID = result.medicineCode
-                                                          }
-                                                       }
-                                                  ))
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading) {
+                    if (searchDoseViewModel.isNetworkSucceed) {
+                        ForEach(searchDoseViewModel.searchResults, id: \.medicineCode) { result in
+                            SearchDoseElementView(doseAddViewModel: doseAddViewModel,
+                                                  searchDoseResponseModelResult: .constant(result),
+                                                  isDoseSelected: Binding<Bool>(
+                                                          get: { doseAddViewModel.dosePlanInfoState.medicineID == result.medicineCode },
+                                                          set: { isSelected in
+                                                              if isSelected {
+                                                                  doseAddViewModel.dosePlanInfoState.medicineID = result.medicineCode
+                                                              }
+                                                           }
+                                                      ))
+                        }
                     }
-                }
-                
-                if (searchDoseViewModel.isResultEmpty) {
-                    VStack {
-                        Image("ic_empty")
-                            .resizable()
-                            .frame(width: 100, height: 100)
-                            .padding()
-                        
-                        Text("검색어를 다시 확인해주세요")
-                            .font(.caption1Bold)
-                            .foregroundStyle(Color.gray90)
-                            .padding(.bottom, 2)
-                        
-                        Text("검색 결과가 없습니다.")
-                            .font(.caption1Regular)
-                            .foregroundStyle(Color.gray90)
+                    
+                    if (searchDoseViewModel.isResultEmpty) {
+                        VStack {
+                            Image("ic_empty")
+                                .resizable()
+                                .frame(width: 100, height: 100)
+                                .padding()
+                            
+                            Text("검색어를 다시 확인해주세요")
+                                .font(.caption1Bold)
+                                .foregroundStyle(Color.gray90)
+                                .padding(.bottom, 2)
+                            
+                            Text("검색 결과가 없습니다.")
+                                .font(.caption1Regular)
+                                .foregroundStyle(Color.gray90)
+                        }
+                        .padding()
                     }
-                    .padding()
                 }
             }
 
@@ -104,13 +105,14 @@ struct SearchDoseElementView: View {
                         .multilineTextAlignment(.leading)
                         .font(.h5Bold)
                         .foregroundStyle(Color.gray90)
-                        .frame(width: 225)
                         .padding(.top, 10)
+                        .padding(.leading, 5)
                     
                     MedicineEffectView(text: searchDoseResponseModelResult.medicineEffect)
                         .padding(.bottom, 10)
+                        .padding(.leading, 5)
                 }
-                
+                                
                 Image(isDoseSelected ? "ic_dose_selected" : "ic_dose_unselected")
                     .padding()
             }

@@ -25,6 +25,7 @@ struct SignUpView: View {
     @ObservedObject var signUpRequestViewModel: SignUpRequestViewModel      // 회원가입 request
     @ObservedObject var userProfileViewModel: CreateUserProfileViewModel    // view의 정보를 갖고 있는 view model
     @ObservedObject var validationViewModel: UserProfileValidationViewModel // 유효성 검사를 위한 view model
+
     
     // MARK: - Initializer
         
@@ -86,6 +87,18 @@ struct SignUpView: View {
                                     errorMessage: signUpRequestViewModel.phoneNumberVerificationErrorState,
                                     textInputStyle: .verificationCode)
                     
+                    if signUpRequestViewModel.isNetworkSucceed {
+                        Text("인증코드 유효 시간: \(timeString(time: signUpRequestViewModel.timeRemaining))")
+                            .font(.body1Bold)
+                            .foregroundStyle(Color.primary60)
+                            .padding(5)
+                            .onAppear {
+                                signUpRequestViewModel.startTimer()
+                            }
+                            .onDisappear {
+                                signUpRequestViewModel.timer?.cancel()
+                            }
+                    }
                 case 3: // 이름
                     CustomTextInput(placeholder: "본명 입력 (ex. 홍길동)",
                                     text: $validationViewModel.infoState.name,
@@ -139,8 +152,12 @@ struct SignUpView: View {
                         switch userProfileViewModel.step {
                         case 1: // 전화번호
                             signUpRequestViewModel.$tapPhoneNumberVerificationButton.send()
+                            userProfileViewModel.step += 1
                         case 2:
                             signUpRequestViewModel.compareToVerificationCode()
+                            if signUpRequestViewModel.isVerificationSucced {
+                                userProfileViewModel.step += 1
+                            }
                         case 4:
                             // 로그인 요청
                             signUpRequestViewModel.$tapSignInButton.send()
@@ -173,9 +190,6 @@ struct SignUpView: View {
             .onReceive(userProfileViewModel.$step) { _ in
                 updateButtonState()
             }
-            .onReceive(signUpRequestViewModel.$isVerificationSucced, perform: { _ in
-                updateButtonState()
-            })
             .onReceive(validationViewModel.$infoState) { _ in
                 updateButtonState()
             }
@@ -193,6 +207,9 @@ struct SignUpView: View {
                     userProfileViewModel.step += 1
                 }
             }
+            .onReceive(signUpRequestViewModel.$inputVerificationCode) { _ in
+                updateButtonState()
+            }
             .padding([.leading, .trailing], 32)
             
             Spacer()
@@ -205,7 +222,17 @@ struct SignUpView: View {
         case 1:
             isButtonDisabled = !validationViewModel.infoErrorState.phoneNumberErrorMessage.isEmpty || validationViewModel.infoState.phoneNumber.isEmpty
         case 2:
-            isButtonDisabled = !signUpRequestViewModel.isVerificationSucced
+            if signUpRequestViewModel.inputVerificationCode.isEmpty {
+                isButtonDisabled = true
+                if signUpRequestViewModel.isVerificationSucced {
+                    isButtonDisabled = false
+                    
+                } else {
+                    isButtonDisabled = true
+                }
+            } else {
+                isButtonDisabled = false
+            }
         case 3:
             isButtonDisabled = !validationViewModel.infoErrorState.nameErrorMessage.isEmpty || validationViewModel.infoState.name.isEmpty
         case 4:
@@ -215,6 +242,13 @@ struct SignUpView: View {
         default:
             isButtonDisabled = true
         }
+    }
+    
+    /// 시간을 문자열로 바꿔주는 메서드
+    private func timeString(time: Int) -> String {
+        let minutes = time / 60
+        let seconds = time % 60
+        return String(format: "%02d분 %02d초", minutes, seconds)
     }
 }
 

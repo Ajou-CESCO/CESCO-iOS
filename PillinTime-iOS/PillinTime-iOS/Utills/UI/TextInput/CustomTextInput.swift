@@ -43,6 +43,7 @@ struct CustomTextInput: View {
                 .foregroundStyle(Color.error90)
                 .font(.body1Regular)
                 .opacity(!errorMessage.isEmpty ? 1.0 : 0.0)
+                .lineSpacing(3)
                 .animation(.easeInOut(duration: 0.1),
                            value: isFocused)
         }

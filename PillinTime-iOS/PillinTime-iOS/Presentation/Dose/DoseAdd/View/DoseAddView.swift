@@ -47,6 +47,7 @@ struct DoseAddView: View {
         VStack(alignment: .leading) {
             ProgressView(value: doseAddViewModel.progress)
                 .tint(Color.primary60)
+                .animation(.easeIn, value: doseAddViewModel.progress)
 
             CustomNavigationBar(previousAction: {
                 if doseAddViewModel.step > 1 {

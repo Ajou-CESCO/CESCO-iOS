@@ -5,7 +5,7 @@
 //  Created by Jae Hyun Lee on 4/11/24.
 //
 
-import Foundation
+import SwiftUI
 import Combine
 
 import Factory
@@ -35,6 +35,9 @@ class SignUpRequestViewModel: ObservableObject {
     @Published var isNetworking: Bool = false
     @Published var isNetworkSucceed: Bool = false
     @Published var isVerificationSucced: Bool = false
+    
+    @Published var timeRemaining: Int = 180 // 3분
+    @Published var timer: AnyCancellable?
     
     // MARK: - Cancellable Bag
     private var cancellables = Set<AnyCancellable>()
@@ -149,6 +152,7 @@ class SignUpRequestViewModel: ObservableObject {
                 switch completion {
                 case .finished:
                     print("회원가입 요청 완료")
+                    self.isLoginSucced = true
                 case .failure(let error):
                     print("회원가입 요청 실패: \(error)")
                     self.signUpState.failMessage = error.localizedDescription
@@ -201,7 +205,23 @@ class SignUpRequestViewModel: ObservableObject {
             self.phoneNumberVerificationErrorState = ""
             self.isVerificationSucced = true
         } else {
-            self.phoneNumberVerificationErrorState = "인증에 실패했어요. 입력한 정보를 다시 확인해주세요."
+            self.phoneNumberVerificationErrorState = "인증에 실패했어요.\n입력한 정보를 다시 확인해주세요."
         }
     }
+    
+    /// 타이머 시작
+    func startTimer() {
+        timer?.cancel()
+        timeRemaining = 180
+        timer = Timer.publish(every: 1, on: .main, in: .common)
+            .autoconnect()
+            .sink { _ in
+                if self.timeRemaining > 0 {
+                    self.timeRemaining -= 1
+                } else {
+                    self.timer?.cancel()
+                }
+            }
+    }
+
 }

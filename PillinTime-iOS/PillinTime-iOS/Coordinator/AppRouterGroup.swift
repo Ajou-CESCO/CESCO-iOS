@@ -15,7 +15,10 @@ struct AppRouterGroup {
             SignUpRouteBuilder(),
             SuccessSignUpRouteBuilder(),
             DoseScheduleRouteBuilder(),
-            DoseAddRouteBuilder()
+            DoseAddRouteBuilder(),
+            LogoutRouteBuilder(),
+            MyPageRouteBuilder(),
+            MyPageDetailRouteBuilder()
         ]
     }
 }

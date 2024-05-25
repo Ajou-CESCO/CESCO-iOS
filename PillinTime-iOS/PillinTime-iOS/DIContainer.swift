@@ -78,6 +78,13 @@ extension Container {
         .singleton
     }
     
+    var relationService: Factory<RelationServiceType> {
+        Factory(self) {
+            RelationService(provider: MoyaProvider<RelationAPI>())
+        }
+        .singleton
+    }
+    
     var planService: Factory<PlanServiceType> {
         Factory(self) {
             PlanService(provider: MoyaProvider<PlanAPI>())

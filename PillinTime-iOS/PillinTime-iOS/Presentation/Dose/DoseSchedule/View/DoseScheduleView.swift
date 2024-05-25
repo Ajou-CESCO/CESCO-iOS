@@ -29,6 +29,7 @@ struct DoseScheduleView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack {
+                
                 if (UserManager.shared.isManager ?? true) {
                     ClientListView(relationLists: doseScheduleViewModel.relationLists,
                                    selectedClientId: $selectedClientId)
@@ -148,7 +149,12 @@ struct DoseScheduleView: View {
             .disabled(isSelectedMemberHasntPillCase())
         }
         .onReceive(homeViewModel.$isDataReady) { _ in
-            self.selectedClientId = homeViewModel.relationLists.first?.memberID
+            // 만약 피보호자라면
+            if !(UserManager.shared.isManager ?? true) {
+                selectedClientId = UserManager.shared.memberId
+            } else {
+                self.selectedClientId = homeViewModel.relationLists.first?.memberID
+            }
         }
         .onAppear {
             refresh()

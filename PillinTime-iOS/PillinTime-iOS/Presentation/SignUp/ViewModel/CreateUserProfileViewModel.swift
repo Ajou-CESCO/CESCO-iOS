@@ -29,10 +29,8 @@ class CreateUserProfileViewModel: ObservableObject {
             return "이름은 무엇인가요?"
         case 4:
             return "주민등록번호를 입력해주세요"
-        case 5:
-            return "당신은 누구인가요?"
         default:
-            return "보호자들이\n회원님을 기다리고 있어요"
+            return "당신은 누구인가요?"
         }
     }
     
@@ -46,10 +44,8 @@ class CreateUserProfileViewModel: ObservableObject {
             return "신분증에 표기되어 있는 실명을 입력해주세요."
         case 4:
             return "주민등록번호 7번째 자리까지 입력해주세요."
-        case 5:
-            return "본인에 대한 간단한 정보를 알려주세요."
         default:
-            return "단 한 명의 보호자만 선택할 수 있어요."
+            return "본인에 대한 간단한 정보를 알려주세요."
         }
     }
     

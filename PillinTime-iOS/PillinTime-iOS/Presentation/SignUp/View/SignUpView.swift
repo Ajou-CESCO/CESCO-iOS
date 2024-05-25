@@ -26,7 +26,6 @@ struct SignUpView: View {
     @ObservedObject var userProfileViewModel: CreateUserProfileViewModel    // view의 정보를 갖고 있는 view model
     @ObservedObject var validationViewModel: UserProfileValidationViewModel // 유효성 검사를 위한 view model
 
-    
     // MARK: - Initializer
         
     init(navigator: LinkNavigatorType) {
@@ -111,7 +110,7 @@ struct SignUpView: View {
                                     isError: .isErrorBinding(for: $validationViewModel.infoErrorState.ssnErrorMessage),
                                     errorMessage: validationViewModel.infoErrorState.ssnErrorMessage,
                                     textInputStyle: .ssn)
-                case 5: // 피보호자, 보호자 선택
+                default: // 피보호자, 보호자 선택
                     UserRoleView(role: "피보호자",
                                  description: "약 복용 및 건강 관리를 받아요.",
                                  isSelected: selectedRole == 1)
@@ -131,14 +130,6 @@ struct SignUpView: View {
                             updateButtonState()
                         }
                         .fadeIn(delay: 0.4)
-                default:    // 보호 관계 신청 목록
-                    if (self.selectedRole == 0) {   // 보호자라면
-                        EmptyView()
-                    } else {    // 피보호자라면
-                        RelationRequestView(finishSelectRelation: {
-                            self.isAuthSuccessed = true
-                        })
-                    }
                 }
                 
                 Spacer()
@@ -222,17 +213,21 @@ struct SignUpView: View {
         case 1:
             isButtonDisabled = !validationViewModel.infoErrorState.phoneNumberErrorMessage.isEmpty || validationViewModel.infoState.phoneNumber.isEmpty
         case 2:
-            if signUpRequestViewModel.inputVerificationCode.isEmpty {
-                isButtonDisabled = true
-                if signUpRequestViewModel.isVerificationSucced {
-                    isButtonDisabled = false
-                    
-                } else {
-                    isButtonDisabled = true
-                }
-            } else {
-                isButtonDisabled = false
-            }
+            // test: 이후 주석 해제
+            isButtonDisabled = false
+            userProfileViewModel.step += 1
+
+//            if signUpRequestViewModel.inputVerificationCode.isEmpty {
+//                isButtonDisabled = true
+//                if signUpRequestViewModel.isVerificationSucced {
+//                    isButtonDisabled = false
+//                    
+//                } else {
+//                    isButtonDisabled = true
+//                }
+//            } else {
+//                isButtonDisabled = false
+//            }
         case 3:
             isButtonDisabled = !validationViewModel.infoErrorState.nameErrorMessage.isEmpty || validationViewModel.infoState.name.isEmpty
         case 4:

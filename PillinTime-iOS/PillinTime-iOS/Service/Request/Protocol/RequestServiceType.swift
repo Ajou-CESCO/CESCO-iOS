@@ -18,4 +18,11 @@ protocol RequestServiceType {
     ///     - receiverPhone: 보호관계 요청을 보낼 사용자의 휴대폰 번호입니다.
     /// - Returns: 이후 수정
     func relationRequest(receiverPhone: String) -> AnyPublisher<RequestRelationResponseModel, PillinTimeError>
+    
+    /// 나와 이루어져 있는 보호관계 목록 조회 요청을 보냅니다.
+    ///
+    /// - Parameters:
+    ///     - 없음
+    /// - Returns: 이후 수정
+    func relationRequestList() -> AnyPublisher<RelationRequestListResponseModel, PillinTimeError>
 }

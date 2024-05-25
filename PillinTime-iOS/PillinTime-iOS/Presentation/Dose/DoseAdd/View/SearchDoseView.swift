@@ -55,22 +55,7 @@ struct SearchDoseView: View {
                     }
                     
                     if (searchDoseViewModel.isResultEmpty) {
-                        VStack {
-                            Image("ic_empty")
-                                .resizable()
-                                .frame(width: 100, height: 100)
-                                .padding()
-                            
-                            Text("검색어를 다시 확인해주세요")
-                                .font(.caption1Bold)
-                                .foregroundStyle(Color.gray90)
-                                .padding(.bottom, 2)
-                            
-                            Text("검색 결과가 없습니다.")
-                                .font(.caption1Regular)
-                                .foregroundStyle(Color.gray90)
-                        }
-                        .padding()
+                        CustomEmptyView(mainText: "검색어를 다시 확인해주세요", subText: "검색 결과가 없습니다.")
                     }
                 }
             }

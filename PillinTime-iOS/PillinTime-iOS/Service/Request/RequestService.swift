@@ -11,6 +11,7 @@ import CombineMoya
 import Combine
 
 class RequestService: RequestServiceType {
+    
     let provider: MoyaProvider<RequestAPI>
     var cancellables = Set<AnyCancellable>()
     
@@ -24,6 +25,24 @@ class RequestService: RequestServiceType {
         return provider.requestPublisher(.requestRelation(receiverPhone))
             .tryMap { response in
                 let decodedData = try response.map(RequestRelationResponseModel.self)
+                return decodedData
+            }
+            .mapError { error in
+                print("error:", error)
+                if error is MoyaError {
+                    return PillinTimeError.networkFail
+                } else {
+                    return error as! PillinTimeError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    /// 보호 관계 요청 리스트 조회 요청
+    func relationRequestList() -> AnyPublisher<RelationRequestListResponseModel, PillinTimeError> {
+        return provider.requestPublisher(.relationRequestList)
+            .tryMap { response in
+                let decodedData = try response.map(RelationRequestListResponseModel.self)
                 return decodedData
             }
             .mapError { error in

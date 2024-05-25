@@ -18,6 +18,7 @@ struct HomeView: View {
     @State var selectedClientId: Int?  // 선택된 Client
     @State private var showEncourageView: Bool = false
     @State private var showAddPillCaseView: Bool = false
+    @State private var showRequestRelationListView: Bool = false
     
     // MARK: - body
     
@@ -131,6 +132,11 @@ struct HomeView: View {
         }
         .background(Color.gray5)
         .onChange(of: homeViewModel.isDataReady, {
+            // 피보호자이고, 보호관계가 없을 경우 보호관계를 생성해야 함
+            if !(UserManager.shared.isManager ?? false) && homeViewModel.relationLists.isEmpty {
+                self.showRequestRelationListView = true
+            }
+            
             refresh()
         })
         .onAppear {
@@ -148,9 +154,16 @@ struct HomeView: View {
         .sheet(isPresented: $showAddPillCaseView, content: {
             AddPillCaseView(selectedManagerId: selectedClientId ?? 0)
         })
+        .fullScreenCover(isPresented: $showRequestRelationListView, content: {
+            RelationRequestView()
+        })
     }
     
     private func refresh() {
+        if !(UserManager.shared.isManager ?? true) {
+            selectedClientId = UserManager.shared.memberId
+        }
+        
         if selectedClientId == 0 && homeViewModel.isDataReady {
             selectedClientId = homeViewModel.relationLists.first?.memberID
         }

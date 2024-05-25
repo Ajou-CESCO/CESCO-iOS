@@ -17,9 +17,7 @@ struct ManagementMyInformationView: View {
 
     @ObservedObject var myPageViewModel: MyPageViewModel = MyPageViewModel()
     
-    var name: String
-    var phoneNumber: String
-    var ssn: String
+    let userInfo: SelectedRelation
     
     // MARK: - body
     
@@ -58,11 +56,11 @@ struct ManagementMyInformationView: View {
     private func setTextInputData(element: UserProfile) -> String {
         switch element {
         case .name:
-            return self.name
+            return userInfo.name
         case .phoneNumber:
-            return self.phoneNumber
+            return userInfo.phone
         case .ssn:
-            return self.ssn.prefix(8) + "●●●●●●"
+            return userInfo.ssn.prefix(8) + "●●●●●●"
         }
         
     }

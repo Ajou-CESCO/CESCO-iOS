@@ -10,10 +10,11 @@ import SwiftUI
 import Moya
 import Factory
 
-struct SelectedRelation {
-    var name: String = String()
-    var ssn: String = String()
-    var phone: String = String()
+struct SelectedRelation: Identifiable {
+    let id = UUID()
+    let name: String
+    let ssn: String
+    let phone: String
 }
 
 // MARK: - ClientManageView
@@ -26,7 +27,8 @@ struct ClientManageView: View {
     @State var isDeletePopUp: Bool = false
     @State var isRequestRelationPopUp: Bool = false
     @State var showInformationView: Bool = false
-    @State var selectedRelation: SelectedRelation = SelectedRelation()
+    @State var selectedRelation: SelectedRelation? = nil
+    @State var selectedDeleteRelation: SelectedRelation? = nil
     @State var showToastView: Bool = false
     
     // MARK: - body
@@ -43,10 +45,12 @@ struct ClientManageView: View {
                     Button(action: {
                         self.isRequestRelationPopUp = true
                     }, label: {
-                        Image(systemName: "person.crop.circle.badge.plus")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 30)
+                        if !(UserManager.shared.isManager ?? true) {
+                            Image(systemName: "person.crop.circle.badge.plus")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 30)
+                        }
                     })
                     .foregroundColor(.gray60)
                 }
@@ -65,23 +69,26 @@ struct ClientManageView: View {
                                     .font(.body2Medium)
                                     .foregroundStyle(Color.gray70)
                             }
+                            .onTapGesture {
+                                self.selectedRelation = SelectedRelation(name: relation.memberName,
+                                                                         ssn: relation.memberSsn,
+                                                                         phone: relation.memberPhone)
+                                
+                                self.showInformationView = true
+                            }
                             
                             Spacer()
                             
-                            Image(relation.cabinetID == 0 ? "ic_cabnet_disconnected" : "ic_cabnet_connected")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                        }
-                        .onTapGesture {
-                            self.selectedRelation = SelectedRelation(name: relation.memberName,
-                                                                     ssn: relation.memberPhone,
-                                                                     phone: relation.memberPhone)
-                            self.showInformationView = true
+                            if !(UserManager.shared.isManager ?? true) {
+                                Image(relation.cabinetID == 0 ? "ic_cabnet_disconnected" : "ic_cabnet_connected")
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                            }
                         }
                         .swipeActions {
                             Button("삭제") {
                                 self.isDeletePopUp = true
-                                self.selectedRelation = SelectedRelation(name: relation.memberName,
+                                self.selectedDeleteRelation = SelectedRelation(name: relation.memberName,
                                                                          ssn: relation.memberPhone,
                                                                          phone: relation.memberPhone)
                             }
@@ -111,10 +118,9 @@ struct ClientManageView: View {
                 .background(ClearBackgroundView())
                 .background(Material.ultraThin)
         })
-        .fullScreenCover(isPresented: $isDeletePopUp,
-                         content: {
-            CustomPopUpView(mainText: "\(selectedRelation.name) 님을\n삭제하시겠어요?",
-                            subText: "삭제하면 \(selectedRelation.name) 님은 새로운 보호자가 케어를\n요청할 때까지 서비스를 이용할 수 없어요.",
+        .fullScreenCover(item: $selectedDeleteRelation, content: { relation in
+            CustomPopUpView(mainText: "\(relation.name) 님을\n삭제하시겠어요?",
+                            subText: "삭제하면 \(relation.name) 님은 새로운 보호자가 케어를\n요청할 때까지 서비스를 이용할 수 없어요.",
                             leftButtonText: "취소할래요",
                             rightButtonText: "삭제할래요",
                             leftButtonAction: {
@@ -125,13 +131,9 @@ struct ClientManageView: View {
             })
             .background(ClearBackgroundView())
             .background(Material.ultraThin)
-           
         })
-        .sheet(isPresented: $showInformationView,
-               content: {
-            ManagementMyInformationView(name: selectedRelation.name,
-                                        phoneNumber: selectedRelation.phone,
-                                        ssn: selectedRelation.ssn)
+        .sheet(item: $selectedRelation, content: { relation in
+            ManagementMyInformationView(userInfo: relation)
         })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true

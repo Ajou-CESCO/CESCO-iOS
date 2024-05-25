@@ -57,9 +57,9 @@ struct MyPageDetailView: View {
             
             switch settingListElement {
             case .managementMyInformation:
-                ManagementMyInformationView(name: UserManager.shared.name ?? "null",
-                                            phoneNumber: UserManager.shared.phoneNumber ?? "null",
-                                            ssn: UserManager.shared.ssn ?? "null")
+                ManagementMyInformationView(userInfo: SelectedRelation(name: UserManager.shared.name ?? "null", 
+                                                                       ssn: UserManager.shared.ssn ?? "null",
+                                                                       phone: UserManager.shared.phoneNumber ?? "null"))
             case .subscriptionPaymentHistory:
                 SubscriptionPaymentHistoryView()
             case .customerServiceCenter:

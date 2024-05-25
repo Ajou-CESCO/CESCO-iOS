@@ -27,7 +27,7 @@ enum SettingListElement {
         case .withdrawal:
             return "회원 탈퇴"
         case .clientManage:
-            return "피보호자 관리"
+            return "보호 관계 관리"
         case .logout:
             return "로그아웃"
         }
@@ -35,8 +35,8 @@ enum SettingListElement {
     
     static let listCases: [SettingListElement] = [
         .managementMyInformation,
-        .subscriptionPaymentHistory,
-        .customerServiceCenter,
+//        .subscriptionPaymentHistory,
+//        .customerServiceCenter,
         .logout,
         .withdrawal
     ]

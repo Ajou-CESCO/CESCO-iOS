@@ -20,6 +20,7 @@ class RelationRequestViewModel: ObservableObject {
 
     @Injected(\.requestServie) var requestService: RequestServiceType
     @Injected(\.relationService) var relationService: RelationServiceType
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     // MARK: - Input State
     @Subject var requestRelationRequestList: Void = ()
@@ -101,7 +102,9 @@ class RelationRequestViewModel: ObservableObject {
             }, receiveValue: { [weak self] result in
                 print("보호 관계 생성 성공: ", result)
                 guard let self = self else { return }
-                self.isCreateRelationSucced = true
+                self.isCreateRelationSucced = true                    
+                toastManager.showToast(description: "보호 관계 생성을 완료했어요.")
+
             })
             .store(in: &cancellables)
     }

@@ -13,7 +13,7 @@ import Factory
 struct HomeView: View {
     
     // MARK: - Properties
-        
+    
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     @State var selectedClientId: Int?  // 선택된 Client
     @State private var showEncourageView: Bool = false
@@ -29,8 +29,8 @@ struct HomeView: View {
                 if UserManager.shared.isManager ?? true {
                     ClientListView(relationLists: homeViewModel.relationLists,
                                    selectedClientId: $selectedClientId)
-                        .padding(.bottom, 17)
-                        .fadeIn(delay: 0.1)
+                    .padding(.bottom, 17)
+                    .fadeIn(delay: 0.1)
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         LazyHStack(spacing: 0) {
@@ -39,19 +39,19 @@ struct HomeView: View {
                                     VStack(alignment: .leading) {
                                         Text.multiColoredText("오늘 \(relation.memberName) 님의 약속시간은?",
                                                               coloredSubstrings: [(relation.memberName, Color.primary60),
-                                                                                ("약", Color.primary60)])
-                                            .foregroundStyle(Color.gray90)
-                                            .font(.logo3Medium)
-                                            .padding(.leading, 33)
-                                            .fadeIn(delay: 0.2)
+                                                                                  ("약", Color.primary60)])
+                                        .foregroundStyle(Color.gray90)
+                                        .font(.logo3Medium)
+                                        .padding(.leading, 33)
+                                        .fadeIn(delay: 0.2)
                                         
                                         DoseScheduleStatusView(memberId: relation.memberID,
                                                                isCabinetExist: relation.cabinetID != 0,
                                                                takenStatus: nil,
                                                                showAddPillCaseView: $showAddPillCaseView)
-                                            .padding([.top, .bottom], 10)
-                                            .padding([.leading, .trailing], 25)
-                                            .fadeIn(delay: 0.3)
+                                        .padding([.top, .bottom], 10)
+                                        .padding([.leading, .trailing], 25)
+                                        .fadeIn(delay: 0.3)
                                         
                                         if showEncourageView {
                                             EncourageMainView()
@@ -80,15 +80,15 @@ struct HomeView: View {
                     }
                     .scrollTargetBehavior(.viewAligned)
                     .scrollPosition(id: $selectedClientId)
-                /// 피보호자일 경우
+                    /// 피보호자일 경우
                 } else {
                     HStack {
-                        Text.multiColoredText("\(UserManager.shared.name ?? "null") 님,\n오늘 하루도 화이팅이에요!", 
+                        Text.multiColoredText("\(UserManager.shared.name ?? "null") 님,\n오늘 하루도 화이팅이에요!",
                                               coloredSubstrings: [(UserManager.shared.name ?? "null", Color.primary60)])
-                            .foregroundStyle(Color.gray90)
-                            .font(.logo3Medium)
-                            .lineSpacing(3)
-                            .frame(alignment: .leading)
+                        .foregroundStyle(Color.gray90)
+                        .font(.logo3Medium)
+                        .lineSpacing(3)
+                        .frame(alignment: .leading)
                         
                         Spacer()
                         
@@ -107,9 +107,9 @@ struct HomeView: View {
                                            isCabinetExist: homeViewModel.clientCabnetId != 0,
                                            takenStatus: nil,
                                            showAddPillCaseView: $showAddPillCaseView)
-                        .padding([.top, .bottom], 18)
-                        .padding([.leading, .trailing], 25)
-                        .fadeIn(delay: 0.3)
+                    .padding([.top, .bottom], 18)
+                    .padding([.leading, .trailing], 25)
+                    .fadeIn(delay: 0.3)
                     
                     if showEncourageView {
                         EncourageMainView()
@@ -133,14 +133,13 @@ struct HomeView: View {
         .background(Color.gray5)
         .onChange(of: homeViewModel.isDataReady, {
             // 피보호자이고, 보호관계가 없을 경우 보호관계를 생성해야 함
-            if !(UserManager.shared.isManager ?? false) && homeViewModel.relationLists.isEmpty {
-                self.showRequestRelationListView = true
-            }
-            
+            checkReleationEmpty()
             refresh()
         })
         .onAppear {
+            checkReleationEmpty()
             homeViewModel.action.viewOnAppear.send()
+            initClient()
             refresh()
         }
         .onChange(of: selectedClientId, {
@@ -157,6 +156,21 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showRequestRelationListView, content: {
             RelationRequestView()
         })
+        .transaction { transaction in   // 모달 애니메이션 삭제
+            transaction.disablesAnimations = true
+        }
+    }
+    
+    private func checkReleationEmpty() {
+        if !(UserManager.shared.isManager ?? false) && homeViewModel.relationLists.isEmpty {
+            self.showRequestRelationListView = true
+        } else {
+            self.showRequestRelationListView = false
+        }
+    }
+    
+    private func initClient() {
+        homeViewModel.$requestInitClient.send(true)
     }
     
     private func refresh() {

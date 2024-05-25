@@ -144,7 +144,7 @@ class DoseAddViewModel: ObservableObject {
                     }
                 case .failure(let error):
                     print("복용 계획 생성 요청 요청 실패: \(error)")
-                    self.toastManager.showToast(description: "복용 계획 생성 요청 요청 실패")
+                    self.toastManager.showToast(description: "복용 계획 생성 요청 실패")
                     self.requestAddDosePlanState.failMessage = error.localizedDescription
                     self.isNetworking = false
 

@@ -10,6 +10,8 @@ import Moya
 
 enum RelationAPI {
     case createRelation(_ id: Int)
+    case getRelation
+    case deleteRelation(_ id: Int)
 }
 
 extension RelationAPI: TargetType {
@@ -23,7 +25,7 @@ extension RelationAPI: TargetType {
     
     var path: String {
         switch self {
-        case .createRelation:
+        case .createRelation, .deleteRelation, .getRelation:
             return "/api/relation"
         }
     }
@@ -32,6 +34,10 @@ extension RelationAPI: TargetType {
         switch self {
         case .createRelation:
             return .post
+        case .getRelation:
+            return .get
+        case .deleteRelation:
+            return .delete
         }
     }
     
@@ -39,6 +45,11 @@ extension RelationAPI: TargetType {
         switch self {
         case .createRelation(let id):
             return .requestParameters(parameters: ["requestId": id],
+                                      encoding: URLEncoding.queryString)
+        case .getRelation:
+            return .requestPlain
+        case .deleteRelation(let id):
+            return .requestParameters(parameters: ["relationId": id],
                                       encoding: URLEncoding.queryString)
         }
     }

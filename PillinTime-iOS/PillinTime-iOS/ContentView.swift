@@ -61,9 +61,11 @@ struct ContentView: View {
         .onAppear {
             if !UserManager.shared.hasAccessToken {
                 navigator.next(paths: ["signup"], items: [:], isAnimated: false)
+            } else {
+                HKAuthorizationHelper.shared.setAuthorization()
+                homeViewModel.$requestInitClient.send(true)
             }
-            
-            homeViewModel.$requestInitClient.send(true)
+        
         }
         .navigationBarHidden(true)
     }

@@ -243,7 +243,3 @@ struct DoseScheduleSubView: View {
         })
     }
 }
-
-//#Preview {
-//    DoseScheduleView(navigator: <#any LinkNavigatorType#>)
-//}

@@ -92,4 +92,12 @@ extension Container {
         .singleton
     }
     
+    // MARK: - HealthKit
+    
+    var hkService: Factory<HKServiceProtocol> {
+        Factory(self) {
+            HKService(provider: HKProvider(), core: HKSleepCore())
+        }
+        .singleton
+    }
 }

@@ -14,17 +14,30 @@ struct HomeState {
     var failMessage: String = String()
 }
 
+struct HealthInfoAction {
+    var viewOnAppear = Subjected<Void>()
+}
+
+struct HealthInfoState {
+    var stepCount: String = ""
+    var burnCalories: String = ""
+    var sleepTotal: String = ""
+    var collectionDate: String = ""
+}
+
 class HomeViewModel: ObservableObject {
     
     // MARK: - Dependency
     
     @Injected(\.etcService) var etcService: EtcServiceType
     @Injected(\.planService) var planService: PlanServiceType
+    @Injected(\.hkService) var hkService: HKServiceProtocol
     
     // MARK: - Input State
     
     @Subject var requestInitClient: Bool = false
     @Subject var requestGetDoseLog: Int = 0
+    @Published var action = HealthInfoAction()
     
     // MARK: - Output State
     
@@ -33,6 +46,8 @@ class HomeViewModel: ObservableObject {
     @Published var isDataReady: Bool = false
     @Published var relationLists: [RelationList] = []
     @Published var doseLog: [GetDoseLogResponseModelResult] = []
+    @Published var clientCabnetId: Int = 0
+    @Published var state = HealthInfoState()
 
     // MARK: - Cancellable Bag
     
@@ -43,10 +58,26 @@ class HomeViewModel: ObservableObject {
     init(etcService: EtcService, planService: PlanService) {
         self.etcService = etcService
         self.planService = planService
+        bind()
         bindState()
     }
     
     // MARK: - Bind Method
+    
+    private func bind() {
+        
+    
+        action
+            .viewOnAppear
+            .flatMap {
+                self.hkService.getStepCount(date: DateHelper().getYesterdayStartAM(Date()))
+                    .replaceError(with: 0)
+                    .map { "\(Int($0)) 걸음"}
+            }
+            .receive(on: DispatchQueue.main)
+            .assign(to: \.state.stepCount, on: self)
+            .store(in: &cancellables)
+    }
     
     private func bindState() {
         $requestInitClient.sink { _ in
@@ -80,6 +111,7 @@ class HomeViewModel: ObservableObject {
                 guard let self = self else { return }
                 UserManager.shared.memberId = result.result.memberID
                 UserManager.shared.isManager = result.result.isManager
+                self.clientCabnetId = result.result.cabinetID
                 // relationList UserDefault에 저장
                 UserDefaults.standard.set(try? PropertyListEncoder().encode(result.result.relationList), forKey: "relationLists")
                 // relationList UserDefault 읽어오기

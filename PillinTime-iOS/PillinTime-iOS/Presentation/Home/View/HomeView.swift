@@ -59,7 +59,7 @@ struct HomeView: View {
                                                 .padding([.leading, .trailing], 25)
                                         }
                                         
-                                        HealthMainView()
+                                        HealthMainView(stepCount: $homeViewModel.state.stepCount)
                                             .padding(.top, showEncourageView ? 14 : 0) // EncourageMainView 표시에 따라 조정
                                             .fadeIn(delay: 0.5)
                                             .padding([.leading, .trailing], 25)
@@ -79,7 +79,7 @@ struct HomeView: View {
                     }
                     .scrollTargetBehavior(.viewAligned)
                     .scrollPosition(id: $selectedClientId)
-                    
+                /// 피보호자일 경우
                 } else {
                     HStack {
                         Text.multiColoredText("\(UserManager.shared.name ?? "null") 님,\n오늘 하루도 화이팅이에요!", 
@@ -102,11 +102,13 @@ struct HomeView: View {
                     .padding(.top, 23)
                     
                     /// 이후 수정
-//                    DoseScheduleStatusView(clientRelation: homeViewModel.relationLists.first ?? Relat,
-//                                           doseStatus: nil)
-//                        .padding([.top, .bottom], 18)
-//                        .padding([.leading, .trailing], 25)
-//                        .fadeIn(delay: 0.3)
+                    DoseScheduleStatusView(memberId: UserManager.shared.memberId ?? 0,
+                                           isCabinetExist: homeViewModel.clientCabnetId != 0,
+                                           takenStatus: nil,
+                                           showAddPillCaseView: $showAddPillCaseView)
+                        .padding([.top, .bottom], 18)
+                        .padding([.leading, .trailing], 25)
+                        .fadeIn(delay: 0.3)
                     
                     if showEncourageView {
                         EncourageMainView()
@@ -115,7 +117,7 @@ struct HomeView: View {
                             .padding([.leading, .trailing], 25)
                     }
                     
-                    HealthMainView()
+                    HealthMainView(stepCount: $homeViewModel.state.stepCount)
                         .padding(.top, showEncourageView ? 17 : 0) // EncourageMainView 표시에 따라 조정
                         .fadeIn(delay: 0.5)
                         .padding([.leading, .trailing], 25)
@@ -132,6 +134,7 @@ struct HomeView: View {
             refresh()
         })
         .onAppear {
+            homeViewModel.action.viewOnAppear.send()
             refresh()
         }
         .onChange(of: selectedClientId, {
@@ -139,7 +142,7 @@ struct HomeView: View {
                 if selectedClientId == nil {
                     selectedClientId = homeViewModel.relationLists.first?.memberID
                 }
-                homeViewModel.$requestGetDoseLog.send(selectedClientId!)
+                homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
             }
         })
         .sheet(isPresented: $showAddPillCaseView, content: {
@@ -168,6 +171,7 @@ struct HealthMainView: View {
     
     var mainText: [String] = ["걸음 수", "하품 횟수", "소화 횟수"]
     var subText: [String] = ["99,110보", "45,300회", "23,244회"]
+    @Binding var stepCount: String
     
     // MARK: - body
     

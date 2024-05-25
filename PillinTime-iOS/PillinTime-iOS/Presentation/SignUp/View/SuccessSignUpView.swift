@@ -54,6 +54,7 @@ struct SuccessSignUpView: View {
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 navigator.next(paths: ["content"], items: [:], isAnimated: true)
+                HKAuthorizationHelper.shared.setAuthorization()
             }
         }
     }

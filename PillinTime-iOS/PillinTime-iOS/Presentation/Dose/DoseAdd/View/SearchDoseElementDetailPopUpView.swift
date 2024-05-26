@@ -104,6 +104,7 @@ struct SearchDoseElementDetailPopUpView: View {
         .padding([.leading, .trailing], 33)
         .scaleFadeIn(delay: 0.1)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .shadow(color: Color.gray60.opacity(0.2), radius: 10, x: 0, y: 4)
     }
     
     func textForIndex(_ index: Int) -> String {

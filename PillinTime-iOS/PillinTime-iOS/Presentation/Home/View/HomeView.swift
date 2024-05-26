@@ -19,6 +19,7 @@ struct HomeView: View {
     @State private var showEncourageView: Bool = false
     @State private var showAddPillCaseView: Bool = false
     @State private var showRequestRelationListView: Bool = false
+    @State private var showLandingView: Bool = true
     
     // MARK: - body
     
@@ -31,6 +32,10 @@ struct HomeView: View {
                                    selectedClientId: $selectedClientId)
                     .padding(.bottom, 17)
                     .fadeIn(delay: 0.1)
+                    
+                    if homeViewModel.relationLists.isEmpty {
+                        ManagerHasntClientView()
+                    }
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         LazyHStack(spacing: 0) {
@@ -156,6 +161,9 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showRequestRelationListView, content: {
             RelationRequestView()
         })
+        .fullScreenCover(isPresented: $showLandingView, content: {
+            LandingView()
+        })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true
         }
@@ -258,3 +266,4 @@ struct EncourageMainView: View {
         .cornerRadius(8)
     }
 }
+

@@ -66,7 +66,6 @@ class HomeViewModel: ObservableObject {
     
     private func bind() {
         
-    
         action
             .viewOnAppear
             .flatMap {

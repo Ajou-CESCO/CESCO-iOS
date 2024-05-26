@@ -11,11 +11,13 @@ import LinkNavigator
 import Factory
 import Firebase
 import FirebaseMessaging
+import Moya
 
 /// 외부 의존성과 화면을 주입받은 navigator를 관리하는 타입입니다.
 final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
-    
+
     let gcmMessageIDKey = "gcm.message_id"
+    @ObservedObject var fcmViewModel = FcmViewModel(fcmService: FcmService(provider: MoyaProvider<FcmAPI>()))
     
     var navigator: LinkNavigator {
         LinkNavigator(dependency: AppDependency(), builders: AppRouterGroup().routers)
@@ -53,22 +55,20 @@ final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
         Messaging.messaging().apnsToken = deviceToken
     }
     
-    
     // fcm 등록 토큰을 받았을 때
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
 
-        print("토큰을 받았다")
+        print("토큰 받음")
         // Store this token to firebase and retrieve when to send message to someone...
         let dataDict: [String: String] = ["token": fcmToken ?? ""]
         
         // Store token in Firestore For Sending Notifications From Server in Future...
-        
+        self.fcmViewModel.requestRegisterTokenToServer(fcmToken ?? "")
         print(dataDict)
      
     }
     
 }
-
 
 @available(iOS 10, *)
 extension AppDelegate: UNUserNotificationCenterDelegate {
@@ -86,8 +86,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     if let messageID = userInfo[gcmMessageIDKey] {
         print("Message ID: \(messageID)")
     }
-    
-    
+
     print(userInfo)
 
     completionHandler([[.banner, .badge, .sound]])

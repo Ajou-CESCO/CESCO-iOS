@@ -71,6 +71,8 @@ struct MyPageDetailView: View {
                 ClientManageView()
             case .logout:
                 LogoutView(navigator: navigator)
+            default:
+                EmptyView()
             }
             
             Spacer()

@@ -256,6 +256,7 @@ struct RequestRelationPopUpView: View {
         .padding()
         .fadeIn(delay: 0.1)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .shadow(color: Color.gray60.opacity(0.2), radius: 10, x: 0, y: 4)
         .onReceive(validationViewModel.$infoErrorState) { _ in
             updateButtonState()
         }

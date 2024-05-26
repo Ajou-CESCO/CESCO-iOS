@@ -92,6 +92,13 @@ extension Container {
         .singleton
     }
     
+    var fcmService: Factory<FcmServiceType> {
+        Factory(self) {
+            FcmService(provider: MoyaProvider<FcmAPI>())
+        }
+        .singleton
+    }
+    
     var etcService: Factory<EtcServiceType> {
         Factory(self) {
             EtcService(provider: MoyaProvider<EtcAPI>())

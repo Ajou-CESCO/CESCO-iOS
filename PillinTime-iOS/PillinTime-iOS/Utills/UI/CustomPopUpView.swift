@@ -21,12 +21,15 @@ struct CustomPopUpView: View {
     let leftButtonAction: () -> Void
     let rightButtonAction: () -> Void
     
+    var multiColorText: String = String() // 색상을 변경해야 할 경우
+    
     // MARK: - body
     
     var body: some View {
         ZStack {
                 VStack(alignment: .leading) {
-                    Text(mainText)
+                    
+                    Text.multiColoredText(mainText, coloredSubstrings: [(multiColorText, Color.primary60)])
                         .font(.h4Bold)
                         .foregroundStyle(Color.gray90)
                         .lineSpacing(5)
@@ -70,6 +73,7 @@ struct CustomPopUpView: View {
         .padding()
         .scaleFadeIn(delay: 0.1)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .shadow(color: Color.gray60.opacity(0.2), radius: 10, x: 0, y: 4)
     }
 }
 

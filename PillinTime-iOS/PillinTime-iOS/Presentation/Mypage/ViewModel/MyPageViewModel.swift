@@ -15,11 +15,12 @@ enum SettingListElement {
     case withdrawal
     case clientManage
     case logout
+    case managementDoseSchedule
 
     var description: String {
         switch self {
         case .managementMyInformation:
-            return "내 정보 관리"
+            return "내 정보 보기"
         case .subscriptionPaymentHistory:
             return "구독 결제 내역"
         case .customerServiceCenter:
@@ -30,8 +31,26 @@ enum SettingListElement {
             return "보호 관계 관리"
         case .logout:
             return "로그아웃"
+        case .managementDoseSchedule:
+            return "복약 일정 관리"
         }
     }
+    
+    var image: String {
+        switch self {
+        case .clientManage:
+            return "ic_people"
+        case .managementDoseSchedule:
+            return "ic_schedule"
+        default:
+            return "ic_people"
+        }
+    }
+    
+    static let topCases: [SettingListElement] = [
+        .clientManage,
+        .managementDoseSchedule
+    ]
     
     static let listCases: [SettingListElement] = [
         .managementMyInformation,

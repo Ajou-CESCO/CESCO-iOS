@@ -54,8 +54,8 @@ struct DoseScheduleView: View {
                                             .padding(.top, UserManager.shared.isManager ?? true ? 10 : 20)
                                             .padding(.bottom, 20)
                                             .fadeIn(delay: 0.3)
-                                        // 이후에 수정할 것
-                                        if (true) {
+                                        // 보호자일 때만 존재
+                                        if (UserManager.shared.isManager ?? true) {
                                             Button(action: {
                                                 self.isUserPoked = true
                                                 print(self.isUserPoked)
@@ -176,6 +176,9 @@ struct DoseScheduleView: View {
     }
     
     private func refresh() {
+        if !(UserManager.shared.isManager ?? true) {
+            selectedClientId = UserManager.shared.memberId ?? 0
+        }
         if selectedClientId == 0 && homeViewModel.isDataReady {
             selectedClientId = homeViewModel.relationLists.first?.memberID
         }

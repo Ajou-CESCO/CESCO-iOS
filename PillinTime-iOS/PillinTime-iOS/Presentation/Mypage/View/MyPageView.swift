@@ -80,10 +80,9 @@ struct MyPageView: View {
             
             SettingList(navigator: navigator)
         }
-        .fullScreenCover(isPresented: $showMyPageDetailView,
-                         content: {
+        .fullScreenCover(item: $selectedSettingList, content: { element in
             MyPageDetailView(navigator: navigator,
-                             settingListElement: selectedSettingList ?? .clientManage)
+                             settingListElement: element)
         })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true

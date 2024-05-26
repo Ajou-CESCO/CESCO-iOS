@@ -32,6 +32,25 @@ struct DateHelper {
         return koreanLocaleFormatter
     }
     
+    /// time 배열을 string 하나로 묶어서 배열
+    static func convertTimeStrings(_ timeStrings: [String]) -> String {
+        let inputDateFormatter = DateFormatter()
+        inputDateFormatter.dateFormat = "HH:mm:ss"
+        
+        let outputDateFormatter = DateFormatter()
+        outputDateFormatter.dateFormat = "a h시"
+        outputDateFormatter.locale = Locale(identifier: "ko_KR")
+        
+        let times = timeStrings.compactMap { timeString -> String? in
+            if let date = inputDateFormatter.date(from: timeString) {
+                return outputDateFormatter.string(from: date)
+            }
+            return nil
+        }
+        
+        return times.joined(separator: ", ")
+    }
+    
     /// 그날 오후 6시
     func getTodaySixPM(_ date: Date) -> Date {
         let calendar = Calendar.current

@@ -6,9 +6,10 @@
 //
 
 import Combine
+import Foundation
 
 @frozen
-enum SettingListElement {
+enum SettingListElement: Identifiable {
     case managementMyInformation
     case subscriptionPaymentHistory
     case customerServiceCenter
@@ -16,6 +17,10 @@ enum SettingListElement {
     case clientManage
     case logout
     case managementDoseSchedule
+    
+    var id: SettingListElement {
+        return self
+    }
 
     var description: String {
         switch self {

@@ -1,22 +1,23 @@
 //
-//  LogoutRouteBuilder.swift
+//  WithdrawalRouteBuilder.swift
 //  PillinTime-iOS
 //
-//  Created by Jae Hyun Lee on 5/19/24.
+//  Created by Jae Hyun Lee on 5/27/24.
 //
 
 import SwiftUI
 
 import LinkNavigator
 
-struct LogoutRouteBuilder: RouteBuilder {
-    var matchPath: String { "logout" }
+struct WithdrawalRouteBuilder: RouteBuilder {
+    var matchPath: String { "withdrawal" }
     
     var build: (LinkNavigatorType, [String: String], DependencyType) -> MatchingViewController? {
         { navigator, items, dependency in
             return WrappingController(matchPath: matchPath) {
-                LogoutView(navigator: navigator).navigationBarHidden(true)
+                WithdrawalView(navigator: navigator).navigationBarHidden(true)
             }
         }
     }
 }
+

@@ -12,7 +12,7 @@ struct CustomNavigationBar: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.dismiss) var dismiss
     
-    @State var isBackButtonHidden: Bool = false
+    var isBackButtonHidden: Bool = false
     var title: String = String()
     var previousAction: (() -> Void)?   // 이전 동작을 설정하고 싶다면 사용
     
@@ -23,7 +23,7 @@ struct CustomNavigationBar: View {
                     // 이전 동작을 설정했다면 그대로, 아니면 dismiss
                     self.previousAction?() ?? presentationMode.wrappedValue.dismiss()
                 }, label: {
-                    if !isBackButtonHidden {
+                    if !(isBackButtonHidden) {
                         Image("ic_arrow_back")
                             .accessibilityHidden(true)
                             .padding(.leading, 16)

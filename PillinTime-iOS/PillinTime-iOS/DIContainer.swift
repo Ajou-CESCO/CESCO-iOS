@@ -52,7 +52,7 @@ extension Container {
     
     var userService: Factory<UserServiceType> {
         Factory(self) {
-            UserService()
+            UserService(provider: MoyaProvider<UserAPI>())
         }
         .singleton
     }

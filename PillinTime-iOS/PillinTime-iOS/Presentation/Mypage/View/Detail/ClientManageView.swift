@@ -15,6 +15,7 @@ struct SelectedRelation: Identifiable {
     let name: String
     let ssn: String
     let phone: String
+    let isPillCaseExist: Bool
 }
 
 // MARK: - ClientManageView
@@ -80,7 +81,8 @@ struct ClientManageView: View {
                                 self.selectedRelation = SelectedRelation(relationId: relation.id,
                                                                          name: relation.memberName,
                                                                          ssn: relation.memberSsn,
-                                                                         phone: relation.memberPhone)
+                                                                         phone: relation.memberPhone, 
+                                                                         isPillCaseExist: relation.cabinetID != 0)
                                 
                                 self.showInformationView = true
                             }
@@ -105,7 +107,8 @@ struct ClientManageView: View {
                                 self.selectedDeleteRelation = SelectedRelation(relationId: relation.id,
                                                                                name: relation.memberName,
                                                                                ssn: relation.memberPhone,
-                                                                               phone: relation.memberPhone)
+                                                                               phone: relation.memberPhone, 
+                                                                               isPillCaseExist: relation.cabinetID != 0)
                             }
                             .tint(.error90)
                         }
@@ -116,7 +119,6 @@ struct ClientManageView: View {
                     .refreshable {
                         requestToGetInfo()
                     }
-                    
                 }
                 .ignoresSafeArea(edges: .bottom)
                 .listStyle(.plain)
@@ -143,34 +145,16 @@ struct ClientManageView: View {
             .background(Material.ultraThin)
         })
         .fullScreenCover(item: $selectedDeleteRelation, content: { relation in
-            
-            if UserManager.shared.isManager ?? true {
-                CustomPopUpView(mainText: "\(relation.name) 님을\n삭제하시겠어요?",
-                                subText: "삭제하면 \(relation.name) 님은 새로운 보호자가 케어를\n요청할 때까지 서비스를 이용할 수 없어요.",
-                                leftButtonText: "취소할래요",
-                                rightButtonText: "삭제할래요",
-                                leftButtonAction: {
-                    
-                },
-                                rightButtonAction: {
-                    
-                })
-                .background(ClearBackgroundView())
-                .background(Material.ultraThin)
-            } else {
-                CustomPopUpView(mainText: "\(relation.name) 님을\n삭제하시겠어요?",
-                                subText: "삭제하면 \(relation.name) 님은 더이상 \n\(UserManager.shared.name ?? "null") 님을 케어할 수 없어요. 신중하게 삭제해주세요.",
-                                leftButtonText: "취소할래요",
-                                rightButtonText: "삭제할래요",
-                                leftButtonAction: {
-                    
-                },
-                                rightButtonAction: {
-                    requestToDelete(relation.relationId)
-                })
-                .background(ClearBackgroundView())
-                .background(Material.ultraThin)
-            }
+            CustomPopUpView(mainText: "\(relation.name) 님을\n삭제하시겠어요?",
+                            subText: popUpSubText(name: relation.name),
+                            leftButtonText: "취소할래요",
+                            rightButtonText: "삭제할래요",
+                            leftButtonAction: {},
+                            rightButtonAction: {
+                requestToDelete(relation.relationId)
+            })
+            .background(ClearBackgroundView())
+            .background(Material.ultraThin)
         })
         .sheet(item: $selectedRelation, content: { relation in
             ManagementMyInformationView(userInfo: relation)
@@ -186,6 +170,10 @@ struct ClientManageView: View {
     
     private func requestToDelete(_ id: Int) {
         self.clientManageViewModel.$requestDeleteRelation.send(id)
+    }
+    
+    private func popUpSubText(name: String) -> String {
+        return (UserManager.shared.isManager ?? true) ? "삭제하면 \(name) 님은 더이상 \n\(UserManager.shared.name ?? "null") 님을 케어할 수 없어요. 신중하게 삭제해주세요." : "삭제하면 \(name) 님은 새로운 보호자가 케어를\n요청할 때까지 서비스를 이용할 수 없어요."
     }
 }
 

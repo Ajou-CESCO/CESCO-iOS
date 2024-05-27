@@ -7,9 +7,28 @@
 
 import SwiftUI
 
+import Moya
+import LinkNavigator
+
 // MARK: - WithdrawalView
 
 struct WithdrawalView: View {
+    
+    // MARK: - Properties
+
+    @ObservedObject var withdrawalViewModel: WithdrawalViewModel = WithdrawalViewModel(userService: UserService(provider: MoyaProvider<UserAPI>()))
+    @State private var showPopUpView: Bool = false
+    
+    let navigator: LinkNavigatorType
+    
+    // MARK: - Initializer
+    
+    init(navigator: LinkNavigatorType) {
+        self.navigator = navigator
+    }
+    
+    // MARK: - body
+    
     var body: some View {
         VStack(alignment: .leading) {
             VStack(alignment: .leading){
@@ -37,11 +56,34 @@ struct WithdrawalView: View {
             CustomButton(buttonSize: .regular,
                          buttonStyle: .disabled,
                          action: {
-                
+                self.showPopUpView = true
             }, content: {
                 Text("탈퇴하기")
             }, isDisabled: false)
             .padding([.leading, .trailing], 32)
         }
+        .fullScreenCover(isPresented: $showPopUpView, content: {
+            CustomPopUpView(mainText: "정말로 탈퇴하시겠습니까?",
+                            subText: "탈퇴 안 하면 안될까요? 🥹",
+                            leftButtonText: "취소하기",
+                            rightButtonText: "그래도 탈퇴하기", leftButtonAction: {},
+                            rightButtonAction: {
+                requestDeleteUser()
+            })
+            .background(ClearBackgroundView())
+            .background(Material.ultraThin)
+        })
+        .transaction { transaction in   // 모달 애니메이션 삭제
+            transaction.disablesAnimations = true
+        }
+        .onChange(of: withdrawalViewModel.isNetworkSucceed, {
+            if withdrawalViewModel.isNetworkSucceed {
+                navigator.next(paths: ["content"], items: [:], isAnimated: true)
+            }
+        })
+    }
+    
+    private func requestDeleteUser() {
+        self.withdrawalViewModel.$requestDeleteUser.send()
     }
 }

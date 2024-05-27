@@ -45,10 +45,24 @@ struct ManagementMyInformationView: View {
                             .foregroundStyle(Color.gray90)
                     }
                     .padding()
+                    .fadeIn(delay: 0.2)
                 }
             }
             .listStyle(.plain)
             .background(Color.clear)
+            
+            Spacer()
+            
+            if !(UserManager.shared.isManager ?? true) && (userInfo.isPillCaseExist) {
+                CustomButton(buttonSize: .regular,
+                             buttonStyle: .disabled,
+                             action: {
+                    
+                }, content: {
+                    Text("약통 해제하기")
+                }, isDisabled: false)
+                    .padding([.leading, .trailing], 33)
+            }
         }
     }
     
@@ -61,6 +75,8 @@ struct ManagementMyInformationView: View {
             return userInfo.phone
         case .ssn:
             return userInfo.ssn.prefix(8) + "●●●●●●"
+        case .isPillCaseExist:
+            return ""
         }
         
     }

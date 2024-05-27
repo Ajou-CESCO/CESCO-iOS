@@ -29,7 +29,6 @@ struct DoseScheduleView: View {
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack {
-                
                 if (UserManager.shared.isManager ?? true) {
                     ClientListView(relationLists: doseScheduleViewModel.relationLists,
                                    selectedClientId: $selectedClientId)
@@ -164,6 +163,7 @@ struct DoseScheduleView: View {
                 if selectedClientId == nil {
                     selectedClientId = homeViewModel.relationLists.first?.memberID
                 }
+                homeViewModel.$requestGetDoseLog.send(selectedClientId!)
                 homeViewModel.$requestGetDoseLog.send(selectedClientId!)
             }
         })

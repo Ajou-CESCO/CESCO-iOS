@@ -46,7 +46,7 @@ struct SignUpView: View {
     
     var body: some View {
         VStack {
-            CustomNavigationBar(isBackButtonHidden: userProfileViewModel.step == 1, 
+            CustomNavigationBar(isBackButtonHidden: self.userProfileViewModel.step == 1,
                                 previousAction: {
                 if userProfileViewModel.step > 1 {
                     userProfileViewModel.previousStep()
@@ -104,7 +104,8 @@ struct SignUpView: View {
                                     text: $validationViewModel.infoState.name,
                                     isError: .isErrorBinding(for: $validationViewModel.infoErrorState.nameErrorMessage),
                                     errorMessage: validationViewModel.infoErrorState.nameErrorMessage,
-                                    textInputStyle: .text)
+                                    textInputStyle: .text,
+                                    maxLength: 4)
                 case 4: // 주민등록번호
                     CustomTextInput(placeholder: "주민번호 입력",
                                     text: $validationViewModel.infoState.ssn,

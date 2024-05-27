@@ -23,6 +23,7 @@ class FcmService: FcmServiceType {
     func registerToken(fcmToken: String) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError> {
         return provider.requestPublisher(.registerToken(fcmToken))
             .tryMap { response in
+                print(response)
                 guard let httpResponse = response.response, httpResponse.statusCode == 200 else {
                     let errorResponse = try response.map(BaseResponse<BlankData>.self)
                     throw PillinTimeError.networkFail

@@ -112,13 +112,38 @@ struct SettingList: View {
             List {
                 ForEach(SettingListElement.listCases, id: \.self) { element in
                     ZStack {
-                        NavigationLink(destination: MyPageDetailView(navigator: navigator, settingListElement: element)) {
-                            EmptyView()
+                        if element == .logout {
+                            NavigationLink(destination: 
+                                            CustomPopUpView(mainText: "로그아웃하시겠습니까?",
+                                                            subText: popUpSubText(), 
+                                                            leftButtonText: "취소하기",
+                                                            rightButtonText: "로그아웃하기",
+                                                            leftButtonAction: {},
+                                                            rightButtonAction: {
+                                                logout()
+                                            })
+                                                .background(ClearBackgroundView())
+                                                .background(Material.ultraThin)
+                                                .transaction { transaction in   // 모달 애니메이션 삭제
+                                                    transaction.disablesAnimations = true
+                                                }
+                            
+                            ) {
+                                EmptyView()
+                            }
+                            .opacity(0.0)
+                            .buttonStyle(PlainButtonStyle())
+                            .background(Color.clear)
+                            .listRowSeparator(.hidden)
+                        } else {
+                            NavigationLink(destination: MyPageDetailView(navigator: navigator, settingListElement: element)) {
+                                EmptyView()
+                            }
+                            .opacity(0.0)
+                            .buttonStyle(PlainButtonStyle())
+                            .background(Color.clear)
+                            .listRowSeparator(.hidden)
                         }
-                        .opacity(0.0)
-                        .buttonStyle(PlainButtonStyle())
-                        .background(Color.clear)
-                        .listRowSeparator(.hidden)
                         
                         HStack {
                             Text(element.description)
@@ -136,5 +161,14 @@ struct SettingList: View {
             .listStyle(.sidebar)
             .background(Color.clear)
         }
+    }
+    
+    private func popUpSubText() -> String {
+        return UserManager.shared.isManager ?? true ? "로그아웃하면 피보호자는 나의 관리를 받지 못해요.": "로그아웃하면 보호자가 나를 관리하지 못해요."
+    }
+    
+    private func logout() {
+        UserManager.shared.accessToken = nil
+        navigator.next(paths: ["content"], items: [:], isAnimated: true)
     }
 }

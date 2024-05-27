@@ -65,7 +65,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
         // Store token in Firestore For Sending Notifications From Server in Future...
         self.fcmViewModel.requestRegisterTokenToServer(fcmToken ?? "")
         print(dataDict)
-     
+
     }
     
 }
@@ -81,7 +81,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
       
     let userInfo = notification.request.content.userInfo
 
-    
     // Do Something With MSG Data...
     if let messageID = userInfo[gcmMessageIDKey] {
         print("Message ID: \(messageID)")

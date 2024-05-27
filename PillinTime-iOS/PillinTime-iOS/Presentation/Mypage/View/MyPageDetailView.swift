@@ -15,6 +15,8 @@ enum UserProfile {
     case name
     case phoneNumber
     case ssn
+    case isPillCaseExist
+    
     var description: String {
         switch self {
         case .name:
@@ -23,6 +25,8 @@ enum UserProfile {
             return "휴대폰 번호"
         case .ssn:
             return "주민등록번호"
+        case .isPillCaseExist:
+            return ""
         }
     }
     static let allCases: [UserProfile] = [
@@ -60,19 +64,20 @@ struct MyPageDetailView: View {
                 ManagementMyInformationView(userInfo: SelectedRelation(relationId: UserManager.shared.memberId ?? 0,
                                                                        name: UserManager.shared.name ?? "null", 
                                                                        ssn: UserManager.shared.ssn ?? "null",
-                                                                       phone: UserManager.shared.phoneNumber ?? "null"))
+                                                                       phone: UserManager.shared.phoneNumber ?? "null", 
+                                                                       isPillCaseExist: true))
             case .subscriptionPaymentHistory:
                 SubscriptionPaymentHistoryView()
             case .customerServiceCenter:
                 CustomerServiceCenterView()
             case .withdrawal:
-                WithdrawalView()
+                WithdrawalView(navigator: navigator)
             case .clientManage:
                 ClientManageView()
-            case .logout:
-                LogoutView(navigator: navigator)
             case .managementDoseSchedule:
                 ManagementDoseScheduleView()
+            default:
+                EmptyView()
             }
             
             Spacer()
@@ -94,26 +99,5 @@ struct SubscriptionPaymentHistoryView: View {
 struct CustomerServiceCenterView: View {
     var body: some View {
         /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Hello, world!@*/Text("Hello, world!")/*@END_MENU_TOKEN@*/
-    }
-}
-
-// MARK: - LogoutView
-
-struct LogoutView: View {
-    
-    let navigator: LinkNavigatorType
-    
-    init(navigator: LinkNavigatorType) {
-        self.navigator = navigator
-    }
-
-    var body: some View {
-        Button(action: {
-            // 액세스 토큰 삭제
-            UserManager.shared.accessToken = nil
-            navigator.next(paths: ["content"], items: [:], isAnimated: true)
-        }, label: {
-            Text("로구아웃 버튼 ㅋ.ㅋ")
-        })
     }
 }

@@ -1,6 +1,6 @@
 ## 💊 PillinTime-iOS
 
-![title-Image](https://github.com/Ajou-CESCO/PillinTime-iOS/assets/79050615/0ed6c4a6-2f21-4a56-97af-5930ac05a048)   
+![SW캡스톤디자인_CESCO_썸네일](https://github.com/Ajou-CESCO/.github/assets/52846766/b92232ed-3fb7-4006-aa93-8a3b12a2d04f)
 
 <br>
 
@@ -53,7 +53,7 @@
 
 | 이름 | 역할 | 이메일 | 한마디
 | --- | --- | --- | --- |
-| [노수인](https://github.com/bigpie1367)  | Back-End | bigpie1367@gmail.com | 이제 좀 쉬고싶어요  |
+| [노수인](https://github.com/bigpie1367)  | Back-End | suin.rohh@gmail.com | 이제 좀 쉬고싶어요  |
 | [김학준](https://github.com/PUPAO)  | Back-End | swkhj2022@ajou.ac.kr | 어? |
 | [김종명](https://github.com/jm991014) | Front-End (Android) |  jm991014@ajou.ac.kr | 구성가능한 @Composable | 
 | [심재민](https://github.com/simpson9241) | Embedded (RPi) | simba7743@ajou.ac.kr | 약통 부숴지면 퇴사할게요 |

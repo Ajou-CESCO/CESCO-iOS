@@ -64,6 +64,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
         
         // Store token in Firestore For Sending Notifications From Server in Future...
         self.fcmViewModel.requestRegisterTokenToServer(fcmToken ?? "")
+        UserManager.shared.fcmToken = fcmToken
         print(dataDict)
 
     }

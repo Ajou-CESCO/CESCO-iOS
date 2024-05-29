@@ -45,44 +45,54 @@ struct MyPageDetailView: View {
     @State var isEditing: Bool = false
     @State var settingListElement: SettingListElement
     
+    @State var name: String?
     let navigator: LinkNavigatorType
     
-    init(navigator: LinkNavigatorType, settingListElement: SettingListElement) {
+    init(navigator: LinkNavigatorType, settingListElement: SettingListElement, name: String?) {
         self.navigator = navigator
         self.settingListElement = settingListElement
+        self.name = name
     }
     
     // MARK: - body
     
     var body: some View {
-        
-        VStack {
-            CustomNavigationBar(title: settingListElement.description)
+        ZStack {
+            Color.gray5
+                .ignoresSafeArea()
             
-            switch settingListElement {
-            case .managementMyInformation:
-                ManagementMyInformationView(userInfo: SelectedRelation(relationId: UserManager.shared.memberId ?? 0,
-                                                                       name: UserManager.shared.name ?? "null", 
-                                                                       ssn: UserManager.shared.ssn ?? "null",
-                                                                       phone: UserManager.shared.phoneNumber ?? "null", 
-                                                                       isPillCaseExist: true))
-            case .subscriptionPaymentHistory:
-                SubscriptionPaymentHistoryView()
-            case .customerServiceCenter:
-                CustomerServiceCenterView()
-            case .withdrawal:
-                WithdrawalView(navigator: navigator)
-            case .clientManage:
-                ClientManageView()
-            case .managementDoseSchedule:
-                ManagementDoseScheduleView()
-            default:
-                EmptyView()
+            VStack {
+                CustomNavigationBar(title: settingListElement.description)
+                
+                switch settingListElement {
+                case .managementMyInformation:
+                    ManagementMyInformationView(userInfo: SelectedRelation(relationId: UserManager.shared.memberId ?? 0,
+                                                                           name: UserManager.shared.name ?? "null",
+                                                                           ssn: UserManager.shared.ssn ?? "null",
+                                                                           phone: UserManager.shared.phoneNumber ?? "null",
+                                                                           isPillCaseExist: true))
+                case .subscriptionPaymentHistory:
+                    SubscriptionPaymentHistoryView()
+                case .customerServiceCenter:
+                    CustomerServiceCenterView()
+                case .withdrawal:
+                    WithdrawalView(navigator: navigator)
+                case .clientManage:
+                    ClientManageView()
+                case .managementDoseSchedule:
+                    ManagementDoseScheduleView()
+                case .todaysHealthState:
+                    HealthDashBoardView(name: self.name ?? "")
+                default:
+                    EmptyView()
+                }
+                
+                Spacer()
             }
-            
-            Spacer()
+            .navigationBarHidden(true)
         }
-        .navigationBarHidden(true)
+        
+        
     }
 }
 

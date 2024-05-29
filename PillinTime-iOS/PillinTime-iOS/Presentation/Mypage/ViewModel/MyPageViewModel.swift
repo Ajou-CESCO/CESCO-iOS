@@ -17,6 +17,7 @@ enum SettingListElement: Identifiable {
     case clientManage
     case logout
     case managementDoseSchedule
+    case todaysHealthState
     
     var id: SettingListElement {
         return self
@@ -38,6 +39,8 @@ enum SettingListElement: Identifiable {
             return "로그아웃"
         case .managementDoseSchedule:
             return "복약 일정 관리"
+        case .todaysHealthState:
+            return "오늘의 건강 상태"
         }
     }
     

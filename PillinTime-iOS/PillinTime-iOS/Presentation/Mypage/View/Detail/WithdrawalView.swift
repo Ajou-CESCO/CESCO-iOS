@@ -54,7 +54,8 @@ struct WithdrawalView: View {
             Spacer()
             
             CustomButton(buttonSize: .regular,
-                         buttonStyle: .disabled,
+                         buttonStyle: .disabled, 
+                         buttonColor: .white,
                          action: {
                 self.showPopUpView = true
             }, content: {

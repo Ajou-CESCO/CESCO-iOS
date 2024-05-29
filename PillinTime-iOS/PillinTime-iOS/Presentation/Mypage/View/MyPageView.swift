@@ -8,6 +8,7 @@
 import SwiftUI
 
 import LinkNavigator
+import Moya
 
 struct MyPageView: View {
     
@@ -82,7 +83,7 @@ struct MyPageView: View {
         }
         .fullScreenCover(item: $selectedSettingList, content: { element in
             MyPageDetailView(navigator: navigator,
-                             settingListElement: element)
+                             settingListElement: element, name: "")
         })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true
@@ -97,11 +98,13 @@ struct SettingList: View {
     @State private var isShowingDetailView = false
     @State private var selectedElement: SettingListElement?
     @ObservedObject var myPageViewModel: MyPageViewModel
+    @ObservedObject var fcmViewModel: FcmViewModel
     
     let navigator: LinkNavigatorType
     
     init(navigator: LinkNavigatorType) {
         self.myPageViewModel = MyPageViewModel()
+        self.fcmViewModel = FcmViewModel(fcmService: FcmService(provider: MoyaProvider<FcmAPI>()))
         self.navigator = navigator
     }
         
@@ -136,7 +139,7 @@ struct SettingList: View {
                             .background(Color.clear)
                             .listRowSeparator(.hidden)
                         } else {
-                            NavigationLink(destination: MyPageDetailView(navigator: navigator, settingListElement: element)) {
+                            NavigationLink(destination: MyPageDetailView(navigator: navigator, settingListElement: element, name: nil)) {
                                 EmptyView()
                             }
                             .opacity(0.0)
@@ -170,5 +173,6 @@ struct SettingList: View {
     private func logout() {
         UserManager.shared.accessToken = nil
         navigator.next(paths: ["content"], items: [:], isAnimated: true)
+        self.fcmViewModel.requestRegisterTokenToServer(UserManager.shared.fcmToken ?? "")
     }
 }

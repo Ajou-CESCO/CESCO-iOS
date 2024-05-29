@@ -36,6 +36,8 @@ struct ClientManageView: View {
     
     var body: some View {
         ZStack {
+            Color.white
+            
             VStack {
                 HStack {
                     Text("총 \(clientManageViewModel.relationList.count)명")

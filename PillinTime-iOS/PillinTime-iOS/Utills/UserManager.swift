@@ -22,6 +22,7 @@ final class UserManager {
     @UserDefaultWrapper<String>(key: "phoneNumber") public var phoneNumber
     @UserDefaultWrapper<String>(key: "ssn") public var ssn
     @UserDefaultWrapper<Bool>(key: "isManager") public var isManager
+    @UserDefaultWrapper<String>(key: "fcmToken") public var fcmToken
 
     var hasAccessToken: Bool { return self.accessToken != nil }
     

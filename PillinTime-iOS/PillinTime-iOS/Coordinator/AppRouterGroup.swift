@@ -18,7 +18,8 @@ struct AppRouterGroup {
             DoseAddRouteBuilder(),
             MyPageRouteBuilder(),
             MyPageDetailRouteBuilder(),
-            WithdrawalRouteBuilder()
+            WithdrawalRouteBuilder(),
+            HomeRouteBuilder()
         ]
     }
 }

@@ -24,38 +24,42 @@ struct ManagementDoseScheduleView: View {
     // MARK: - body
     
     var body: some View {
-        VStack(alignment: .leading) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 15) {
-                    ForEach(homeViewModel.relationLists, id: \.memberID) { relation in
-                        VStack {
-                            Text(relation.memberName)
-                                .font(.body1Medium)
-                                .foregroundStyle(selectedClientId == relation.memberID ? Color.gray90 : Color.gray50)
-                            
-                            Rectangle()
-                                .frame(width: 70, height: 2)
-                                .foregroundStyle(selectedClientId == relation.memberID ? Color.primary60 : Color.clear)
-                        }
-                        .onTapGesture {
-                            self.selectedClientId = relation.memberID
+        
+        ZStack {
+            Color.white
+                .ignoresSafeArea()
+            
+            VStack(alignment: .leading) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 15) {
+                        ForEach(homeViewModel.relationLists, id: \.memberID) { relation in
+                            VStack {
+                                Text(relation.memberName)
+                                    .font(.body1Medium)
+                                    .foregroundStyle(selectedClientId == relation.memberID ? Color.gray90 : Color.gray50)
+                                
+                                Rectangle()
+                                    .frame(width: 70, height: 2)
+                                    .foregroundStyle(selectedClientId == relation.memberID ? Color.primary60 : Color.clear)
+                            }
+                            .onTapGesture {
+                                self.selectedClientId = relation.memberID
+                            }
                         }
                     }
                 }
-            }
-            .fadeIn(delay: 0.1)
-                        
-            Text.multiColoredText("등록된 약 \(managementDoseScheduleViewModel.dosePlanList.count)",
-                                  coloredSubstrings: [("\(managementDoseScheduleViewModel.dosePlanList.count)", Color.primary60)])
-                .font(.body2Medium)
-                .foregroundStyle(Color.gray70)
-                .padding([.top, .bottom])
-                .fadeIn(delay: 0.2)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 0) {
-                    ForEach(homeViewModel.relationLists, id: \.memberID) { _ in
-                        ScrollView {
+                .fadeIn(delay: 0.1)
+                            
+                Text.multiColoredText("등록된 약 \(managementDoseScheduleViewModel.dosePlanList.count)",
+                                      coloredSubstrings: [("\(managementDoseScheduleViewModel.dosePlanList.count)", Color.primary60)])
+                    .font(.body2Medium)
+                    .foregroundStyle(Color.gray70)
+                    .padding([.top, .bottom])
+                    .fadeIn(delay: 0.2)
+                
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: 0) {
+                        ForEach(homeViewModel.relationLists, id: \.memberID) { _ in
                             VStack(alignment: .center) {
                                 if managementDoseScheduleViewModel.isNetworking {
                                     LoadingView()
@@ -66,18 +70,20 @@ struct ManagementDoseScheduleView: View {
                                 ManagementDoseScheduleElementView(dosePlanList: .constant(
                                     managementDoseScheduleViewModel.dosePlanList
                                 ))
+                                
+                                Spacer()
                             }
                             .containerRelativeFrame(.horizontal)
                         }
                     }
+                    .scrollTargetLayout(isEnabled: true)
                 }
-                .scrollTargetLayout(isEnabled: true)
+                .scrollTargetBehavior(.viewAligned)
+                .scrollPosition(id: $selectedClientId)
+                .fadeIn(delay: 0.3)
             }
-            .scrollTargetBehavior(.viewAligned)
-            .scrollPosition(id: $selectedClientId)
-            .fadeIn(delay: 0.3)
+            .padding(16)
         }
-        .padding(16)
         .onAppear {
             selectedClientId = homeViewModel.relationLists.first?.memberID
         }

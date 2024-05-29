@@ -9,6 +9,7 @@ import SwiftUI
 
 import Moya
 import Factory
+import LinkNavigator
 
 struct HomeView: View {
     
@@ -19,7 +20,12 @@ struct HomeView: View {
     @State private var showEncourageView: Bool = false
     @State private var showAddPillCaseView: Bool = false
     @State private var showRequestRelationListView: Bool = false
-    @State private var showLandingView: Bool = true
+    @State private var showHealthView: Bool = false
+    let navigator: LinkNavigatorType
+    
+    init(navigator: LinkNavigatorType) {
+        self.navigator = navigator
+    }
     
     // MARK: - body
     
@@ -63,6 +69,9 @@ struct HomeView: View {
                                                 .transition(.move(edge: .top))
                                                 .scaleFadeIn(delay: 0.4)
                                                 .padding([.leading, .trailing], 25)
+                                                .onTapGesture {
+                                                    self.showHealthView = true
+                                                }
                                         }
                                         
                                         HealthMainView(stepCount: $homeViewModel.state.stepCount)
@@ -136,12 +145,14 @@ struct HomeView: View {
             }
         }
         .background(Color.gray5)
-        .onChange(of: homeViewModel.isDataReady, {
+        .onReceive(homeViewModel.$isDataReady) { _ in
             // 피보호자이고, 보호관계가 없을 경우 보호관계를 생성해야 함
+            initSelectedRelationId()
             checkReleationEmpty()
             refresh()
-        })
+        }
         .onAppear {
+            initSelectedRelationId()
             checkReleationEmpty()
             homeViewModel.action.viewOnAppear.send()
             initClient()
@@ -150,7 +161,7 @@ struct HomeView: View {
         .onChange(of: selectedClientId, {
             if homeViewModel.isDataReady {
                 if selectedClientId == nil {
-                    selectedClientId = homeViewModel.relationLists.first?.memberID
+                    initSelectedRelationId()
                 }
                 homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
             }
@@ -161,8 +172,10 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showRequestRelationListView, content: {
             RelationRequestView()
         })
-        .fullScreenCover(isPresented: $showLandingView, content: {
-            LandingView()
+        .fullScreenCover(isPresented: $showHealthView, content: {
+            MyPageDetailView(navigator: navigator,
+                             settingListElement: .todaysHealthState,
+                             name: "zz")
         })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true
@@ -175,6 +188,10 @@ struct HomeView: View {
         } else {
             self.showRequestRelationListView = false
         }
+    }
+    
+    private func initSelectedRelationId() {
+        selectedClientId = homeViewModel.relationLists.first?.memberID
     }
     
     private func initClient() {
@@ -204,8 +221,8 @@ struct HealthMainView: View {
     
     // MARK: - Properties
     
-    var mainText: [String] = ["걸음 수", "하품 횟수", "소화 횟수"]
-    var subText: [String] = ["99,110보", "45,300회", "23,244회"]
+    var mainText: [String] = ["걸음 수", "수면", "심장박동수", "활동량"]
+    var subText: [String] = ["4,512보", "7시간", "89bpm", "435kcal"]
     @Binding var stepCount: String
     
     // MARK: - body
@@ -214,8 +231,8 @@ struct HealthMainView: View {
         ZStack {
             Color.primary60
             
-            HStack(spacing: 36) {
-                ForEach(0..<3, id: \.self) { index in
+            HStack(spacing: 20) {
+                ForEach(0..<4, id: \.self) { index in
                     VStack {
                         Text(mainText[index])
                             .font(.caption1Medium)
@@ -240,8 +257,8 @@ struct EncourageMainView: View {
     
     // MARK: - Properties
     
-    var mainTitle: String = "오늘 많이 걸으셨나요?"
-    var subTitle: String = "50대 평균보다 300보 덜 걸으셨어요."
+    var mainTitle: String = "오늘 얼마나 걸으셨나요?"
+    var subTitle: String = "권장량보다 2,488보 덜 걸으셨어요."
     
     // MARK: - body
     
@@ -260,10 +277,13 @@ struct EncourageMainView: View {
                     .font(.body2Medium)
                     .foregroundStyle(Color.gray50)
             }
+            
+            Image(systemName: "chevron.forward")
+                .foregroundStyle(Color.gray60)
+                .padding()
         }
         .frame(maxWidth: .infinity, minHeight: 90, maxHeight: 90)
         .background(Color.white)
         .cornerRadius(8)
     }
 }
-

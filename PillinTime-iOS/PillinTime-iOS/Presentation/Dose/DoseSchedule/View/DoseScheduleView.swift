@@ -9,6 +9,7 @@ import SwiftUI
 
 import LinkNavigator
 import Factory
+import Moya
 
 struct DoseScheduleView: View {
     
@@ -19,8 +20,10 @@ struct DoseScheduleView: View {
     @State var isUserPoked: Bool = false
     let navigator: LinkNavigatorType
     @ObservedObject var doseScheduleViewModel = DoseScheduleViewModel()
+    @ObservedObject var fcmViewModel = FcmViewModel(fcmService: FcmService(provider: MoyaProvider<FcmAPI>()))
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     @ObservedObject var doseAddViewModel = Container.shared.doseAddViewModel.resolve()
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     init(navigator: LinkNavigatorType) {
         self.navigator = navigator
@@ -57,7 +60,6 @@ struct DoseScheduleView: View {
                                         if (UserManager.shared.isManager ?? true) {
                                             Button(action: {
                                                 self.isUserPoked = true
-                                                print(self.isUserPoked)
                                             }, label: {
                                                 HStack {
                                                     if isUserPoked {
@@ -114,12 +116,6 @@ struct DoseScheduleView: View {
                 }
                 .scrollTargetBehavior(.viewAligned)
                 .scrollPosition(id: $selectedClientId)
-                
-                if isUserPoked {
-                    ToastView(description: "김철수 님을 콕 찔렀어요.",
-                              show: $isUserPoked)
-                        .padding(.bottom, 20)
-                }
             }
             .background(Color.gray5)
             
@@ -158,6 +154,16 @@ struct DoseScheduleView: View {
         .onAppear {
             refresh()
         }
+        .onChange(of: isUserPoked, {
+            if isUserPoked {
+                fcmViewModel.requestPushAlarmToServer(selectedClientId ?? 0)
+                toastManager.showToast(description: "노수인 님을 콕 찔렀어요.")
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+                    self.isUserPoked = false
+                })
+            }
+        })
         .onChange(of: selectedClientId, {
             if homeViewModel.isDataReady {
                 if selectedClientId == nil {

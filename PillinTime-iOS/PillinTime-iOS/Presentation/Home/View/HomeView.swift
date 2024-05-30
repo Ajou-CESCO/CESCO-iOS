@@ -21,6 +21,7 @@ struct HomeView: View {
     @State private var showAddPillCaseView: Bool = false
     @State private var showRequestRelationListView: Bool = false
     @State private var showHealthView: Bool = false
+    @State private var isRefresh: Bool = false
     let navigator: LinkNavigatorType
     
     init(navigator: LinkNavigatorType) {
@@ -86,6 +87,7 @@ struct HomeView: View {
                                 .refreshable {
                                     homeViewModel.$requestGetDoseLog.send(self.selectedClientId!)
                                     homeViewModel.$requestInitClient.send(true)
+                                    self.isRefresh = true
                                 }
                             }
                         }
@@ -147,9 +149,15 @@ struct HomeView: View {
         .background(Color.gray5)
         .onReceive(homeViewModel.$isDataReady) { _ in
             // 피보호자이고, 보호관계가 없을 경우 보호관계를 생성해야 함
-            initSelectedRelationId()
+            if !(UserManager.shared.isManager ?? true) {
+                selectedClientId = UserManager.shared.memberId
+            } 
+            if !isRefresh {
+                self.selectedClientId = homeViewModel.relationLists.first?.memberID
+            }
+            
             checkReleationEmpty()
-            refresh()
+
         }
         .onAppear {
             initSelectedRelationId()

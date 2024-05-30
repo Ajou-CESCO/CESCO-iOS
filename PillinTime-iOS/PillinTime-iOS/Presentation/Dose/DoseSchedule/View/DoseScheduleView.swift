@@ -17,6 +17,7 @@ struct DoseScheduleView: View {
     
     @State private var selectedDays = Set<String>()
     @State var selectedClientId: Int?  // 선택된 Client
+    @State var selectedClientName: String? // 선택된 Client의 이름, 찌르기 시에 활용
     @State var isUserPoked: Bool = false
     let navigator: LinkNavigatorType
     @ObservedObject var doseScheduleViewModel = DoseScheduleViewModel()
@@ -157,7 +158,7 @@ struct DoseScheduleView: View {
         .onChange(of: isUserPoked, {
             if isUserPoked {
                 fcmViewModel.requestPushAlarmToServer(selectedClientId ?? 0)
-                toastManager.showToast(description: "노수인 님을 콕 찔렀어요.")
+                toastManager.showToast(description: "\(selectedClientName ?? "null") 님을 콕 찔렀어요.")
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
                     self.isUserPoked = false
@@ -168,8 +169,9 @@ struct DoseScheduleView: View {
             if homeViewModel.isDataReady {
                 if selectedClientId == nil {
                     selectedClientId = homeViewModel.relationLists.first?.memberID
+                    selectedClientName = homeViewModel.relationLists.first?.memberName
                 }
-                homeViewModel.$requestGetDoseLog.send(selectedClientId!)
+                selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
                 homeViewModel.$requestGetDoseLog.send(selectedClientId!)
             }
         })
@@ -187,6 +189,7 @@ struct DoseScheduleView: View {
         }
         if selectedClientId == 0 && homeViewModel.isDataReady {
             selectedClientId = homeViewModel.relationLists.first?.memberID
+            selectedClientName = homeViewModel.relationLists.first?.memberName
         }
         homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
     }

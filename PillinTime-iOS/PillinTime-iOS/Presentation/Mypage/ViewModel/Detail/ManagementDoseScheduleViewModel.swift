@@ -14,6 +14,12 @@ struct ManagementDoseScheduleState {
     var failMessage: String = String()
 }
 
+struct DeleteDoseScheduleState {
+    var memberId: Int = Int()
+    var medicineId: String = String()
+    var cabinetIndex: Int = Int()
+}
+
 class ManagementDoseScheduleViewModel: ObservableObject {
     
     // MARK: - Dependency
@@ -24,6 +30,7 @@ class ManagementDoseScheduleViewModel: ObservableObject {
     // MARK: - Input State
     
     @Subject var requestGetDosePlan: Int = Int()
+    @Subject var requestDeleteDosePlan: DeleteDoseScheduleState = DeleteDoseScheduleState()
     
     // MARK: - Output State
     
@@ -34,6 +41,7 @@ class ManagementDoseScheduleViewModel: ObservableObject {
     
     @Published var isNetworking: Bool = false
     @Published var isNetworkSucceed: Bool = false
+    @Published var isDeleteSucceed: Bool = false
 
     // MARK: - Cancellable Bag
     
@@ -51,6 +59,11 @@ class ManagementDoseScheduleViewModel: ObservableObject {
     private func bindState() {
         $requestGetDosePlan.sink { [weak self] id in
             self?.requestGetDosePlanToServer(id)
+        }
+        .store(in: &cancellables)
+        
+        $requestDeleteDosePlan.sink { [weak self] plan in
+            self?.requestDeletePlanToServer(plan)
         }
         .store(in: &cancellables)
     }
@@ -75,6 +88,29 @@ class ManagementDoseScheduleViewModel: ObservableObject {
                 print("복약 일정 계획 조회 성공: ", result)
                 guard let self = self else { return }
                 self.dosePlanList = result.result
+            })
+            .store(in: &cancellables)
+    }
+    
+    func requestDeletePlanToServer(_ plan: DeleteDoseScheduleState) {
+        print("복약 일정 계획 삭제 시작")
+        planService.deleteDosePlan(memberId: plan.memberId, medicineId: plan.medicineId, cabinetIndex: plan.cabinetIndex)
+            .sink(receiveCompletion: { [weak self] completion in
+                guard let self = self else { return }
+                switch completion {
+                case .finished:
+                    print("복약 일정 계획 삭제 요청 완료")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        self.isDeleteSucceed = true
+                    }
+
+                case .failure(let error):
+                    print("복약 일정 계획 삭제 실패: \(error)")
+                    self.managementDoseScheduleState.failMessage = error.localizedDescription
+                }
+            }, receiveValue: { [weak self] result in
+                print("복약 일정 계획 삭제 성공: ", result)
+                guard let self = self else { return }
             })
             .store(in: &cancellables)
     }

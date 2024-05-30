@@ -28,6 +28,7 @@ struct RequestRelationSender: Codable {
     let id: Int
     let name, ssn, phone: String
     let gender: Int
+    let fcmToken: String
     let cabinet: JSONNull?
     let manager, subscriber: Bool
 }

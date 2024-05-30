@@ -15,7 +15,8 @@ struct GetDosePlanResponseModel: Codable {
 }
 
 // MARK: - GetDosePlanResponseModelResult
-struct GetDosePlanResponseModelResult: Codable {
+struct GetDosePlanResponseModelResult: Codable, Identifiable {
+    let id = UUID()  
     let medicineID, medicineName: String
     let cabinetIndex: Int
     let weekdayList: [Int]

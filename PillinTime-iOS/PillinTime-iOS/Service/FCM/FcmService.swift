@@ -45,6 +45,7 @@ class FcmService: FcmServiceType {
     func requestPushAlarm(targetId: Int) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError> {
         return provider.requestPublisher(.requestPushAlarm(targetId))
             .tryMap { response in
+                print(response)
                 guard let httpResponse = response.response, httpResponse.statusCode == 200 else {
                     let errorResponse = try response.map(BaseResponse<BlankData>.self)
                     throw PillinTimeError.networkFail

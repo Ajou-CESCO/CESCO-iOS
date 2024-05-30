@@ -69,7 +69,8 @@ struct ManagementDoseScheduleView: View {
 
                                 ManagementDoseScheduleElementView(dosePlanList: .constant(
                                     managementDoseScheduleViewModel.dosePlanList
-                                ))
+                                ), selectedClientId: $selectedClientId,
+                                managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
                                 
                                 Spacer()
                             }
@@ -104,11 +105,14 @@ struct ManagementDoseScheduleElementView: View {
     // MARK: - Properties
     
     @Binding var dosePlanList: [GetDosePlanResponseModelResult]
-    
+    @Binding var selectedClientId: Int?
+    @State var selectedDosePlan: GetDosePlanResponseModelResult?  // 삭제할 dose plan
+    @ObservedObject var managementDoseScheduleViewModel: ManagementDoseScheduleViewModel
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
+
     // MARK: - body
     
     var body: some View {
-        
         VStack(alignment: .leading) {
             ForEach(dosePlanList, id: \.medicineID) { plan in
                 HStack {
@@ -123,12 +127,41 @@ struct ManagementDoseScheduleElementView: View {
                             .padding(.bottom, 10)
                     }
                     .padding(.leading, 20)
+                    
+                    Button(action: {
+                        self.selectedDosePlan = plan
+                    }, label: {
+                        Image(systemName: "xmark.circle")
+                            .foregroundStyle(Color.gray90)
+                    })
+                    .padding()
 
                 }
                 
                 Divider()
             }
         }
+        .fullScreenCover(item: $selectedDosePlan, content: { _ in
+            CustomPopUpView(mainText: "선택한 일정을 삭제하시겠습니까?",
+                            subText: "삭제하면 해당 일정에 대해 관리하지 못해요.",
+                            leftButtonText: "취소하기", rightButtonText: "삭제하기", leftButtonAction: {}, rightButtonAction: {
+                requestServer()
+            })
+            .background(ClearBackgroundView())
+            .background(Material.ultraThin)
+        })
+        .transaction { transaction in   // 모달 애니메이션 삭제
+            transaction.disablesAnimations = true
+        }
+        .onChange(of: managementDoseScheduleViewModel.isDeleteSucceed, {
+            self.toastManager.showToast(description: "일정 삭제를 완료했어요.")
+        })
+    }
+    
+    private func requestServer() {
+        self.managementDoseScheduleViewModel.requestDeletePlanToServer(DeleteDoseScheduleState(memberId: self.selectedClientId ?? 0,
+                                                                                               medicineId: self.selectedDosePlan?.medicineID ?? "",
+                                                                                               cabinetIndex: self.selectedDosePlan?.cabinetIndex ?? 0))
     }
 }
 

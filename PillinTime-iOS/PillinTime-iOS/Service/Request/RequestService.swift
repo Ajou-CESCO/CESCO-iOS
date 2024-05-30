@@ -24,6 +24,7 @@ class RequestService: RequestServiceType {
     func relationRequest(receiverPhone: String) -> AnyPublisher<RequestRelationResponseModel, PillinTimeError> {
         return provider.requestPublisher(.requestRelation(receiverPhone))
             .tryMap { response in
+                print(response)
                 let decodedData = try response.map(RequestRelationResponseModel.self)
                 return decodedData
             }

@@ -144,7 +144,7 @@ struct SignUpView: View {
                                  action: {
                         switch userProfileViewModel.step {
                         case 1: // 전화번호
-//                            signUpRequestViewModel.$tapPhoneNumberVerificationButton.send()
+                            signUpRequestViewModel.$tapPhoneNumberVerificationButton.send()
                             userProfileViewModel.step += 1
                         case 2:
                             signUpRequestViewModel.compareToVerificationCode()
@@ -225,21 +225,17 @@ struct SignUpView: View {
         case 1:
             isButtonDisabled = !validationViewModel.infoErrorState.phoneNumberErrorMessage.isEmpty || validationViewModel.infoState.phoneNumber.isEmpty
         case 2:
-            // test: 이후 주석 해제
-            isButtonDisabled = false
-            userProfileViewModel.step += 1
-
-//            if signUpRequestViewModel.inputVerificationCode.isEmpty {
-//                isButtonDisabled = true
-//                if signUpRequestViewModel.isVerificationSucced {
-//                    isButtonDisabled = false
-//                    
-//                } else {
-//                    isButtonDisabled = true
-//                }
-//            } else {
-//                isButtonDisabled = false
-//            }
+            if signUpRequestViewModel.inputVerificationCode.isEmpty {
+                isButtonDisabled = true
+                if signUpRequestViewModel.isVerificationSucced {
+                    isButtonDisabled = false
+                    
+                } else {
+                    isButtonDisabled = true
+                }
+            } else {
+                isButtonDisabled = false
+            }
         case 3:
             isButtonDisabled = !validationViewModel.infoErrorState.nameErrorMessage.isEmpty || validationViewModel.infoState.name.isEmpty
         case 4:

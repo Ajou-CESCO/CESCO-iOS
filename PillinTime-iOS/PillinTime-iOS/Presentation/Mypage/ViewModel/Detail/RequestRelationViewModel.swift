@@ -19,6 +19,7 @@ class RequestRelationViewModel: ObservableObject {
     // MARK: - Dependency
     
     @Injected(\.requestServie) var requestService: RequestServiceType
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
 
     // MARK: - Input State
     
@@ -30,7 +31,6 @@ class RequestRelationViewModel: ObservableObject {
     @Published var requestRelationResult: RequestRelationResponseModelResult?
     @Published var isNetworking: Bool = false
     @Published var isNetworkSucceed: Bool = false
-    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
 
     // MARK: - Cancellable Bag
     
@@ -72,6 +72,7 @@ class RequestRelationViewModel: ObservableObject {
                     self.toastManager.showToast(description: "보호관계 요청 실패")
                     self.isNetworking = false
                     self.requestRelationState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 guard let self = self else { return }

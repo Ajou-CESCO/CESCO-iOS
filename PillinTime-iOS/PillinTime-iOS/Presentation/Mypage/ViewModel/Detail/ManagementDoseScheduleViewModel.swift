@@ -83,6 +83,7 @@ class ManagementDoseScheduleViewModel: ObservableObject {
                 case .failure(let error):
                     print("복약 일정 계획 조회 실패: \(error)")
                     self.managementDoseScheduleState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 print("복약 일정 계획 조회 성공: ", result)
@@ -107,6 +108,7 @@ class ManagementDoseScheduleViewModel: ObservableObject {
                 case .failure(let error):
                     print("복약 일정 계획 삭제 실패: \(error)")
                     self.managementDoseScheduleState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 print("복약 일정 계획 삭제 성공: ", result)

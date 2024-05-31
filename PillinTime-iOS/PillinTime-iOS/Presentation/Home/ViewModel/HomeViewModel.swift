@@ -5,7 +5,7 @@
 //  Created by Jae Hyun Lee on 5/15/24.
 //
 
-import Foundation
+import SwiftUI
 import Combine
 
 import Factory
@@ -32,6 +32,7 @@ class HomeViewModel: ObservableObject {
     @Injected(\.etcService) var etcService: EtcServiceType
     @Injected(\.planService) var planService: PlanServiceType
     @Injected(\.hkService) var hkService: HKServiceProtocol
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     // MARK: - Input State
     

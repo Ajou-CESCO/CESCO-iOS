@@ -19,6 +19,7 @@ class WithdrawalViewModel: ObservableObject {
     // MARK: - Dependency
     
     @Injected(\.userService) var userService: UserServiceType
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     // MARK: - Input State
     
@@ -65,6 +66,7 @@ class WithdrawalViewModel: ObservableObject {
                 case .failure(let error):
                     print("탈퇴 요청 실패: \(error)")
                     self.withdrawalViewModelState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 print("탈퇴 성공: ", result)

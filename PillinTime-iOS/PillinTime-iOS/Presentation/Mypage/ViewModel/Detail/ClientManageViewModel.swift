@@ -78,6 +78,7 @@ class ClientManageViewModel: ObservableObject {
                 case .failure(let error):
                     print("보호 관계 리스트 조회 실패: \(error)")
                     self.getRelationListState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 print("보호 관계 리스트 조회 성공: ", result)
@@ -101,6 +102,7 @@ class ClientManageViewModel: ObservableObject {
                 case .failure(let error):
                     print("보호 관계 삭제 실패: \(error)")
                     self.deleteRelationState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 print("보호 관계 삭제 성공: ", result)

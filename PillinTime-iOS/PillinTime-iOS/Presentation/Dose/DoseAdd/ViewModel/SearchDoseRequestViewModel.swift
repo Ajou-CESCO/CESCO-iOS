@@ -5,7 +5,7 @@
 //  Created by Jae Hyun Lee on 5/12/24.
 //
 
-import Foundation
+import SwiftUI
 import Combine
 
 import Factory
@@ -19,6 +19,7 @@ class SearchDoseRequestViewModel: ObservableObject {
     // MARK: - Dependency
     
     @Injected(\.etcService) var etcService: EtcServiceType
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     // MARK: - Input State
     
@@ -72,6 +73,7 @@ class SearchDoseRequestViewModel: ObservableObject {
                     self.isNetworkSucceed = false
                     self.isResultEmpty = true
                     self.searchDoseState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 guard let self = self else { return }

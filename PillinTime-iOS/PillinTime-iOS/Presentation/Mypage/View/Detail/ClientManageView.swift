@@ -85,7 +85,7 @@ struct ClientManageView: View {
                                                                          ssn: relation.memberSsn,
                                                                          phone: relation.memberPhone, 
                                                                          isPillCaseExist: relation.cabinetID != 0)
-                                
+                                print(self.selectedRelation)
                                 self.showInformationView = true
                             }
                             

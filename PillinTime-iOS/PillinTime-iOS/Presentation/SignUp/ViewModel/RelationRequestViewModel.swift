@@ -75,6 +75,7 @@ class RelationRequestViewModel: ObservableObject {
                 case .failure(let error):
                     print("보호 관계 요청 리스트 조회 실패: \(error)")
                     self.relationRequestState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 print("보호 관계 요청 리스트 조회 성공: ", result)
@@ -98,6 +99,7 @@ class RelationRequestViewModel: ObservableObject {
                 case .failure(let error):
                     print("보호 관계 생성 실패: \(error)")
                     self.relationRequestState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 print("보호 관계 생성 성공: ", result)

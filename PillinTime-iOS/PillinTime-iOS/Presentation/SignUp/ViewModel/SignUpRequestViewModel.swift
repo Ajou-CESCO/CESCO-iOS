@@ -17,6 +17,7 @@ class SignUpRequestViewModel: ObservableObject {
     @Injected(\.authService) var authService: AuthServiceType
     var eventToValidationViewModel = PassthroughSubject<SignUpRequestViewModelEvent, Never>()
     var eventFromValidationViewModel: PassthroughSubject<SignUpValidationViewModelEvent, Never>?
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     // MARK: - Input State
     @Subject var tapSignUpButton: Void = ()
@@ -156,6 +157,7 @@ class SignUpRequestViewModel: ObservableObject {
                 case .failure(let error):
                     print("회원가입 요청 실패: \(error)")
                     self.signUpState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 print("회원가입 성공: ", result)
@@ -188,6 +190,7 @@ class SignUpRequestViewModel: ObservableObject {
                 case .failure(let error):
                     print("전화번호 인증 요청 실패: \(error)")
                     self.signUpState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 print("전화번호 인증 요청 성공: ", result)

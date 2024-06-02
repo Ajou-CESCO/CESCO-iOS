@@ -84,7 +84,7 @@ struct MyPageDetailView: View {
                 case .managementDoseSchedule:
                     ManagementDoseScheduleView()
                 case .todaysHealthState:
-                    HealthDashBoardView(name: self.name ?? "")
+                    HealthDashBoardView(name: (UserManager.shared.isManager ?? true) ? (UserManager.shared.selectedClientName ?? "null"): (UserManager.shared.name ?? "null"))
                 default:
                     EmptyView()
                 }

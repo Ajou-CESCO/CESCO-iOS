@@ -61,7 +61,7 @@ class SearchDoseRequestViewModel: ObservableObject {
         self.isNetworkSucceed = false
         self.isResultEmpty = false
         self.isNetworking = true
-        etcService.searchDose(name: name.trimmingCharacters(in: [" "]))
+        etcService.searchDose(memberId: (UserManager.shared.isManager ?? true) ? (UserManager.shared.selectedClientId ?? 0) : (UserManager.shared.memberId ?? 0), name: name.trimmingCharacters(in: [" "]))
             .sink(receiveCompletion: { [weak self] completion in
                 guard let self = self else { return }
                 self.isNetworking = false
@@ -79,6 +79,7 @@ class SearchDoseRequestViewModel: ObservableObject {
                 guard let self = self else { return }
                 self.isNetworkSucceed = true
                 self.searchResults = result.result  // 검색 결과 업데이트
+                print(self.searchResults)
                 if result.result.isEmpty { self.isResultEmpty = true }
             })
             .store(in: &cancellables)

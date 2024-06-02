@@ -27,10 +27,13 @@ struct SearchDoseLoadingView: View {
             Text("약품과 부작용을 조회하고 있어요")
                 .font(.caption1Bold)
                 .foregroundStyle(Color.gray90)
-                .padding(.bottom, 2)
+                .padding(.bottom, 4)
             
-            Text("잠시만 기다려주세요...")
+            Text("의약품의 종류에 따라 최대 20초 정도 걸릴 수 있어요.\n잠시만 기다려주세요...")
+                .multilineTextAlignment(.center)
+                .lineSpacing(3)
                 .font(.caption1Regular)
+                .fixedSize(horizontal: false, vertical: true)
                 .foregroundStyle(Color.gray90)
             
             Spacer()

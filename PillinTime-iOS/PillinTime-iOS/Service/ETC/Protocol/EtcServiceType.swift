@@ -16,9 +16,10 @@ protocol EtcServiceType {
     ///
     /// - Parameters:
     ///     - name: 검색하고자 하는 검색어입니다.
+    ///     - memberId: 부작용 조회를 위해 필요한 memberId입니다.
     /// - Returns:
     ///     - SearchDoseResponseModel: 검색 결과 정보를 담은 Model입니다.
-    func searchDose(name: String) -> AnyPublisher<SearchDoseResponseModel, PillinTimeError>
+    func searchDose(memberId: Int, name: String) -> AnyPublisher<SearchDoseResponseModel, PillinTimeError>
     
     /// 사용자에 대한 초기 정보를 받아옵니다.
     ///

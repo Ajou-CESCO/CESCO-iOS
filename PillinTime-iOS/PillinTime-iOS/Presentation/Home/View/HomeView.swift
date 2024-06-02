@@ -17,6 +17,7 @@ struct HomeView: View {
     
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     @State var selectedClientId: Int?  // 선택된 Client
+    @State var selectedClientName: String? // 선택된 Client의 이름, 찌르기 시에 활용
     @State private var showEncourageView: Bool = false
     @State private var showAddPillCaseView: Bool = false
     @State private var showRequestRelationListView: Bool = false
@@ -171,6 +172,8 @@ struct HomeView: View {
                     initSelectedRelationId()
                 }
                 homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
+                UserManager.shared.selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
+                UserManager.shared.selectedClientId = selectedClientId
             }
         })
         .sheet(isPresented: $showAddPillCaseView, content: {
@@ -182,7 +185,7 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showHealthView, content: {
             MyPageDetailView(navigator: navigator,
                              settingListElement: .todaysHealthState,
-                             name: "zz")
+                             name: selectedClientName ?? "null")
         })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true
@@ -200,8 +203,10 @@ struct HomeView: View {
     private func initSelectedRelationId() {
         if UserManager.shared.isManager ?? true {
             selectedClientId = homeViewModel.relationLists.first?.memberID
+            selectedClientName = homeViewModel.relationLists.first?.memberName
         } else {
             selectedClientId = UserManager.shared.memberId
+            selectedClientName = UserManager.shared.name
         }
     }
     

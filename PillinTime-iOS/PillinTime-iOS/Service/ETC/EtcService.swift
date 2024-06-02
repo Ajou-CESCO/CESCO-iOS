@@ -20,8 +20,8 @@ class EtcService: EtcServiceType {
     }
     
     /// 약물 검색 요청
-    func searchDose(name: String) -> AnyPublisher<SearchDoseResponseModel, PillinTimeError> {
-        return provider.requestPublisher(.searchDose(name))
+    func searchDose(memberId: Int, name: String) -> AnyPublisher<SearchDoseResponseModel, PillinTimeError> {
+        return provider.requestPublisher(.searchDose(memberId: memberId, name: name))
             .tryMap { response in
                 let decodeData = try response.map(SearchDoseResponseModel.self)
                 return decodeData

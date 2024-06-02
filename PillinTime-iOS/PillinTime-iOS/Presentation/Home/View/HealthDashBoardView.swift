@@ -14,7 +14,7 @@ struct HealthDashBoardView: View {
     var body: some View {
         VStack(alignment: .center) {
             
-            Text.multiColoredText("오늘 노수인 님의\n건강 상태를 분석했어요.", coloredSubstrings: [("노수인", Color.primary60)])
+            Text.multiColoredText("오늘 \(name) 님의\n건강 상태를 분석했어요.", coloredSubstrings: [("\(name)", Color.primary60)])
                 .multilineTextAlignment(.leading)
                 .font(.logo3Medium)
                 .foregroundStyle(Color.gray90)

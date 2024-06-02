@@ -9,7 +9,7 @@ import Foundation
 import Moya
 
 enum EtcAPI {
-    case searchDose(_ name: String)
+    case searchDose(memberId: Int, name: String)
     case initClient
 }
 
@@ -40,8 +40,9 @@ extension EtcAPI: TargetType {
     
     var task: Moya.Task {
         switch self {
-        case .searchDose(let name):
-            return .requestParameters(parameters: ["name": name],
+        case .searchDose(let memberId, let name):
+            print(memberId, name)
+            return .requestParameters(parameters: ["memberId": memberId, "name": name],
                                       encoding: URLEncoding.queryString)
         case .initClient:
             return .requestPlain

@@ -43,6 +43,7 @@ class HomeViewModel: ObservableObject {
     // MARK: - Output State
     
     @Published var homeState: HomeState = HomeState()
+    @Published var healthInfoState: HealthInfoState = HealthInfoState()
     @Published var isNetworking: Bool = false
     @Published var isDataReady: Bool = false
     @Published var relationLists: [RelationList] = []
@@ -59,14 +60,13 @@ class HomeViewModel: ObservableObject {
     init(etcService: EtcService, planService: PlanService) {
         self.etcService = etcService
         self.planService = planService
-        bind()
+        bindHealth()
         bindState()
     }
     
     // MARK: - Bind Method
     
-    private func bind() {
-        
+    private func bindHealth() {
         action
             .viewOnAppear
             .flatMap {

@@ -198,6 +198,8 @@ struct DoseScheduleView: View {
                     selectedClientName = homeViewModel.relationLists.first?.memberName
                 }
                 selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
+                UserManager.shared.selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
+                UserManager.shared.selectedClientId = selectedClientId
                 homeViewModel.$requestGetDoseLog.send(selectedClientId!)
             }
         })

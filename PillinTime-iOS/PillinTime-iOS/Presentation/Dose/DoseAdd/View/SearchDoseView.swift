@@ -52,7 +52,7 @@ struct SearchDoseView: View {
                                                                   doseAddViewModel.dosePlanInfoState.medicineID = result.medicineCode
                                                               }
                                                            }
-                                                      ))
+                                                  ), isUserHasSideEffect: .constant(!isAdverseMapSafe(adverseMap: result.adverseMap)))
                         }
                     }
                     
@@ -68,6 +68,16 @@ struct SearchDoseView: View {
             hideKeyboard()
         }
     }
+    
+    private func isAdverseMapSafe(adverseMap: AdverseMap) -> Bool {
+        
+        return adverseMap.dosageCaution == nil &&
+               adverseMap.ageSpecificContraindication == nil &&
+               adverseMap.elderlyCaution == nil &&
+               adverseMap.administrationPeriodCaution == nil &&
+               adverseMap.pregnancyContraindication == nil &&
+               adverseMap.duplicateEfficacyGroup == nil
+    }
 }
 
 // MARK: - SearchDoseElementView
@@ -80,6 +90,7 @@ struct SearchDoseElementView: View {
     @Binding var searchDoseResponseModelResult: SearchDoseResponseModelResult
     @State var showDoseElementDetail: Bool = false
     @Binding var isDoseSelected: Bool
+    @Binding var isUserHasSideEffect: Bool
 
     // MARK: - body
     
@@ -95,9 +106,14 @@ struct SearchDoseElementView: View {
                         .padding(.top, 10)
                         .padding(.leading, 5)
                     
-                    MedicineEffectView(text: searchDoseResponseModelResult.medicineEffect)
-                        .padding(.bottom, 10)
-                        .padding(.leading, 5)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            MedicineSideEffectView(isUserHasSideEffect: $isUserHasSideEffect)
+                            MedicineEffectView(text: searchDoseResponseModelResult.medicineEffect)
+                        }
+                    }
+                    .padding(.bottom, 10)
+                    .padding(.leading, 5)
                 }
                                 
                 Image(isDoseSelected ? "ic_dose_selected" : "ic_dose_unselected")
@@ -133,23 +149,38 @@ struct MedicineEffectView: View {
     let text: String
     
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(alignment: .center, spacing: 10) {
-                ForEach(splitText(), id: \.self) { word in
-                    Text(word)
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 10)
-                        .font(.caption2Medium)
-                        .background(Color.gray10)
-                        .foregroundColor(Color.gray80)
-                        .cornerRadius(6)
-                }
+        HStack(alignment: .center, spacing: 10) {
+            ForEach(splitText(), id: \.self) { word in
+                Text(word)
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 10)
+                    .font(.caption2Medium)
+                    .background(Color.gray10)
+                    .foregroundColor(Color.gray80)
+                    .cornerRadius(6)
             }
-            .padding(.trailing, 5)
         }
+        .padding(.trailing, 5)
     }
     
     func splitText() -> [String] {
         return text.components(separatedBy: ", ")
+    }
+}
+
+// MARK: - MedicineSideEffectView
+
+struct MedicineSideEffectView: View {
+    
+    @Binding var isUserHasSideEffect: Bool
+    
+    var body: some View {
+        Text(isUserHasSideEffect ? "부작용 주의": "부작용 안전")
+            .padding(.vertical, 6)
+            .padding(.horizontal, 10)
+            .font(.caption2Medium)
+            .background(isUserHasSideEffect ? Color.warning60: Color.success60)
+            .foregroundColor(Color.white)
+            .cornerRadius(6)
     }
 }

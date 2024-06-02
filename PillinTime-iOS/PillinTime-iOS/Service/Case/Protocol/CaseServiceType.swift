@@ -24,6 +24,6 @@ protocol CaseServiceType {
     /// - Parameters:
     ///     - cabinetId: 해제할 약통의 id입니다.
     /// - Returns: BaseResponse
-    func deletePillCaseRequest(cabineId: String) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
+    func deletePillCaseRequest(cabineId: Int) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
     
 }

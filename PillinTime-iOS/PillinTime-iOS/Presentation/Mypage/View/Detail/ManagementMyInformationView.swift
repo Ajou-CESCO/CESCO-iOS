@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+import Moya
+import Factory
+
 // MARK: - ManagementMyInformationView
 
 struct ManagementMyInformationView: View {
@@ -16,6 +19,7 @@ struct ManagementMyInformationView: View {
     @State private var showToast: Bool = false
 
     @ObservedObject var myPageViewModel: MyPageViewModel = MyPageViewModel()
+    @ObservedObject var managementMyInformationViewModel: ManagementMyInformationViewModel = ManagementMyInformationViewModel(caseService: CaseService(provider: MoyaProvider<CaseAPI>()))
     
     let userInfo: SelectedRelation
     
@@ -60,7 +64,7 @@ struct ManagementMyInformationView: View {
                     CustomButton(buttonSize: .regular,
                                  buttonStyle: .disabled,
                                  action: {
-                        
+                        self.managementMyInformationViewModel.$tapDeletePillCaseButton.send(userInfo.cabinetId)
                     }, content: {
                         Text("약통 해제하기")
                     }, isDisabled: false)

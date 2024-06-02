@@ -45,78 +45,104 @@ struct DoseScheduleView: View {
                     .frame(maxWidth: .infinity, minHeight: 80, maxHeight: 80)
                     .background(UserManager.shared.isManager ?? true ? .clear : .white)
                 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 0) {
-                        ForEach(doseScheduleViewModel.relationLists, id: \.memberID) { relation in
-                            ScrollView(.vertical, showsIndicators: false) {
-                                VStack {
-                                    ZStack(alignment: .topTrailing) {
-                                        DoseScheduleSubView(takenStatus: 0,
+                if (UserManager.shared.isManager ?? true) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 0) {
+                            ForEach(doseScheduleViewModel.relationLists, id: \.memberID) { relation in
+                                ScrollView(.vertical, showsIndicators: false) {
+                                    VStack {
+                                        ZStack(alignment: .topTrailing) {
+                                            DoseScheduleSubView(takenStatus: 0,
+                                                                memberId: relation.memberID,
+                                                                isCabinetExist: relation.cabinetID != 0)
+                                                .padding(.top, 10)
+                                                .padding(.bottom, 20)
+                                                .fadeIn(delay: 0.3)
+                                            // 보호자일 때만 존재
+                                            if (UserManager.shared.isManager ?? true) {
+                                                Button(action: {
+                                                    self.isUserPoked = true
+                                                }, label: {
+                                                    HStack {
+                                                        if isUserPoked {
+                                                            Text("찌르기 완료")
+                                                                .font(.body2Medium)
+                                                                .foregroundStyle(Color.gray70)
+                                                                .padding(6)
+                                                        } else {
+                                                            Image("ic_poke")
+                                                                .frame(width: 30, height: 30)
+                                                            Text("찌르기")
+                                                                .font(.body2Medium)
+                                                                .foregroundColor(Color.gray70)
+                                                                .padding(.trailing, 2)
+                                                        }
+                                                    }
+                                                    .padding(5)
+                                                    .background(Color.white)
+                                                    .cornerRadius(8)
+                                                    .overlay(RoundedRectangle(cornerRadius: 8)
+                                                        .stroke(Color.gray10, lineWidth: 2)
+                                                    )
+
+                                                })
+                                                .disabled(isUserPoked)
+                                                .padding(.trailing, 25)
+                                                .fadeIn(delay: 0.3)
+                                            }
+                                        }
+                                        
+                                        DoseScheduleSubView(takenStatus: 2,
                                                             memberId: relation.memberID,
                                                             isCabinetExist: relation.cabinetID != 0)
-                                            .padding(.top, UserManager.shared.isManager ?? true ? 10 : 20)
                                             .padding(.bottom, 20)
-                                            .fadeIn(delay: 0.3)
-                                        // 보호자일 때만 존재
-                                        if (UserManager.shared.isManager ?? true) {
-                                            Button(action: {
-                                                self.isUserPoked = true
-                                            }, label: {
-                                                HStack {
-                                                    if isUserPoked {
-                                                        Text("찌르기 완료")
-                                                            .font(.body2Medium)
-                                                            .foregroundStyle(Color.gray70)
-                                                            .padding(6)
-                                                    } else {
-                                                        Image("ic_poke")
-                                                            .frame(width: 30, height: 30)
-                                                        Text("찌르기")
-                                                            .font(.body2Medium)
-                                                            .foregroundColor(Color.gray70)
-                                                            .padding(.trailing, 2)
-                                                    }
-                                                }
-                                                .padding(5)
-                                                .background(Color.white)
-                                                .cornerRadius(8)
-                                                .overlay(RoundedRectangle(cornerRadius: 8)
-                                                    .stroke(Color.gray10, lineWidth: 2)
-                                                )
-
-                                            })
-                                            .disabled(isUserPoked)
-                                            .padding(.trailing, 25)
-                                            .fadeIn(delay: 0.3)
-                                        }
+                                            .fadeIn(delay: 0.4)
+                                        
+                                        DoseScheduleSubView(takenStatus: 1,
+                                                            memberId: relation.memberID,
+                                                            isCabinetExist: relation.cabinetID != 0)
+                                            .padding(.bottom, 20)
+                                            .fadeIn(delay: 0.5)
+                                        
+                                        Spacer()
                                     }
+                                    .containerRelativeFrame(.horizontal)
                                     
-                                    DoseScheduleSubView(takenStatus: 2,
-                                                        memberId: relation.memberID,
-                                                        isCabinetExist: relation.cabinetID != 0)
-                                        .padding(.bottom, 20)
-                                        .fadeIn(delay: 0.4)
-                                    
-                                    DoseScheduleSubView(takenStatus: 1,
-                                                        memberId: relation.memberID,
-                                                        isCabinetExist: relation.cabinetID != 0)
-                                        .padding(.bottom, 20)
-                                        .fadeIn(delay: 0.5)
-                                    
-                                    Spacer()
                                 }
-                                .containerRelativeFrame(.horizontal)
-                                
-                            }
-                            .refreshable {
-                                refresh()
+                                .refreshable {
+                                    refresh()
+                                }
                             }
                         }
+                        .scrollTargetLayout(isEnabled: true)
                     }
-                    .scrollTargetLayout(isEnabled: true)
+                    .scrollTargetBehavior(.viewAligned)
+                    .scrollPosition(id: $selectedClientId)
+                } else {
+                    ScrollView {
+                        DoseScheduleSubView(takenStatus: 0,
+                                            memberId: UserManager.shared.memberId ?? 0,
+                                            isCabinetExist: homeViewModel.clientCabnetId != 0)
+                            .padding(.top, 20)
+                            .fadeIn(delay: 0.3)
+                        
+                        DoseScheduleSubView(takenStatus: 2,
+                                            memberId: UserManager.shared.memberId ?? 0,
+                                            isCabinetExist: homeViewModel.clientCabnetId != 0)
+                            .padding(.bottom, 20)
+                            .fadeIn(delay: 0.3)
+                        
+                        DoseScheduleSubView(takenStatus: 1,
+                                            memberId: UserManager.shared.memberId ?? 0,
+                                            isCabinetExist: homeViewModel.clientCabnetId != 0)
+                            .padding(.bottom, 20)
+                            .fadeIn(delay: 0.3)
+                    }
+                    .refreshable {
+                        refresh()
+                    }
                 }
-                .scrollTargetBehavior(.viewAligned)
-                .scrollPosition(id: $selectedClientId)
+                
             }
             .background(Color.gray5)
             
@@ -246,7 +272,6 @@ struct DoseScheduleSubView: View {
                 default:
                     EmptyView()
                 }
-                
             }
             
             DoseScheduleStatusView(memberId: memberId,

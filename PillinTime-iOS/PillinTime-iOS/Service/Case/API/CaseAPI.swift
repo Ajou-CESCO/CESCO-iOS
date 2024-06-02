@@ -10,7 +10,7 @@ import Moya
 
 enum CaseAPI {
     case createCase(_ createPillCaseRequestModel: CreatePillCaseRequestModel)
-    case deleteCase(_ cabinetId: String)
+    case deleteCase(_ cabinetId: Int)
 }
 
 extension CaseAPI: TargetType {
@@ -24,8 +24,11 @@ extension CaseAPI: TargetType {
     
     var path: String {
         switch self {
-        case .createCase, .deleteCase:
+        case .createCase:
             return "/api/cabinet"
+        case .deleteCase(let cabinetId):
+            print("/api/cabinet/\(String(cabinetId))")
+            return "/api/cabinet/\(String(cabinetId))"
         }
     }
     
@@ -42,9 +45,8 @@ extension CaseAPI: TargetType {
         switch self {
         case .createCase(let createPillCaseRequestModel):
             return .requestJSONEncodable(createPillCaseRequestModel)
-        case .deleteCase(let cabinetId):
-            return .requestParameters(parameters: ["cabinetId": cabinetId], 
-                                      encoding: URLEncoding.queryString)
+        case .deleteCase:
+            return .requestPlain
         }
     }
     

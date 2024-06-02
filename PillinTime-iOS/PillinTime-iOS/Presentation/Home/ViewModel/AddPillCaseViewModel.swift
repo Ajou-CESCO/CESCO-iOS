@@ -113,6 +113,5 @@ class AddPillCaseViewModel: ObservableObject {
                 print(result)
             })
             .store(in: &cancellables)
-        
     }
 }

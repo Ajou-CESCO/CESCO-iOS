@@ -98,48 +98,44 @@ struct HomeView: View {
                     .scrollPosition(id: $selectedClientId)
                     /// 피보호자일 경우
                 } else {
-                    HStack {
+                    ScrollView {
                         Text.multiColoredText("\(UserManager.shared.name ?? "null") 님,\n오늘 하루도 화이팅이에요!",
                                               coloredSubstrings: [(UserManager.shared.name ?? "null", Color.primary60)])
-                        .foregroundStyle(Color.gray90)
-                        .font(.logo3Medium)
-                        .lineSpacing(3)
-                        .frame(alignment: .leading)
+                            .foregroundStyle(Color.gray90)
+                            .font(.logo3Medium)
+                            .lineSpacing(3)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding([.leading, .trailing], 33)
+                            .padding(.top, 23)
+                        
+                        /// 이후 수정
+                        DoseScheduleStatusView(memberId: UserManager.shared.memberId ?? 0,
+                                               isCabinetExist: homeViewModel.clientCabnetId != 0,
+                                               takenStatus: nil,
+                                               showAddPillCaseView: $showAddPillCaseView)
+                        .padding([.top, .bottom], 18)
+                        .padding([.leading, .trailing], 25)
+                        .fadeIn(delay: 0.3)
+                        
+                        if showEncourageView {
+                            EncourageMainView()
+                                .transition(.move(edge: .top))
+                                .scaleFadeIn(delay: 0.4)
+                                .padding([.leading, .trailing], 25)
+                        }
+                        
+                        HealthMainView(stepCount: $homeViewModel.state.stepCount)
+                            .padding(.top, showEncourageView ? 17 : 0) // EncourageMainView 표시에 따라 조정
+                            .fadeIn(delay: 0.5)
+                            .padding([.leading, .trailing], 25)
                         
                         Spacer()
-                        
-                        Button(action: {
-                            
-                        }, label: {
-                            Image("ic_alarm_filled")    // 이후에 분기
-                                .frame(width: 36, height: 36)
-                        })
                     }
-                    .padding([.leading, .trailing], 33)
-                    .padding(.top, 23)
-                    
-                    /// 이후 수정
-                    DoseScheduleStatusView(memberId: UserManager.shared.memberId ?? 0,
-                                           isCabinetExist: homeViewModel.clientCabnetId != 0,
-                                           takenStatus: nil,
-                                           showAddPillCaseView: $showAddPillCaseView)
-                    .padding([.top, .bottom], 18)
-                    .padding([.leading, .trailing], 25)
-                    .fadeIn(delay: 0.3)
-                    
-                    if showEncourageView {
-                        EncourageMainView()
-                            .transition(.move(edge: .top))
-                            .scaleFadeIn(delay: 0.4)
-                            .padding([.leading, .trailing], 25)
+                    .refreshable {
+                        homeViewModel.$requestGetDoseLog.send(UserManager.shared.memberId ?? 0)
+                        homeViewModel.$requestInitClient.send(true)
+                        self.isRefresh = true
                     }
-                    
-                    HealthMainView(stepCount: $homeViewModel.state.stepCount)
-                        .padding(.top, showEncourageView ? 17 : 0) // EncourageMainView 표시에 따라 조정
-                        .fadeIn(delay: 0.5)
-                        .padding([.leading, .trailing], 25)
-                    
-                    Spacer()
                 }
             } else {
                 LoadingView()

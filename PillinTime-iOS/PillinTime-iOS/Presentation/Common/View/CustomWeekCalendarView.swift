@@ -14,7 +14,7 @@ struct CustomWeekCalendarView: View {
     // MARK: - Properties
     
     let week: [String] = ["월", "화", "수", "목", "금", "토", "일"]
-    var day: String
+    var day: String = DateHelper.todayDay
     @State var isSelectDisabled: Bool = true
     var isDoseAdd: Bool = false // ^^.. doseAdd일 때만 다른 경우가 있어서. .. 이후에 case 추가 시 리팩
     @Binding var selectedDays: Set<String>

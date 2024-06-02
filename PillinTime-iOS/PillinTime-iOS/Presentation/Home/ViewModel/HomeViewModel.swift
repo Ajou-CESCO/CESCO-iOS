@@ -112,6 +112,7 @@ class HomeViewModel: ObservableObject {
                 UserManager.shared.memberId = result.result.memberID
                 UserManager.shared.isManager = result.result.isManager
                 self.clientCabnetId = result.result.cabinetID
+                
                 // relationList UserDefault에 저장
                 UserDefaults.standard.set(try? PropertyListEncoder().encode(result.result.relationList), forKey: "relationLists")
                 // relationList UserDefault 읽어오기

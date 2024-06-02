@@ -30,25 +30,28 @@ struct ManagementDoseScheduleView: View {
                 .ignoresSafeArea()
             
             VStack(alignment: .leading) {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 15) {
-                        ForEach(homeViewModel.relationLists, id: \.memberID) { relation in
-                            VStack {
-                                Text(relation.memberName)
-                                    .font(.body1Medium)
-                                    .foregroundStyle(selectedClientId == relation.memberID ? Color.gray90 : Color.gray50)
-                                
-                                Rectangle()
-                                    .frame(width: 70, height: 2)
-                                    .foregroundStyle(selectedClientId == relation.memberID ? Color.primary60 : Color.clear)
-                            }
-                            .onTapGesture {
-                                self.selectedClientId = relation.memberID
+                
+                if (UserManager.shared.isManager ?? true) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 15) {
+                            ForEach(homeViewModel.relationLists, id: \.memberID) { relation in
+                                VStack {
+                                    Text(relation.memberName)
+                                        .font(.body1Medium)
+                                        .foregroundStyle(selectedClientId == relation.memberID ? Color.gray90 : Color.gray50)
+                                    
+                                    Rectangle()
+                                        .frame(width: 70, height: 2)
+                                        .foregroundStyle(selectedClientId == relation.memberID ? Color.primary60 : Color.clear)
+                                }
+                                .onTapGesture {
+                                    self.selectedClientId = relation.memberID
+                                }
                             }
                         }
                     }
+                    .fadeIn(delay: 0.1)
                 }
-                .fadeIn(delay: 0.1)
                             
                 Text.multiColoredText("등록된 약 \(managementDoseScheduleViewModel.dosePlanList.count)",
                                       coloredSubstrings: [("\(managementDoseScheduleViewModel.dosePlanList.count)", Color.primary60)])
@@ -86,7 +89,11 @@ struct ManagementDoseScheduleView: View {
             .padding(16)
         }
         .onAppear {
-            selectedClientId = homeViewModel.relationLists.first?.memberID
+            if UserManager.shared.isManager ?? true {
+                selectedClientId = homeViewModel.relationLists.first?.memberID
+            } else {
+                selectedClientId = UserManager.shared.memberId
+            }
         }
         .onChange(of: selectedClientId, {
             requestDosePlanToServer()

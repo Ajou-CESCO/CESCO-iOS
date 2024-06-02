@@ -34,8 +34,6 @@ struct LottieView: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<LottieView>) {
-        DispatchQueue.main.asyncAfter(deadline: .now(), execute: {
-            animationView.play()
-        })
+        animationView.play()
     }
 }

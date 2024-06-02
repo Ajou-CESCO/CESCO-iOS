@@ -21,7 +21,7 @@ struct SearchDoseLoadingView: View {
             Spacer()
             
             LottieView(lottieFile: "search-dose", loopMode: .loop)
-                .frame(width: 300, height: 0)
+                .frame(width: 300, height: 200)
                 .background(Color.clear)
             
             Text("약품과 부작용을 조회하고 있어요")

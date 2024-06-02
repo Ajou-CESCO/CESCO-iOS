@@ -8,6 +8,7 @@
 import SwiftUI
 
 import LinkNavigator
+import Factory
 
 // 이후 다른 곳으로 이동할 것
 @frozen
@@ -44,6 +45,7 @@ struct MyPageDetailView: View {
     
     @State var isEditing: Bool = false
     @State var settingListElement: SettingListElement
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     
     @State var name: String?
     let navigator: LinkNavigatorType
@@ -70,7 +72,7 @@ struct MyPageDetailView: View {
                                                                            name: UserManager.shared.name ?? "null",
                                                                            ssn: UserManager.shared.ssn ?? "null",
                                                                            phone: UserManager.shared.phoneNumber ?? "null",
-                                                                           cabinetId: 1))
+                                                                           cabinetId: homeViewModel.clientCabnetId))
                 case .subscriptionPaymentHistory:
                     SubscriptionPaymentHistoryView()
                 case .customerServiceCenter:

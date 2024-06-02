@@ -54,6 +54,9 @@ struct DoseAddView: View {
                     doseAddViewModel.previousStep()
                 } else {
                     navigator.remove(paths: ["doseAdd"])
+                    /// 복용 계획을 생성하고 나면, state 초기화
+                    doseAddViewModel.dosePlanInfoState = AddDosePlanInfoState()
+                    doseAddViewModel.searchDose = ""
                 }
             })
             

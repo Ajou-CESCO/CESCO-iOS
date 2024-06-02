@@ -85,7 +85,6 @@ struct ClientManageView: View {
                                                                          ssn: relation.memberSsn,
                                                                          phone: relation.memberPhone, 
                                                                          cabinetId: relation.cabinetID)
-                                print(self.selectedRelation)
                                 self.showInformationView = true
                             }
                             
@@ -175,7 +174,7 @@ struct ClientManageView: View {
     }
     
     private func popUpSubText(name: String) -> String {
-        return (UserManager.shared.isManager ?? true) ? "삭제하면 \(name) 님은 더이상 \n\(UserManager.shared.name ?? "null") 님을 케어할 수 없어요. 신중하게 삭제해주세요." : "삭제하면 \(name) 님은 새로운 보호자가 케어를\n요청할 때까지 서비스를 이용할 수 없어요."
+        return (UserManager.shared.isManager ?? true) ? "삭제하면 \(name) 님은 새로운 보호자가 케어를\n요청할 때까지 서비스를 이용할 수 없어요." : "삭제하면 \(name) 님은 \n\(UserManager.shared.name ?? "null") 님을 케어할 수 없어요. 신중하게 삭제해주세요."
     }
 }
 

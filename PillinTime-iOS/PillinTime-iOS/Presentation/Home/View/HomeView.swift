@@ -122,6 +122,9 @@ struct HomeView: View {
                                 .transition(.move(edge: .top))
                                 .scaleFadeIn(delay: 0.4)
                                 .padding([.leading, .trailing], 25)
+                                .onTapGesture {
+                                    self.showHealthView = true
+                                }
                         }
                         
                         HealthMainView(stepCount: $homeViewModel.state.stepCount)

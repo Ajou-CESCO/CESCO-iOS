@@ -282,7 +282,7 @@ struct DoseScheduleSubView: View {
                 .padding([.leading, .trailing], 25)
         }
         .sheet(isPresented: $showAddPillCaseView, content: {
-            AddPillCaseView(selectedManagerId: memberId)
+            AddPillCaseView(selectedMemberId: memberId)
         })
     }
 }

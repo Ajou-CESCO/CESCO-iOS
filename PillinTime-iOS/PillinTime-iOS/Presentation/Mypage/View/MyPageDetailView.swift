@@ -93,8 +93,6 @@ struct MyPageDetailView: View {
             }
             .navigationBarHidden(true)
         }
-        
-        
     }
 }
 

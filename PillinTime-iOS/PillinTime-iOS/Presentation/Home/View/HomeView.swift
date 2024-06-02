@@ -149,7 +149,7 @@ struct HomeView: View {
                 selectedClientId = UserManager.shared.memberId
             } 
             if !isRefresh {
-                self.selectedClientId = homeViewModel.relationLists.first?.memberID
+                initSelectedRelationId()
             }
             
             checkReleationEmpty()
@@ -171,7 +171,7 @@ struct HomeView: View {
             }
         })
         .sheet(isPresented: $showAddPillCaseView, content: {
-            AddPillCaseView(selectedManagerId: selectedClientId ?? 0)
+            AddPillCaseView(selectedMemberId: selectedClientId ?? 0)
         })
         .fullScreenCover(isPresented: $showRequestRelationListView, content: {
             RelationRequestView()
@@ -195,7 +195,11 @@ struct HomeView: View {
     }
     
     private func initSelectedRelationId() {
-        selectedClientId = homeViewModel.relationLists.first?.memberID
+        if UserManager.shared.isManager ?? true {
+            selectedClientId = homeViewModel.relationLists.first?.memberID
+        } else {
+            selectedClientId = UserManager.shared.memberId
+        }
     }
     
     private func initClient() {

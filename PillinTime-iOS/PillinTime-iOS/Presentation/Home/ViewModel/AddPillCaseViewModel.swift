@@ -105,7 +105,7 @@ class AddPillCaseViewModel: ObservableObject {
                     print("--------------------")
                     print("약통 생성 요청 실패: \(error)")
                     self.isNetworking = false
-                    self.infoErrorState.serialNumberErrorMessage = error.localizedDescription
+                    self.infoErrorState.serialNumberErrorMessage = "입력된 시리얼 넘버가 잘못되었습니다."
                     toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in

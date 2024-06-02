@@ -206,14 +206,14 @@ struct AddPillCaseView: View {
     @State private var textInput: String = String()
     @State private var showQRCodeScanningView: Bool = false
     @State private var scannedCode: String?
-    var selectedManagerId: Int
+    var selectedMemberId: Int
     
     @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     // MARK: - Initializer
     
-    init(selectedManagerId: Int) {
-        self.selectedManagerId = selectedManagerId
+    init(selectedMemberId: Int) {
+        self.selectedMemberId = selectedMemberId
         self.addPillCaseViewModel = AddPillCaseViewModel(caseService: CaseService(provider: MoyaProvider<CaseAPI>()))
     }
     
@@ -240,7 +240,10 @@ struct AddPillCaseView: View {
                                     text: $addPillCaseViewModel.infoState.serialNumber,
                                     isError: .constant(false),
                                     errorMessage: addPillCaseViewModel.infoErrorState.serialNumberErrorMessage,
-                                    textInputStyle: .text)
+                                    textInputStyle: .text, 
+                                    onSubmit: {
+                        requestToAddPillCase(serialNumber: addPillCaseViewModel.infoState.serialNumber)
+                    })
                         .fadeIn(delay: 0.3)
                     
                     Button(action: {
@@ -249,6 +252,7 @@ struct AddPillCaseView: View {
                         Text("QR 코드로 등록하기")
                             .font(.body2Medium)
                             .foregroundStyle(Color.gray90)
+                            .padding(3)
                     })
                     .fadeIn(delay: 0.4)
                     
@@ -261,7 +265,7 @@ struct AddPillCaseView: View {
                         requestToAddPillCase(serialNumber: addPillCaseViewModel.infoState.serialNumber)
                     }, content: {
                         Text("확인")
-                    }, isDisabled: !addPillCaseViewModel.infoErrorState.serialNumberErrorMessage.isEmpty || addPillCaseViewModel.infoState.serialNumber.isEmpty,
+                    }, isDisabled: addPillCaseViewModel.infoState.serialNumber.isEmpty,
                                  isLoading: addPillCaseViewModel.isNetworking)
                         .fadeIn(delay: 0.4)
                 }
@@ -299,7 +303,7 @@ struct AddPillCaseView: View {
                             Image(systemName: "xmark.circle.fill")
                                 .resizable()
                                 .foregroundStyle(Color.white)
-                                .frame(width: 20, height: 20)
+                                .frame(width: 30, height: 30)
                         })
                         .padding()
                     }
@@ -336,7 +340,7 @@ struct AddPillCaseView: View {
     }
     
     private func requestToAddPillCase(serialNumber: String) {
-        self.addPillCaseViewModel.$tapAddPillCaseButton.send(PillCaseInfoState(ownerId: self.selectedManagerId,
-                                                                              serialNumber: serialNumber))
+        self.addPillCaseViewModel.$tapAddPillCaseButton.send(PillCaseInfoState(ownerId: self.selectedMemberId,
+                                                                               serialNumber: serialNumber))
     }
 }

@@ -22,7 +22,8 @@ class HKAuthorizationHelper {
     /// 수면, 걸음수, 소모 칼로리
     let readAndShare = Set([HKCategoryType.categoryType(forIdentifier: .sleepAnalysis)!,
                             HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.stepCount)!,
-                            HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)!])
+                            HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.activeEnergyBurned)!,
+                            HKObjectType.quantityType(forIdentifier: HKQuantityTypeIdentifier.heartRate)!])
     
     func setAuthorization() {
         // 데이터 접근 가능 여부에 따라 권한 요청 메소드 호출

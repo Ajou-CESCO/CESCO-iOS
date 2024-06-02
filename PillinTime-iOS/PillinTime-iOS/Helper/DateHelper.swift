@@ -63,6 +63,18 @@ struct DateHelper {
         return todaySixPM
     }
     
+    /// 기준 날짜에 특정 일 수를 뺀 날짜를 반환합니다.
+    static func subtractDays(from date: Date, days: Int) -> Date {
+        
+        assert(days >= 0, "일 수는 0보다 커야합니다.")
+        
+        let calendar = Calendar.current
+        var dateComponents = DateComponents()
+        dateComponents.day = -days
+        
+        return calendar.date(byAdding: dateComponents, to: date)!
+    }
+    
     /// 전날 오후 6시
     func getYesterdaySixPM(_ date: Date) -> Date {
         let calendar = Calendar.current

@@ -13,6 +13,14 @@ import Factory
 struct AddDosePlanInfoState {
     var memberID: Int = Int()
     var medicineID: String = String()
+    var medicineName: String = String()
+    var medicineSeries: String = String()
+    var medicineAdverse: MedicineAdverse = MedicineAdverse(dosageCaution: nil,
+                                                          ageSpecificContraindication: nil,
+                                                          elderlyCaution: nil,
+                                                          administrationPeriodCaution: nil,
+                                                          pregnancyContraindication: nil,
+                                                          duplicateEfficacyGroup: nil)
     var weekdayList: [Int] = []
     var timeList: [String] = []
     var startAt: String = String()
@@ -117,11 +125,14 @@ class DoseAddViewModel: ObservableObject {
         $requestAddDosePlan.sink { _ in
             self.requestAddDosePlanToServer(AddDosePlanRequestModel(memberID: self.dosePlanInfoState.memberID,
                                                                     medicineID: self.dosePlanInfoState.medicineID,
+                                                                    medicineName: self.dosePlanInfoState.medicineName,
+                                                                    medicineSeries: self.dosePlanInfoState.medicineSeries,
+                                                                    medicineAdverse: self.dosePlanInfoState.medicineAdverse,
+                                                                    cabinetIndex: self.dosePlanInfoState.cabinetIndex,
                                                                     weekdayList: self.dosePlanInfoState.weekdayList,
                                                                     timeList: self.dosePlanInfoState.timeList,
                                                                     startAt: self.dosePlanInfoState.startAt,
-                                                                    endAt: self.dosePlanInfoState.endAt,
-                                                                    cabinetIndex: self.dosePlanInfoState.cabinetIndex))
+                                                                    endAt: self.dosePlanInfoState.endAt))
         }
         .store(in: &cancellables)
     }
@@ -144,6 +155,7 @@ class DoseAddViewModel: ObservableObject {
                         /// 복용 계획을 생성하고 나면, state 초기화
                         self.dosePlanInfoState = AddDosePlanInfoState()
                         self.searchDose = ""
+                        self.step = 1
                     }
                 case .failure(let error):
                     print("복용 계획 생성 요청 실패: \(error)")

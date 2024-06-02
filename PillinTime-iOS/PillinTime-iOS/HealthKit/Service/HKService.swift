@@ -28,6 +28,7 @@ class HKService: HKServiceProtocol {
     func getSleepRecord(date: Date) -> AnyPublisher<Int, HKError> {
         return self.fetchSleepSamples(date: date)
             .tryMap { samples in
+                print("samples:", samples)
                 return self
                     .core
                     .calculateSleepTimeQuentity(
@@ -37,6 +38,17 @@ class HKService: HKServiceProtocol {
             }
             .mapError { error in
                 return error as! HKError
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    /// 심장박동수
+    func getHeartRate(date: Date) -> AnyPublisher<[Double], HKError> {
+        return self.fetchHeartRate(date: date)
+            .map { samples in
+                self.core.getHeartRateBPM(
+                    samples: samples.map { $0.asHeartRateEntity}
+                )
             }
             .eraseToAnyPublisher()
     }
@@ -146,6 +158,27 @@ extension HKService {
                 if let error = error { promise(.failure(error)) }
                 print("sample:", samples)
                 promise(.success(samples))
+            }
+        }
+    }
+    
+    /// 특정 시간의 심박수 fetch
+    private func fetchHeartRate(date: Date)
+    -> Future<[HKQuantitySample], HKError> {
+        return Future { promise in
+            let endDate = self.dateHelper.getYesterdayEndPM(date)
+            let startDate = self.dateHelper.getYesterdayStartAM(date)
+            let predicate = HKQuery.predicateForSamples(withStart: startDate,
+                                                        end: endDate,
+                                                        options: .strictEndDate)
+            self.provider.getQuantityTypeSamples(identifier: .heartRate,
+                                                 predicate: predicate) { samples, error in
+                if let error = error {
+                    promise(.failure(error))
+                }
+                promise(.success(samples))
+                print("heartrate", samples)
+                print("error", error)
             }
         }
     }

@@ -52,7 +52,7 @@ struct SearchDoseView: View {
                                                                   doseAddViewModel.dosePlanInfoState.medicineID = result.medicineCode
                                                               }
                                                            }
-                                                  ), isUserHasSideEffect: .constant(!isAdverseMapSafe(adverseMap: result.adverseMap)))
+                                                  ), isUserHasSideEffect: .constant(!isAdverseMapSafe(medicineAdverse: result.medicineAdverse)))
                         }
                     }
                     
@@ -69,14 +69,14 @@ struct SearchDoseView: View {
         }
     }
     
-    private func isAdverseMapSafe(adverseMap: AdverseMap) -> Bool {
+    private func isAdverseMapSafe(medicineAdverse: MedicineAdverse) -> Bool {
         
-        return adverseMap.dosageCaution == nil &&
-               adverseMap.ageSpecificContraindication == nil &&
-               adverseMap.elderlyCaution == nil &&
-               adverseMap.administrationPeriodCaution == nil &&
-               adverseMap.pregnancyContraindication == nil &&
-               adverseMap.duplicateEfficacyGroup == nil
+        return medicineAdverse.dosageCaution == nil &&
+        medicineAdverse.ageSpecificContraindication == nil &&
+        medicineAdverse.elderlyCaution == nil &&
+        medicineAdverse.administrationPeriodCaution == nil &&
+        medicineAdverse.pregnancyContraindication == nil &&
+        medicineAdverse.duplicateEfficacyGroup == nil
     }
 }
 
@@ -129,6 +129,9 @@ struct SearchDoseElementView: View {
                                              rightButtonAction: {
                 self.doseAddViewModel.isDoseSelected = true
                 self.doseAddViewModel.dosePlanInfoState.medicineID = searchDoseResponseModelResult.medicineCode
+                self.doseAddViewModel.dosePlanInfoState.medicineName = searchDoseResponseModelResult.medicineName
+                self.doseAddViewModel.dosePlanInfoState.medicineSeries = searchDoseResponseModelResult.medicineSeries
+                self.doseAddViewModel.dosePlanInfoState.medicineAdverse = searchDoseResponseModelResult.medicineAdverse
             })
                 .background(ClearBackgroundView())
                 .background(Material.ultraThin)

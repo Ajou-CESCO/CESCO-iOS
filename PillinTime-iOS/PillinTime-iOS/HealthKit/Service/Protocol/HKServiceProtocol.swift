@@ -33,4 +33,11 @@ protocol HKServiceProtocol {
     ///     - date: 소모 칼로리 데이터 추출할 대상의 날짜입니다.
     /// - Returns: 총 소모 칼로리를 Double로 반환합니다.
     func getEnergy(date: Date) -> Future<Double, HKError>
+    
+    /// 특정 날짜의 심박동 정보를 구합니다.
+    ///
+    /// - Parameters:
+    ///     - date: 심박동 데이터 추출할 대상의 날짜입니다.
+    /// - Returns: 총 소모 칼로리를 Double로 반환합니다.
+    func getHeartRate(date: Date) -> AnyPublisher<[Double], HKError>
 }

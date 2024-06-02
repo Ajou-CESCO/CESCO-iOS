@@ -57,6 +57,7 @@ struct DoseAddView: View {
                     /// 복용 계획을 생성하고 나면, state 초기화
                     doseAddViewModel.dosePlanInfoState = AddDosePlanInfoState()
                     doseAddViewModel.searchDose = ""
+                    doseAddViewModel.step = 1
                 }
             })
             

@@ -25,7 +25,8 @@ extension Container {
     var homeViewModel: Factory<HomeViewModel> {
         Factory(self) {
             HomeViewModel(etcService: EtcService(provider: MoyaProvider<EtcAPI>()), 
-                          planService: PlanService(provider: MoyaProvider<PlanAPI>()))
+                          planService: PlanService(provider: MoyaProvider<PlanAPI>()), 
+                          healthService: HealthService(provider: MoyaProvider<HealthAPI>()))
         }
         .singleton
     }
@@ -102,6 +103,13 @@ extension Container {
     var etcService: Factory<EtcServiceType> {
         Factory(self) {
             EtcService(provider: MoyaProvider<EtcAPI>())
+        }
+        .singleton
+    }
+    
+    var healthService: Factory<HealthServiceType> {
+        Factory(self) {
+            HealthService(provider: MoyaProvider<HealthAPI>())
         }
         .singleton
     }

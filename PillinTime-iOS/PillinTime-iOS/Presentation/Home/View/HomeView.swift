@@ -162,7 +162,6 @@ struct HomeView: View {
         .onAppear {
             initSelectedRelationId()
             checkReleationEmpty()
-            homeViewModel.action.viewOnAppear.send()
             initClient()
             refresh()
         }
@@ -172,6 +171,7 @@ struct HomeView: View {
                     initSelectedRelationId()
                 }
                 homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
+                homeViewModel.$requestGetHealthData.send(selectedClientId ?? 0)
                 UserManager.shared.selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
                 UserManager.shared.selectedClientId = selectedClientId
             }
@@ -223,6 +223,7 @@ struct HomeView: View {
             selectedClientId = homeViewModel.relationLists.first?.memberID
         }
         homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
+        homeViewModel.$requestGetHealthData.send(selectedClientId ?? 0)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
             withAnimation {
                 self.showEncourageView = true
@@ -237,9 +238,8 @@ struct HealthMainView: View {
     
     // MARK: - Properties
     
-    var mainText: [String] = ["걸음 수", "수면", "심장박동수", "활동량"]
-    var subText: [String] = ["4,512보", "7시간", "89bpm", "435kcal"]
     @Binding var stepCount: String
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     
     // MARK: - body
     
@@ -248,14 +248,14 @@ struct HealthMainView: View {
             Color.primary60
             
             HStack(spacing: 20) {
-                ForEach(0..<4, id: \.self) { index in
+                ForEach(homeViewModel.state.asDictionary().sorted(by: <), id: \.key) { key, value in
                     VStack {
-                        Text(mainText[index])
+                        Text("\(key)")
                             .font(.caption1Medium)
                             .foregroundStyle(Color.primary40)
                             .padding(.bottom, 2)
                         
-                        Text(subText[index])
+                        Text("\(value)")
                             .font(.body1Bold)
                             .foregroundStyle(Color.white)
                     }
@@ -274,7 +274,7 @@ struct EncourageMainView: View {
     // MARK: - Properties
     
     var mainTitle: String = "오늘 얼마나 걸으셨나요?"
-    var subTitle: String = "권장량보다 2,488보 덜 걸으셨어요."
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     
     // MARK: - body
     
@@ -289,7 +289,7 @@ struct EncourageMainView: View {
                     .foregroundStyle(Color.gray90)
                     .padding(.bottom, 1)
                 
-                Text(subTitle)
+                Text(homeViewModel.healthData?.stepsMessage ?? "지금 바로 내 걸음 수를 확인하세요.")
                     .font(.body2Medium)
                     .foregroundStyle(Color.gray50)
             }

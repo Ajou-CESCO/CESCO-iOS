@@ -61,26 +61,44 @@ struct ManagementDoseScheduleView: View {
                     .fadeIn(delay: 0.2)
                 
                 ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 0) {
-                        ForEach(homeViewModel.relationLists, id: \.memberID) { _ in
-                            VStack(alignment: .center) {
-                                if managementDoseScheduleViewModel.isNetworking {
-                                    LoadingView()
-                                } else if managementDoseScheduleViewModel.dosePlanList.isEmpty {
-                                    CustomEmptyView(mainText: "등록된 복약 일정이 없습니다", subText: "복약 탭에서 일정을 추가하세요.")
-                                }
+                    
+                    if UserManager.shared.isManager ?? true {
+                        LazyHStack(spacing: 0) {
+                            ForEach(homeViewModel.relationLists, id: \.memberID) { _ in
+                                VStack(alignment: .center) {
+                                    if managementDoseScheduleViewModel.isNetworking {
+                                        LoadingView()
+                                    } else if managementDoseScheduleViewModel.dosePlanList.isEmpty {
+                                        CustomEmptyView(mainText: "등록된 복약 일정이 없습니다", subText: "복약 탭에서 일정을 추가하세요.")
+                                    }
 
-                                ManagementDoseScheduleElementView(dosePlanList: .constant(
-                                    managementDoseScheduleViewModel.dosePlanList
-                                ), selectedClientId: $selectedClientId,
-                                managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
-                                
-                                Spacer()
+                                    ManagementDoseScheduleElementView(dosePlanList: .constant(
+                                        managementDoseScheduleViewModel.dosePlanList
+                                    ), selectedClientId: $selectedClientId,
+                                    managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
+                                    
+                                    Spacer()
+                                }
+                                .containerRelativeFrame(.horizontal)
                             }
-                            .containerRelativeFrame(.horizontal)
+                        }
+                        .scrollTargetLayout(isEnabled: true)
+                    } else {
+                        VStack(alignment: .center) {
+                            if managementDoseScheduleViewModel.isNetworking {
+                                LoadingView()
+                            } else if managementDoseScheduleViewModel.dosePlanList.isEmpty {
+                                CustomEmptyView(mainText: "등록된 복약 일정이 없습니다", subText: "복약 탭에서 일정을 추가하세요.")
+                            }
+                            
+                            ManagementDoseScheduleElementView(dosePlanList: .constant(
+                                managementDoseScheduleViewModel.dosePlanList
+                            ), selectedClientId: $selectedClientId,
+                                managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
+                            
+                            Spacer()
                         }
                     }
-                    .scrollTargetLayout(isEnabled: true)
                 }
                 .scrollTargetBehavior(.viewAligned)
                 .scrollPosition(id: $selectedClientId)
@@ -126,6 +144,9 @@ struct ManagementDoseScheduleElementView: View {
                     VStack(alignment: .leading) {
                         Text(plan.medicineName)
                             .multilineTextAlignment(.leading)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                            .frame(width: 250)
                             .font(.h5Bold)
                             .foregroundStyle(Color.gray90)
                             .padding(.top, 10)
@@ -142,7 +163,6 @@ struct ManagementDoseScheduleElementView: View {
                             .foregroundStyle(Color.gray90)
                     })
                     .padding()
-
                 }
                 
                 Divider()

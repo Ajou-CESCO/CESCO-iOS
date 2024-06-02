@@ -36,7 +36,7 @@ struct SearchDoseView: View {
                             })
             
             if (searchDoseViewModel.isNetworking) {
-                LoadingView()
+                SearchDoseLoadingView()
             }
             
             ScrollView(showsIndicators: false) {

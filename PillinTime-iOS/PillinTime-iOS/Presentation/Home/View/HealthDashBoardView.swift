@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+import Factory
+
 struct HealthDashBoardView: View {
     
     let name: String
@@ -63,6 +65,8 @@ struct HealthDashBoardView: View {
 
 struct StepCardView: View {
     
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
+    
     var body: some View {
         ZStack {
             Image("img-step-chart-unfilled")
@@ -81,7 +85,7 @@ struct StepCardView: View {
                     .foregroundStyle(Color.gray50)
                     .padding(.vertical, 5)
                 
-                Text("20대 권장까지\n2,488보 남았어요")
+                Text("\(homeViewModel.healthData?.stepsMessage ?? "20대 권장까지 1684보 남았어요")")
                     .font(.body1Bold)
                     .foregroundStyle(Color.gray90)
                     .lineSpacing(3)
@@ -96,20 +100,20 @@ struct StepCardView: View {
                     
                     Spacer()
                     
-                    Text("4,512보")
+                    Text("\(homeViewModel.healthData?.steps ?? 1684)보")
                         .font(.caption1Bold)
                         .foregroundStyle(Color.primary60)
                 }
                 .frame(width: 110)
                 
                 HStack {
-                    Text("20대 권장")
+                    Text("\(homeViewModel.healthData?.ageGroup ?? 20)대 권장")
                         .font(.caption1Medium)
                         .foregroundStyle(Color.gray40)
                     
                     Spacer()
                     
-                    Text("7,000보")
+                    Text("\(homeViewModel.healthData?.averStep ?? 7000)보")
                         .font(.caption1Bold)
                         .foregroundStyle(Color.primary60)
                 }
@@ -124,6 +128,9 @@ struct StepCardView: View {
 }
 
 struct SleepCardView: View {
+    
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
+
     var body: some View {
         
         ZStack {
@@ -136,12 +143,13 @@ struct SleepCardView: View {
                     .padding(.leading, 15)
                     .padding(.vertical, 5)
                 
-                Text("어제보다\n3시간 더 잤어요")
+                Text("\(homeViewModel.healthData?.sleepTimeMessage ?? "오늘 14시간 잤어요")")
                     .font(.body1Bold)
                     .foregroundStyle(Color.gray90)
                     .lineSpacing(3)
                     .padding(.bottom, 20)
                     .padding(.leading, 15)
+                    .frame(height: 70)
 
                 HStack {
                     Image("img-sleep-arrow")
@@ -162,7 +170,7 @@ struct SleepCardView: View {
                     
                     Spacer()
                     
-                    Text("12시간")
+                    Text("\(homeViewModel.healthData?.sleepTime ?? 14)시간")
                         .font(.caption1Bold)
                         .foregroundStyle(Color.primary60)
                 }
@@ -170,13 +178,13 @@ struct SleepCardView: View {
                 .padding(.leading, 15)
                 
                 HStack {
-                    Text("20대 권장 시간")
+                    Text("\(homeViewModel.healthData?.ageGroup ?? 20)대 권장 시간")
                         .font(.caption1Medium)
                         .foregroundStyle(Color.gray40)
                     
                     Spacer()
                     
-                    Text("7시간")
+                    Text("\(homeViewModel.healthData?.recommendSleepTime ?? 14)시간")
                         .font(.caption1Bold)
                         .foregroundStyle(Color.gray40)
                 }
@@ -192,6 +200,9 @@ struct SleepCardView: View {
 }
 
 struct HeartRateCardView: View {
+    
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
+    
     var body: some View {
         ZStack {
             Color.white
@@ -210,7 +221,7 @@ struct HeartRateCardView: View {
                         .foregroundStyle(Color.red)
                         .padding(.leading, 8)
                     
-                    Text("89")
+                    Text("\(homeViewModel.healthData?.heartRate ?? 89)")
                         .font(.logo3ExtraBold)
                         .foregroundStyle(Color.gray90)
 
@@ -224,13 +235,13 @@ struct HeartRateCardView: View {
                     .fadeIn(delay: 0.5)
                 
                 HStack {
-                    Text("20대 평균")
+                    Text("\(homeViewModel.healthData?.ageGroup ?? 20)대 평균")
                         .font(.caption1Medium)
                         .foregroundStyle(Color.gray40)
                     
                     Spacer()
                     
-                    Text("100 bpm")
+                    Text("\(homeViewModel.healthData?.heartRateMessage ?? "80-90bpm")")
                         .font(.caption1Bold)
                         .foregroundStyle(Color.gray40)
                 }
@@ -244,6 +255,9 @@ struct HeartRateCardView: View {
 }
 
 struct ActivityEnergyBurnedCardView: View {
+    
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
+    
     var body: some View {
         ZStack {
             Color.white
@@ -259,7 +273,7 @@ struct ActivityEnergyBurnedCardView: View {
                         .scaleFadeIn(delay: 0.5)
                     
                     VStack {
-                        Text("435")
+                        Text("\(homeViewModel.healthData?.calorie ?? 435)")
                             .font(.logo4ExtraBold)
                             .foregroundStyle(Color.gray90)
                         Text("kcal")
@@ -277,7 +291,7 @@ struct ActivityEnergyBurnedCardView: View {
                     
                     Spacer()
                     
-                    Text("435kcal")
+                    Text("\(homeViewModel.healthData?.calorie ?? 435)kcal")
                         .font(.caption1Bold)
                         .foregroundStyle(Color.primary60)
                 }
@@ -285,13 +299,13 @@ struct ActivityEnergyBurnedCardView: View {
                 .padding(.leading, 8)
                 
                 HStack {
-                    Text("20대 권장")
+                    Text("\(homeViewModel.healthData?.ageGroup ?? 20)대 권장")
                         .font(.caption1Medium)
                         .foregroundStyle(Color.gray40)
                     
                     Spacer()
                     
-                    Text("500kcal")
+                    Text("\(homeViewModel.healthData?.calorieMessage ?? "2600kcal")")
                         .font(.caption1Bold)
                         .foregroundStyle(Color.gray40)
                 }

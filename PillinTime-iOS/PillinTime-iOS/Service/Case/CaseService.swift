@@ -51,4 +51,34 @@ class CaseService: CaseServiceType {
             .eraseToAnyPublisher()
     }
     
+    /// 약통 삭제 요청
+    func deletePillCaseRequest(cabineId: String) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError> {
+        return provider.requestPublisher(.deleteCase(cabineId))
+            .tryMap { response in
+                guard let httpResponse = response.response, 200..<300 ~= httpResponse.statusCode else {
+                    print(response.response?.statusCode)
+                    throw PillinTimeError.networkFail
+                }
+                
+                do {
+                    let baseResponse = try JSONDecoder().decode(BaseResponse<BlankData>.self, from: response.data)
+                    if baseResponse.status != 200 {
+                        throw PillinTimeError.networkFail
+                    }
+                    return baseResponse
+                } catch {
+                    throw PillinTimeError.networkFail
+                }
+            }
+            .mapError { error in
+                print("error:", error)
+                if error is MoyaError {
+                    return PillinTimeError.networkFail
+                } else {
+                    return error as! PillinTimeError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
 }

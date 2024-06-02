@@ -70,7 +70,7 @@ struct MyPageDetailView: View {
                                                                            name: UserManager.shared.name ?? "null",
                                                                            ssn: UserManager.shared.ssn ?? "null",
                                                                            phone: UserManager.shared.phoneNumber ?? "null",
-                                                                           isPillCaseExist: true))
+                                                                           cabinetId: 1))
                 case .subscriptionPaymentHistory:
                     SubscriptionPaymentHistoryView()
                 case .customerServiceCenter:

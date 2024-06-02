@@ -56,7 +56,7 @@ struct ManagementMyInformationView: View {
                 
                 Spacer()
                 
-                if !(UserManager.shared.isManager ?? true) && (userInfo.isPillCaseExist) {
+                if !(UserManager.shared.isManager ?? true) && (userInfo.cabinetId != 0) {
                     CustomButton(buttonSize: .regular,
                                  buttonStyle: .disabled,
                                  action: {

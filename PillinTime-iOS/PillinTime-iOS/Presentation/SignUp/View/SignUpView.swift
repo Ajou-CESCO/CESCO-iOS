@@ -201,7 +201,7 @@ struct SignUpView: View {
             Spacer()
         }
         .fullScreenCover(isPresented: $showPopUpView, content: {
-            CustomPopUpView(mainText: "나의 역할을\n\(selectedRole == 0 ? "누군가를 보호하는 보호자" : "누군가의 보호를 받는 피보호자")로\n결정하시겠어요?",
+            CustomPopUpView(mainText: "나의 역할을\n\(selectedRole == 0 ? "누군가를 보호하는 보호자" : "보호를 받는 피보호자")로\n결정하시겠어요?",
                             subText: "나의 역할은 한 번 선택하면 변경하지 못해요.\n신중하게 선택해주세요.",
                             leftButtonText: "다시 정하기",
                             rightButtonText: "확정하기",
@@ -210,7 +210,7 @@ struct SignUpView: View {
             }, rightButtonAction: {
                 // 회원가입 요청
                 signUpRequestViewModel.$tapSignUpButton.send()
-            }, multiColorText: "\(selectedRole == 0 ? "누군가를 보호하는 보호자" : "누군가의 보호를 받는 피보호자")")
+            }, multiColorText: "\(selectedRole == 0 ? "누군가를 보호하는 보호자" : "보호를 받는 피보호자")")
             .background(ClearBackgroundView())
             .background(Material.ultraThin)
         })

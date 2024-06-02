@@ -31,6 +31,8 @@ struct SearchDoseView: View {
                             searchButtonAction: {
                                 hideKeyboard()
                                 searchDoseViewModel.$tapSearchButton.send(doseAddViewModel.searchDose)
+                            }, onSubmit: {
+                                searchDoseViewModel.$tapSearchButton.send(doseAddViewModel.searchDose)
                             })
             
             if (searchDoseViewModel.isNetworking) {

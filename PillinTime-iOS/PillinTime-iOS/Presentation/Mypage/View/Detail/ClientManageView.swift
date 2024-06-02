@@ -15,7 +15,7 @@ struct SelectedRelation: Identifiable {
     let name: String
     let ssn: String
     let phone: String
-    let isPillCaseExist: Bool
+    let cabinetId: Int
 }
 
 // MARK: - ClientManageView
@@ -84,7 +84,7 @@ struct ClientManageView: View {
                                                                          name: relation.memberName,
                                                                          ssn: relation.memberSsn,
                                                                          phone: relation.memberPhone, 
-                                                                         isPillCaseExist: relation.cabinetID != 0)
+                                                                         cabinetId: relation.cabinetID)
                                 print(self.selectedRelation)
                                 self.showInformationView = true
                             }
@@ -110,7 +110,7 @@ struct ClientManageView: View {
                                                                                name: relation.memberName,
                                                                                ssn: relation.memberPhone,
                                                                                phone: relation.memberPhone, 
-                                                                               isPillCaseExist: relation.cabinetID != 0)
+                                                                               cabinetId: relation.cabinetID)
                             }
                             .tint(.error90)
                         }

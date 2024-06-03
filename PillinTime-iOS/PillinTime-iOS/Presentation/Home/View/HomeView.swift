@@ -73,7 +73,9 @@ struct HomeView: View {
                                                 .scaleFadeIn(delay: 0.4)
                                                 .padding([.leading, .trailing], 25)
                                                 .onTapGesture {
-                                                    self.showHealthView = true
+                                                    if !(homeViewModel.healthData?.isEmpty ?? true) {
+                                                        self.showHealthView = true
+                                                    }
                                                 }
                                         }
                                         
@@ -136,7 +138,9 @@ struct HomeView: View {
                                 .scaleFadeIn(delay: 0.4)
                                 .padding([.leading, .trailing], 25)
                                 .onTapGesture {
-                                    self.showHealthView = true
+                                    if !(homeViewModel.healthData?.isEmpty ?? true) {
+                                        self.showHealthView = true
+                                    }
                                 }
                         }
                         
@@ -144,6 +148,21 @@ struct HomeView: View {
                             .padding(.top, showEncourageView ? 17 : 0) // EncourageMainView 표시에 따라 조정
                             .fadeIn(delay: 0.5)
                             .padding([.leading, .trailing], 25)
+                        
+                        Button(action: {
+                            homeViewModel.$requestCreateHealthData.send()
+                        }, label: {
+                            HStack {
+                                Image(systemName: "arrow.clockwise.circle")
+                                    .foregroundStyle(Color.gray90)
+                                
+                                Text("건강 정보 다시 불러오기")
+                                    .font(.body2Medium)
+                                    .foregroundStyle(Color.gray90)
+                            }
+                            .padding()
+                        })
+                        .fadeIn(delay: 0.6)
                         
                         Spacer()
                     }
@@ -176,6 +195,9 @@ struct HomeView: View {
             checkReleationEmpty()
             initClient()
             refresh()
+            if !(UserManager.shared.isManager ?? false) {
+                homeViewModel.$requestCreateHealthData.send()
+            }
         }
         .onChange(of: selectedClientId, {
             if homeViewModel.isDataReady {
@@ -295,23 +317,38 @@ struct EncourageMainView: View {
     
     var body: some View {
         HStack {
-            LottieView(lottieFile: "pie-chart", loopMode: .loop)
-                .frame(width: 70, height: 70)
             
-            VStack(alignment: .leading) {
-                Text(mainTitle)
-                    .font(.logo4Medium)
-                    .foregroundStyle(Color.gray90)
-                    .padding(.bottom, 1)
+            if (homeViewModel.healthData?.stepsMessage != nil) {
+                LottieView(lottieFile: "pie-chart", loopMode: .loop)
+                    .frame(width: 70, height: 70)
                 
-                Text(homeViewModel.healthData?.stepsMessage ?? "지금 바로 내 걸음 수를 확인하세요.")
-                    .font(.body2Medium)
-                    .foregroundStyle(Color.gray50)
+                VStack(alignment: .leading) {
+                    Text(mainTitle)
+                        .font(.logo4Medium)
+                        .foregroundStyle(Color.gray90)
+                        .padding(.bottom, 1)
+                    
+                    Text(homeViewModel.healthData?.stepsMessage ?? "아직 걸음 데이터가 없어요.")
+                        .font(.body2Medium)
+                        .foregroundStyle(Color.gray50)
+                }
+                
+                Image(systemName: "chevron.forward")
+                    .foregroundStyle(Color.gray60)
+                    .padding()
+            } else {
+                VStack {
+                    Text("건강 데이터가 없어요.")
+                        .font(.logo4Medium)
+                        .foregroundStyle(Color.gray90)
+                        .padding(.bottom, 1)
+                    
+                    Text("건강 데이터 자료가 없어서, 통계를 내지 못했어요.")
+                        .font(.body2Medium)
+                        .foregroundStyle(Color.gray50)
+                }
             }
             
-            Image(systemName: "chevron.forward")
-                .foregroundStyle(Color.gray60)
-                .padding()
         }
         .frame(maxWidth: .infinity, minHeight: 90, maxHeight: 90)
         .background(Color.white)

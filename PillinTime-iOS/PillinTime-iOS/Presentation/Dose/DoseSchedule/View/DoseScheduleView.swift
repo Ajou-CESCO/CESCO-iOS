@@ -184,7 +184,7 @@ struct DoseScheduleView: View {
         .onChange(of: isUserPoked, {
             if isUserPoked {
                 fcmViewModel.requestPushAlarmToServer(selectedClientId ?? 0)
-                toastManager.showToast(description: "\(selectedClientName ?? "null") 님을 콕 찔렀어요.")
+                toastManager.showToast(description: "\(selectedClientName ?? "노수인") 님을 콕 찔렀어요.")
                 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
                     self.isUserPoked = false

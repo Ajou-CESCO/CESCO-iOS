@@ -30,6 +30,7 @@ enum UserProfile {
             return ""
         }
     }
+    
     static let allCases: [UserProfile] = [
         .name,
         .phoneNumber,
@@ -85,8 +86,10 @@ struct MyPageDetailView: View {
                     ManagementDoseScheduleView()
                 case .todaysHealthState:
                     HealthDashBoardView(name: (UserManager.shared.isManager ?? true) ? (UserManager.shared.selectedClientName ?? "null"): (UserManager.shared.name ?? "null"))
-                default:
-                    EmptyView()
+                case .bugReport:
+                    BugReportView()
+                case .logout:
+                    LogoutView(navigator: navigator)
                 }
                 
                 Spacer()

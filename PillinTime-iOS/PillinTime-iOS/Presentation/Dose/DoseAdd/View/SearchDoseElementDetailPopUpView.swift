@@ -69,7 +69,7 @@ struct SearchDoseElementDetailPopUpView: View {
                                             .multilineTextAlignment(.leading)
                                             .font(.body2Bold)
                                             .foregroundStyle(Color.white)
-                                            .padding(.bottom, 2)
+                                            .padding(.bottom, 5)
                                             .fadeIn(delay: 0.2)
                                     }
                                 }

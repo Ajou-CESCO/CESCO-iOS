@@ -22,9 +22,10 @@ struct GetDosePlanResponseModelResult: Codable, Identifiable {
     let weekdayList: [Int]
     let timeList: [String]
     let startAt, endAt: String
+    let medicineAdverse: MedicineAdverse
 
     enum CodingKeys: String, CodingKey {
         case medicineID = "medicineId"
-        case medicineName, cabinetIndex, weekdayList, timeList, startAt, endAt
+        case medicineName, cabinetIndex, weekdayList, timeList, startAt, endAt, medicineAdverse
     }
 }

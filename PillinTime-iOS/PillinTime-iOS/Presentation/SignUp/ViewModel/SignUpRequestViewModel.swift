@@ -148,9 +148,9 @@ class SignUpRequestViewModel: ObservableObject {
                 // fcm 토큰 전송
                 self.fcmViewModel.requestRegisterTokenToServer(UserManager.shared.fcmToken ?? "")
                 // 
-                if !(UserManager.shared.isManager ?? false) {
-                    self.homeViewModel.$requestCreateHealthData.send()
-                }
+//                if !(UserManager.shared.isManager ?? false) {
+//                    self.homeViewModel.$requestCreateHealthData.send()
+//                }
             })
             .store(in: &cancellables)
     }

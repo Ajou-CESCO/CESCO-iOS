@@ -15,7 +15,7 @@ struct MyPageDetailRouteBuilder: RouteBuilder {
     var build: (LinkNavigatorType, [String: String], DependencyType) -> MatchingViewController? {
         { navigator, items, dependency in
             return WrappingController(matchPath: matchPath) {
-                MyPageDetailView(navigator: navigator, settingListElement: .logout, name: "").navigationBarHidden(true)
+                MyPageDetailView(navigator: navigator, settingListElement: .bugReport, name: "").navigationBarHidden(true)
             }
         }
     }

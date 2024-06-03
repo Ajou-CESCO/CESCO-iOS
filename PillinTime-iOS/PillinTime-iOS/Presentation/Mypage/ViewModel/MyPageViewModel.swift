@@ -18,6 +18,7 @@ enum SettingListElement: Identifiable {
     case logout
     case managementDoseSchedule
     case todaysHealthState
+    case bugReport
     
     var id: SettingListElement {
         return self
@@ -41,6 +42,8 @@ enum SettingListElement: Identifiable {
             return "복약 일정 관리"
         case .todaysHealthState:
             return "오늘의 건강 상태"
+        case .bugReport:
+            return "버그 제출하기"
         }
     }
     
@@ -65,7 +68,8 @@ enum SettingListElement: Identifiable {
 //        .subscriptionPaymentHistory,
 //        .customerServiceCenter,
         .logout,
-        .withdrawal
+        .withdrawal,
+        .bugReport
     ]
 }
 

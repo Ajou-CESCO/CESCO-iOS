@@ -43,6 +43,6 @@ extension UserAPI: TargetType {
     }
     
     var headers: [String: String]? {
-        return Config.defaultHeader
+        return Config.headerWithAccessToken
     }
 }

@@ -63,7 +63,9 @@ struct ContentView: View {
                 navigator.next(paths: ["signup"], items: [:], isAnimated: false)
             } else {
                 print(UserManager.shared.accessToken)
-                HKAuthorizationHelper.shared.setAuthorization()
+                if !(UserManager.shared.isManager ?? false) {
+                    HKAuthorizationHelper.shared.setAuthorization()
+                }
                 homeViewModel.$requestInitClient.send(true)
             }
         

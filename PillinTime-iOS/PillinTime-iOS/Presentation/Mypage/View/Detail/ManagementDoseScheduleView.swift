@@ -89,6 +89,7 @@ struct ManagementDoseScheduleView: View {
                                 LoadingView()
                             } else if managementDoseScheduleViewModel.dosePlanList.isEmpty {
                                 CustomEmptyView(mainText: "등록된 복약 일정이 없습니다", subText: "복약 탭에서 일정을 추가하세요.")
+                                    .frame(width: UIScreen.main.bounds.width)
                             }
                             
                             ManagementDoseScheduleElementView(dosePlanList: .constant(
@@ -151,7 +152,8 @@ struct ManagementDoseScheduleElementView: View {
                             .foregroundStyle(Color.gray90)
                             .padding(.top, 10)
                         
-                        ManagementDoseScheduleElementDetailView(dosePlanList: plan)
+                        ManagementDoseScheduleElementDetailView(dosePlanList: plan, 
+                                                                isUserHasSideEffect: .constant(!isAdverseMapSafe(medicineAdverse: plan.medicineAdverse)))
                             .padding(.bottom, 10)
                     }
                     .padding(.leading, 20)
@@ -190,6 +192,15 @@ struct ManagementDoseScheduleElementView: View {
                                                                                                medicineId: self.selectedDosePlan?.medicineID ?? "",
                                                                                                cabinetIndex: self.selectedDosePlan?.cabinetIndex ?? 0))
     }
+    
+    private func isAdverseMapSafe(medicineAdverse: MedicineAdverse) -> Bool {
+        return medicineAdverse.dosageCaution == nil &&
+        medicineAdverse.ageSpecificContraindication == nil &&
+        medicineAdverse.elderlyCaution == nil &&
+        medicineAdverse.administrationPeriodCaution == nil &&
+        medicineAdverse.pregnancyContraindication == nil &&
+        medicineAdverse.duplicateEfficacyGroup == nil
+    }
 }
 
 // MARK: - ManagementDoseScheduleElementDetailView
@@ -200,10 +211,13 @@ struct ManagementDoseScheduleElementDetailView: View {
     
     @State var dosePlanList: GetDosePlanResponseModelResult
     let intToDay: [Int: String] = [1: "월", 2: "화", 3: "수", 4: "목", 5: "금", 6: "토", 7: "일"]
+    @Binding var isUserHasSideEffect: Bool
         
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .center, spacing: 10) {
+                MedicineSideEffectView(isUserHasSideEffect: $isUserHasSideEffect)
+
                 Text(convertIntArrayToDays(dosePlanList.weekdayList))
                     .padding(.vertical, 6)
                     .padding(.horizontal, 10)

@@ -27,4 +27,7 @@ protocol EtcServiceType {
     /// - Returns:
     ///     - InitResponseModel: 사용자에 대한 초기 정보를 담은 Model입니다.
     func initClient() -> AnyPublisher<InitResponseModel, PillinTimeError>
+    
+    /// 캡디 시연용 임시 bug report
+    func bugReport(body: String) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
 }

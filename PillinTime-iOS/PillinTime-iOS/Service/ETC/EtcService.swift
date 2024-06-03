@@ -54,4 +54,25 @@ class EtcService: EtcServiceType {
             }
             .eraseToAnyPublisher()
     }
+    
+    func bugReport(body: String) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError> {
+        return provider.requestPublisher(.bugReport(body))
+            .tryMap { response in
+                print(response)
+                guard let httpResponse = response.response, httpResponse.statusCode == 200 else {
+                    let errorResponse = try response.map(BaseResponse<BlankData>.self)
+                    throw PillinTimeError.networkFail
+                }
+                return try response.map(BaseResponse<BlankData>.self)
+            }
+            .mapError { error in
+                print("error:", error)
+                if error is MoyaError {
+                    return PillinTimeError.networkFail
+                } else {
+                    return error as! PillinTimeError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
 }

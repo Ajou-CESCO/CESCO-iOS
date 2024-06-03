@@ -65,12 +65,13 @@ class HomeViewModel: ObservableObject {
     @Published var doseLog: [GetDoseLogResponseModelResult] = []
     @Published var healthData: GetHealthDateResponseModelResult?
     @Published var clientCabnetId: Int = 0
+    @Published var occupiedCabinetIndex: [Int] = []
     
     @Published var state = HealthInfoState()
     @Published var rawDataState = HealthInfoRawDataState()
     
     // MARK: - Other Data
-    @Published var requestToHK: Bool = false    // HK에게 요청 한 번만 하기 위해서
+    var requestToHK: Bool = false    // HK에게 요청 한 번만 하기 위해서
 
     // MARK: - Cancellable Bag
     
@@ -160,6 +161,7 @@ class HomeViewModel: ObservableObject {
             }, receiveValue: { [weak self] result in
                 guard let self = self else { return }
                 self.doseLog = result.result
+                self.occupiedCabinetIndex = doseLog.map { $0.cabinetIndex }
                 print(self.doseLog)
             })
             .store(in: &cancellables)
@@ -247,7 +249,7 @@ class HomeViewModel: ObservableObject {
                                            burnCalories: "\(String(result.result?.calorie ?? 0))kcal")
                 print(self.healthInfoState)
                 // healthData가 빈 값일 때만 bindHealth() 함수들 실행
-                if (self.healthData?.isEmpty ?? true) && (!(UserManager.shared.isManager ?? false)) {
+                if (self.healthData?.isEmpty ?? true) && (!(UserManager.shared.isManager ?? false)) && !self.requestToHK {
                     self.requestHealthDataToHK()
                 }
             })
@@ -288,6 +290,6 @@ class HomeViewModel: ObservableObject {
     
     var yesterday: Date {
         DateHelper
-            .subtractDays(from: Date(), days: 330)
+            .subtractDays(from: Date(), days: 1)
     }
 }

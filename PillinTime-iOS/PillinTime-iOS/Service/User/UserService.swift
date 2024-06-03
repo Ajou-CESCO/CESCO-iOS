@@ -41,6 +41,7 @@ class UserService: UserServiceType {
     func deleteUser() -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError> {
         return provider.requestPublisher(.deleteUser)
             .tryMap { response in
+                print(response)
                 guard let httpResponse = response.response, httpResponse.statusCode == 200 else {
                     let errorResponse = try response.map(BaseResponse<BlankData>.self)
                     throw PillinTimeError.networkFail

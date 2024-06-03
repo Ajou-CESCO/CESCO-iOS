@@ -70,7 +70,6 @@ struct SearchDoseView: View {
     }
     
     private func isAdverseMapSafe(medicineAdverse: MedicineAdverse) -> Bool {
-        
         return medicineAdverse.dosageCaution == nil &&
         medicineAdverse.ageSpecificContraindication == nil &&
         medicineAdverse.elderlyCaution == nil &&

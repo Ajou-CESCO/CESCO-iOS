@@ -155,7 +155,6 @@ class DoseAddViewModel: ObservableObject {
                         /// 복용 계획을 생성하고 나면, state 초기화
                         self.dosePlanInfoState = AddDosePlanInfoState()
                         self.searchDose = ""
-                        self.step = 1
                     }
                 case .failure(let error):
                     print("복용 계획 생성 요청 실패: \(error)")

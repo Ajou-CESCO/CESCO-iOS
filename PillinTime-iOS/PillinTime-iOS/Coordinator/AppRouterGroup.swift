@@ -19,6 +19,7 @@ struct AppRouterGroup {
             MyPageRouteBuilder(),
             MyPageDetailRouteBuilder(),
             WithdrawalRouteBuilder(),
+            LogoutRouteBuilder(),
             HomeRouteBuilder()
         ]
     }

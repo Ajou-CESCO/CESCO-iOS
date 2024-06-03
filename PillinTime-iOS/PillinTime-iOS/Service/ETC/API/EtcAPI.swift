@@ -11,6 +11,7 @@ import Moya
 enum EtcAPI {
     case searchDose(memberId: Int, name: String)
     case initClient
+    case bugReport(_: String)
 }
 
 extension EtcAPI: TargetType {
@@ -28,6 +29,8 @@ extension EtcAPI: TargetType {
             return "/api/medicine"
         case .initClient:
             return "/api/init"
+        case .bugReport:
+            return "/api/bug"
         }
     }
     
@@ -35,6 +38,8 @@ extension EtcAPI: TargetType {
         switch self {
         case .searchDose, .initClient:
             return .get
+        case .bugReport:
+            return .post
         }
     }
     
@@ -46,6 +51,8 @@ extension EtcAPI: TargetType {
                                       encoding: URLEncoding.queryString)
         case .initClient:
             return .requestPlain
+        case .bugReport(let body):
+            return .requestJSONEncodable(["body": body])
         }
     }
     

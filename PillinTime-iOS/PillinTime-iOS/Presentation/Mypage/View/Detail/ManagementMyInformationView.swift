@@ -62,12 +62,12 @@ struct ManagementMyInformationView: View {
                 
                 if !(UserManager.shared.isManager ?? true) && (userInfo.cabinetId != 0) {
                     CustomButton(buttonSize: .regular,
-                                 buttonStyle: .disabled,
+                                 buttonStyle: .filled,
                                  action: {
                         self.managementMyInformationViewModel.$tapDeletePillCaseButton.send(userInfo.cabinetId)
                     }, content: {
                         Text("약통 해제하기")
-                    }, isDisabled: false)
+                    }, isDisabled: self.managementMyInformationViewModel.isDeleteSucced)
                         .padding([.leading, .trailing], 33)
                 }
             }

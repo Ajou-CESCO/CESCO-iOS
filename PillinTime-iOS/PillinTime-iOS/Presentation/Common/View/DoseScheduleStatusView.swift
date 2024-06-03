@@ -135,7 +135,6 @@ struct DoseScheduleStatusView: View {
                             .font(.body1Medium)
                             .foregroundStyle(Color.primary90)
                     })
-                    
                     .frame(width: 127, height: 48)
                     .background(Color.white)
                     .cornerRadius(8)
@@ -173,7 +172,7 @@ struct DoseScheduleStatusView: View {
         dateFormatter.locale = Locale(identifier: "ko_KR")
 
         if let date = dateFormatter.date(from: time) {
-            dateFormatter.dateFormat = "a h시"
+            dateFormatter.dateFormat = "a h시 mm분"
             return dateFormatter.string(from: date)
         } else {
             return "nil"

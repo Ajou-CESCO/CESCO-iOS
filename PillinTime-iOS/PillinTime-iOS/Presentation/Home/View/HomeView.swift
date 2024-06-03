@@ -21,6 +21,7 @@ struct HomeView: View {
     @State private var showEncourageView: Bool = false
     @State private var showAddPillCaseView: Bool = false
     @State private var showRequestRelationListView: Bool = false
+    @State private var sheetRequestRelationListView: Bool = false
     @State private var showHealthView: Bool = false
     @State private var isRefresh: Bool = false
     let navigator: LinkNavigatorType
@@ -87,6 +88,7 @@ struct HomeView: View {
                                 }
                                 .refreshable {
                                     homeViewModel.$requestGetDoseLog.send(self.selectedClientId!)
+                                    homeViewModel.$requestGetHealthData.send(self.selectedClientId!)
                                     homeViewModel.$requestInitClient.send(true)
                                     self.isRefresh = true
                                 }
@@ -100,14 +102,24 @@ struct HomeView: View {
                     /// 피보호자일 경우
                 } else {
                     ScrollView {
-                        Text.multiColoredText("\(UserManager.shared.name ?? "null") 님,\n오늘 하루도 화이팅이에요!",
-                                              coloredSubstrings: [(UserManager.shared.name ?? "null", Color.primary60)])
-                            .foregroundStyle(Color.gray90)
-                            .font(.logo3Medium)
-                            .lineSpacing(3)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding([.leading, .trailing], 33)
-                            .padding(.top, 23)
+                        
+                        HStack {
+                            Text.multiColoredText("\(UserManager.shared.name ?? "null") 님,\n오늘 하루도 화이팅이에요!",
+                                                  coloredSubstrings: [(UserManager.shared.name ?? "null", Color.primary60)])
+                                .foregroundStyle(Color.gray90)
+                                .font(.logo3Medium)
+                                .lineSpacing(3)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding([.leading, .trailing], 33)
+                                .padding(.top, 23)
+                            
+                            Button(action: {
+                                self.sheetRequestRelationListView = true
+                            }, label: {
+                                Image("ic_alarm_filled")
+                            })
+                            .padding()
+                        }
                         
                         /// 이후 수정
                         DoseScheduleStatusView(memberId: UserManager.shared.memberId ?? 0,
@@ -178,6 +190,9 @@ struct HomeView: View {
         })
         .sheet(isPresented: $showAddPillCaseView, content: {
             AddPillCaseView(selectedMemberId: selectedClientId ?? 0)
+        })
+        .sheet(isPresented: $sheetRequestRelationListView, content: {
+            RelationRequestView()
         })
         .fullScreenCover(isPresented: $showRequestRelationListView, content: {
             RelationRequestView()

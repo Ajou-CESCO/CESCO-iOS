@@ -72,15 +72,15 @@ struct SearchDoseElementDetailPopUpView: View {
                                             .padding(.bottom, 2)
                                             .fadeIn(delay: 0.2)
                                     }
-                                    
+                                }
+                                
+                                if viewModel.medicineAdverse.duplicateEfficacyGroup != nil {
                                     Text("의 부작용과,")
                                         .font(.body2Medium)
                                         .foregroundStyle(Color.white)
                                         .padding(.bottom, 10)
                                         .fadeIn(delay: 0.3)
-                                }
-                                
-                                if viewModel.medicineAdverse.duplicateEfficacyGroup != nil {
+                                    
                                     Text("기존 복용 중인 약과 함께 섭취할 경우")
                                         .multilineTextAlignment(.leading)
                                         .font(.body2Bold)

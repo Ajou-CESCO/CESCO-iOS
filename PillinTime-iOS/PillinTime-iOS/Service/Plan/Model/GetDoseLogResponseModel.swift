@@ -21,11 +21,12 @@ struct GetDoseLogResponseModelResult: Codable {
     var id, memberID, planID: Int
     var plannedAt, medicineName: String
     var takenStatus: Int
+    var cabinetIndex: Int
 
     enum CodingKeys: String, CodingKey {
         case id
         case memberID = "memberId"
         case planID = "planId"
-        case plannedAt, medicineName, takenStatus
+        case plannedAt, medicineName, takenStatus, cabinetIndex
     }
 }

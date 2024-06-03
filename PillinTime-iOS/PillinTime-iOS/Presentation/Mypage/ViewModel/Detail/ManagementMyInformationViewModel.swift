@@ -34,6 +34,7 @@ class ManagementMyInformationViewModel: ObservableObject {
     @Published var isNetworking: Bool = false
     @Published var isNetworkSucceed: Bool = false
     @Published var infoErrorState: DeletePillCaseState = DeletePillCaseState()
+    @Published var isDeleteSucced: Bool = false
     
     // MARK: - Other Data
 
@@ -73,12 +74,13 @@ class ManagementMyInformationViewModel: ObservableObject {
                         self.isNetworking = false
                         self.isNetworkSucceed = true
                         self.toastManager.showToast(description: "약통 삭제를 완료했습니다.")
+                        self.isDeleteSucced = true
                     }
                 case .failure(let error):
                     print("약통 삭제 요청 실패: \(error)")
                     self.isNetworking = false
                     self.infoErrorState.failMessage = error.localizedDescription
-                    toastManager.showNetworkFailureToast()
+                    toastManager.showToast(description: "연결된 약통이 존재하지 않습니다.")
                 }
             }, receiveValue: { [weak self] result in
                 guard let result = self else { return }

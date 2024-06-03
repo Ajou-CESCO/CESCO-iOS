@@ -206,8 +206,12 @@ struct DoseScheduleView: View {
     }
     
     private func isSelectedMemberHasntPillCase() -> Bool {
-        homeViewModel.relationLists.contains { relation in
-            relation.memberID == selectedClientId && relation.cabinetID == 0
+        if UserManager.shared.isManager ?? true {
+            homeViewModel.relationLists.contains { relation in
+                relation.memberID == selectedClientId && relation.cabinetID == 0
+            }
+        } else {
+            homeViewModel.clientCabnetId == 0
         }
     }
     

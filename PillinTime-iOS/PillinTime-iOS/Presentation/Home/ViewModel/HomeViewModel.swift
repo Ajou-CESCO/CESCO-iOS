@@ -53,6 +53,7 @@ class HomeViewModel: ObservableObject {
     @Subject var requestInitClient: Bool = false
     @Subject var requestGetDoseLog: Int = 0
     @Subject var requestGetHealthData: Int = 0
+    @Subject var requestCreateHealthData: Void = ()
     
     // MARK: - Output State
     
@@ -99,6 +100,11 @@ class HomeViewModel: ObservableObject {
         
         $requestGetHealthData.sink { memberId in
             self.requestGetHealthDataToServer(memberId: memberId)
+        }
+        .store(in: &cancellables)
+        
+        $requestCreateHealthData.sink { _ in
+            self.requestHealthDataToHK()
         }
         .store(in: &cancellables)
     }
@@ -241,7 +247,7 @@ class HomeViewModel: ObservableObject {
                                            burnCalories: "\(String(result.result?.calorie ?? 0))kcal")
                 print(self.healthInfoState)
                 // healthData가 빈 값일 때만 bindHealth() 함수들 실행
-                if (self.healthData?.isEmpty ?? true) && !self.requestToHK {
+                if (self.healthData?.isEmpty ?? true) && (!(UserManager.shared.isManager ?? false)) {
                     self.requestHealthDataToHK()
                 }
             })

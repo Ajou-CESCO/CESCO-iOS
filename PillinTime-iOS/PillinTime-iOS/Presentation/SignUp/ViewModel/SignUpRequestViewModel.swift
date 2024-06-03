@@ -9,6 +9,7 @@ import SwiftUI
 import Combine
 
 import Factory
+import Moya
 
 class SignUpRequestViewModel: ObservableObject {
     
@@ -18,6 +19,9 @@ class SignUpRequestViewModel: ObservableObject {
     var eventToValidationViewModel = PassthroughSubject<SignUpRequestViewModelEvent, Never>()
     var eventFromValidationViewModel: PassthroughSubject<SignUpValidationViewModelEvent, Never>?
     @ObservedObject var toastManager = Container.shared.toastManager.resolve()
+    @ObservedObject var fcmViewModel = FcmViewModel(fcmService: FcmService(provider: MoyaProvider<FcmAPI>()))
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
+
     
     // MARK: - Input State
     @Subject var tapSignUpButton: Void = ()
@@ -141,6 +145,12 @@ class SignUpRequestViewModel: ObservableObject {
                 userManager.accessToken = result.result.accessToken
                 // 유저타입 저장하기 추가
                 self.signUpState.failMessage = String()
+                // fcm 토큰 전송
+                self.fcmViewModel.requestRegisterTokenToServer(UserManager.shared.fcmToken ?? "")
+                // 
+                if !(UserManager.shared.isManager ?? false) {
+                    self.homeViewModel.$requestCreateHealthData.send()
+                }
             })
             .store(in: &cancellables)
     }
@@ -170,6 +180,8 @@ class SignUpRequestViewModel: ObservableObject {
                 userManager.accessToken = result.result.accessToken
                 userManager.isManager = signUpModel.isManager
                 self.signUpState.failMessage = String()
+                // fcm 토큰 전송
+                self.fcmViewModel.requestRegisterTokenToServer(UserManager.shared.fcmToken ?? "")
             })
             .store(in: &cancellables)
     }

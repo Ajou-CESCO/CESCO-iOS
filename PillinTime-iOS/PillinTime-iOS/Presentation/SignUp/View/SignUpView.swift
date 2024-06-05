@@ -88,7 +88,7 @@ struct SignUpView: View {
                                     textInputStyle: .verificationCode)
                     
                     if signUpRequestViewModel.isNetworkSucceed {
-                        Text("인증코드 유효 시간: \(timeString(time: signUpRequestViewModel.timeRemaining))")
+                        Text("인증번호 유효 시간: \(timeString(time: signUpRequestViewModel.timeRemaining))")
                             .font(.body1Bold)
                             .foregroundStyle(Color.primary60)
                             .padding(5)

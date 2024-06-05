@@ -10,6 +10,7 @@ import Moya
 
 enum RequestAPI {
     case requestRelation(_ receiverPhone: String)
+    case relationRequestList
 }
 
 extension RequestAPI: TargetType {
@@ -23,7 +24,7 @@ extension RequestAPI: TargetType {
     
     var path: String {
         switch self {
-        case .requestRelation:
+        case .requestRelation, .relationRequestList:
             return "/api/request"
         }
     }
@@ -32,6 +33,8 @@ extension RequestAPI: TargetType {
         switch self {
         case .requestRelation:
             return .post
+        case .relationRequestList:
+            return .get
         }
     }
     
@@ -39,6 +42,8 @@ extension RequestAPI: TargetType {
         switch self {
         case .requestRelation(let receiverPhone):
             return .requestJSONEncodable(["receiverPhone": receiverPhone])
+        case .relationRequestList:
+            return .requestPlain
         }
     }
     

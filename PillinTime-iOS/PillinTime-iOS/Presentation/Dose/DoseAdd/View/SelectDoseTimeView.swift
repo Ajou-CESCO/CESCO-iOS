@@ -35,8 +35,6 @@ struct SelectDoseTimeView: View {
     
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 3)
 
-
-    
     // MARK: - body
     
     var body: some View {

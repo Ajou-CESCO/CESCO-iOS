@@ -11,6 +11,8 @@ import Moya
 enum PlanAPI {
     case addDosePlan(_ addDosePlanModel: AddDosePlanRequestModel)
     case getDoseLog(_ memberId: Int)
+    case getDosePlan(_ memberId: Int)
+    case deleteDosePlan(memberId: Int, medicineId: String, cabinetIndex: Int)
 }
 
 extension PlanAPI: TargetType {
@@ -24,7 +26,7 @@ extension PlanAPI: TargetType {
     
     var path: String {
         switch self {
-        case .addDosePlan:
+        case .addDosePlan, .getDosePlan, .deleteDosePlan:
             return "/api/dose/plan"
         case .getDoseLog:
             return "/api/dose/log"
@@ -35,8 +37,10 @@ extension PlanAPI: TargetType {
         switch self {
         case .addDosePlan:
             return .post
-        case .getDoseLog:
+        case .getDoseLog, .getDosePlan:
             return .get
+        case .deleteDosePlan:
+            return .delete
         }
     }
     
@@ -44,8 +48,11 @@ extension PlanAPI: TargetType {
         switch self {
         case .addDosePlan(let addDosePlanModel):
             return .requestJSONEncodable(addDosePlanModel)
-        case .getDoseLog(let memberId):
+        case .getDoseLog(let memberId), .getDosePlan(let memberId):
             return .requestParameters(parameters: ["memberId": memberId],
+                                      encoding: URLEncoding.queryString)
+        case .deleteDosePlan(let memberId, let medicineId, let cabinetIndex):
+            return .requestParameters(parameters: ["memberId": memberId, "medicineId": medicineId, "cabinetIndex": cabinetIndex],
                                       encoding: URLEncoding.queryString)
         }
     }

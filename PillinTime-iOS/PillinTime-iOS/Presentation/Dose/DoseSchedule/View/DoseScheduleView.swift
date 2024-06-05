@@ -9,6 +9,7 @@ import SwiftUI
 
 import LinkNavigator
 import Factory
+import Moya
 
 struct DoseScheduleView: View {
     
@@ -16,11 +17,14 @@ struct DoseScheduleView: View {
     
     @State private var selectedDays = Set<String>()
     @State var selectedClientId: Int?  // 선택된 Client
+    @State var selectedClientName: String? // 선택된 Client의 이름, 찌르기 시에 활용
     @State var isUserPoked: Bool = false
     let navigator: LinkNavigatorType
     @ObservedObject var doseScheduleViewModel = DoseScheduleViewModel()
+    @ObservedObject var fcmViewModel = FcmViewModel(fcmService: FcmService(provider: MoyaProvider<FcmAPI>()))
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     @ObservedObject var doseAddViewModel = Container.shared.doseAddViewModel.resolve()
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     init(navigator: LinkNavigatorType) {
         self.navigator = navigator
@@ -41,85 +45,104 @@ struct DoseScheduleView: View {
                     .frame(maxWidth: .infinity, minHeight: 80, maxHeight: 80)
                     .background(UserManager.shared.isManager ?? true ? .clear : .white)
                 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 0) {
-                        ForEach(doseScheduleViewModel.relationLists, id: \.memberID) { relation in
-                            ScrollView(.vertical, showsIndicators: false) {
-                                VStack {
-                                    ZStack(alignment: .topTrailing) {
-                                        DoseScheduleSubView(takenStatus: 0,
+                if (UserManager.shared.isManager ?? true) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        LazyHStack(spacing: 0) {
+                            ForEach(doseScheduleViewModel.relationLists, id: \.memberID) { relation in
+                                ScrollView(.vertical, showsIndicators: false) {
+                                    VStack {
+                                        ZStack(alignment: .topTrailing) {
+                                            DoseScheduleSubView(takenStatus: 0,
+                                                                memberId: relation.memberID,
+                                                                isCabinetExist: relation.cabinetID != 0)
+                                                .padding(.top, 10)
+                                                .padding(.bottom, 20)
+                                                .fadeIn(delay: 0.3)
+                                            // 보호자일 때만 존재
+                                            if (UserManager.shared.isManager ?? true) {
+                                                Button(action: {
+                                                    self.isUserPoked = true
+                                                }, label: {
+                                                    HStack {
+                                                        if isUserPoked {
+                                                            Text("찌르기 완료")
+                                                                .font(.body2Medium)
+                                                                .foregroundStyle(Color.gray70)
+                                                                .padding(6)
+                                                        } else {
+                                                            Image("ic_poke")
+                                                                .frame(width: 30, height: 30)
+                                                            Text("찌르기")
+                                                                .font(.body2Medium)
+                                                                .foregroundColor(Color.gray70)
+                                                                .padding(.trailing, 2)
+                                                        }
+                                                    }
+                                                    .padding(5)
+                                                    .background(Color.white)
+                                                    .cornerRadius(8)
+                                                    .overlay(RoundedRectangle(cornerRadius: 8)
+                                                        .stroke(Color.gray10, lineWidth: 2)
+                                                    )
+
+                                                })
+                                                .disabled(isUserPoked)
+                                                .padding(.trailing, 25)
+                                                .fadeIn(delay: 0.3)
+                                            }
+                                        }
+                                        
+                                        DoseScheduleSubView(takenStatus: 2,
                                                             memberId: relation.memberID,
                                                             isCabinetExist: relation.cabinetID != 0)
-                                            .padding(.top, UserManager.shared.isManager ?? true ? 10 : 20)
                                             .padding(.bottom, 20)
-                                            .fadeIn(delay: 0.3)
-                                        // 이후에 수정할 것
-                                        if (true) {
-                                            Button(action: {
-                                                self.isUserPoked = true
-                                                print(self.isUserPoked)
-                                            }, label: {
-                                                HStack {
-                                                    if isUserPoked {
-                                                        Text("찌르기 완료")
-                                                            .font(.body2Medium)
-                                                            .foregroundStyle(Color.gray70)
-                                                            .padding(6)
-                                                    } else {
-                                                        Image("ic_poke")
-                                                            .frame(width: 30, height: 30)
-                                                        Text("찌르기")
-                                                            .font(.body2Medium)
-                                                            .foregroundColor(Color.gray70)
-                                                            .padding(.trailing, 2)
-                                                    }
-                                                }
-                                                .padding(5)
-                                                .background(Color.white)
-                                                .cornerRadius(8)
-                                                .overlay(RoundedRectangle(cornerRadius: 8)
-                                                    .stroke(Color.gray10, lineWidth: 2)
-                                                )
-
-                                            })
-                                            .disabled(isUserPoked)
-                                            .padding(.trailing, 25)
-                                            .fadeIn(delay: 0.3)
-                                        }
+                                            .fadeIn(delay: 0.4)
+                                        
+                                        DoseScheduleSubView(takenStatus: 1,
+                                                            memberId: relation.memberID,
+                                                            isCabinetExist: relation.cabinetID != 0)
+                                            .padding(.bottom, 20)
+                                            .fadeIn(delay: 0.5)
+                                        
+                                        Spacer()
                                     }
+                                    .containerRelativeFrame(.horizontal)
                                     
-                                    DoseScheduleSubView(takenStatus: 2,
-                                                        memberId: relation.memberID,
-                                                        isCabinetExist: relation.cabinetID != 0)
-                                        .padding(.bottom, 20)
-                                        .fadeIn(delay: 0.4)
-                                    
-                                    DoseScheduleSubView(takenStatus: 1,
-                                                        memberId: relation.memberID,
-                                                        isCabinetExist: relation.cabinetID != 0)
-                                        .padding(.bottom, 20)
-                                        .fadeIn(delay: 0.5)
-                                    
-                                    Spacer()
                                 }
-                                .containerRelativeFrame(.horizontal)
-                                
-                            }
-                            .refreshable {
-                                refresh()
+                                .refreshable {
+                                    refresh()
+                                }
                             }
                         }
+                        .scrollTargetLayout(isEnabled: true)
                     }
-                    .scrollTargetLayout(isEnabled: true)
+                    .scrollTargetBehavior(.viewAligned)
+                    .scrollPosition(id: $selectedClientId)
+                } else {
+                    ScrollView {
+                        DoseScheduleSubView(takenStatus: 0,
+                                            memberId: UserManager.shared.memberId ?? 0,
+                                            isCabinetExist: homeViewModel.clientCabnetId != 0)
+                            .padding(.top, 20)
+                            .fadeIn(delay: 0.3)
+                        
+                        DoseScheduleSubView(takenStatus: 2,
+                                            memberId: UserManager.shared.memberId ?? 0,
+                                            isCabinetExist: homeViewModel.clientCabnetId != 0)
+                            .padding(.bottom, 20)
+                            .fadeIn(delay: 0.3)
+                        
+                        DoseScheduleSubView(takenStatus: 1,
+                                            memberId: UserManager.shared.memberId ?? 0,
+                                            isCabinetExist: homeViewModel.clientCabnetId != 0)
+                            .padding(.bottom, 20)
+                            .fadeIn(delay: 0.3)
+                    }
+                    .refreshable {
+                        refresh()
+                    }
                 }
-                .scrollTargetBehavior(.viewAligned)
-                .scrollPosition(id: $selectedClientId)
                 
-                if isUserPoked {
-                    ToastView(description: "김철수 님을 콕 찔렀어요.",
-                              show: $isUserPoked)
-                        .padding(.bottom, 20)
-                }
             }
             .background(Color.gray5)
             
@@ -148,30 +171,57 @@ struct DoseScheduleView: View {
             .disabled(isSelectedMemberHasntPillCase())
         }
         .onReceive(homeViewModel.$isDataReady) { _ in
-            self.selectedClientId = homeViewModel.relationLists.first?.memberID
+            // 만약 피보호자라면
+            if !(UserManager.shared.isManager ?? true) {
+                selectedClientId = UserManager.shared.memberId
+            } else {
+                self.selectedClientId = homeViewModel.relationLists.first?.memberID
+            }
         }
         .onAppear {
             refresh()
         }
+        .onChange(of: isUserPoked, {
+            if isUserPoked {
+                fcmViewModel.requestPushAlarmToServer(selectedClientId ?? 0)
+                toastManager.showToast(description: "\(selectedClientName ?? "노수인") 님을 콕 찔렀어요.")
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+                    self.isUserPoked = false
+                })
+            }
+        })
         .onChange(of: selectedClientId, {
             if homeViewModel.isDataReady {
                 if selectedClientId == nil {
                     selectedClientId = homeViewModel.relationLists.first?.memberID
+                    selectedClientName = homeViewModel.relationLists.first?.memberName
                 }
+                selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
+                UserManager.shared.selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
+                UserManager.shared.selectedClientId = selectedClientId
                 homeViewModel.$requestGetDoseLog.send(selectedClientId!)
             }
         })
     }
     
     private func isSelectedMemberHasntPillCase() -> Bool {
-        homeViewModel.relationLists.contains { relation in
-            relation.memberID == selectedClientId && relation.cabinetID == 0
+        if UserManager.shared.isManager ?? true {
+            homeViewModel.relationLists.contains { relation in
+                relation.memberID == selectedClientId && relation.cabinetID == 0
+            }
+        } else {
+            homeViewModel.clientCabnetId == 0
         }
     }
     
     private func refresh() {
+        if !(UserManager.shared.isManager ?? true) {
+            selectedClientId = UserManager.shared.memberId ?? 0
+        }
         if selectedClientId == 0 && homeViewModel.isDataReady {
             selectedClientId = homeViewModel.relationLists.first?.memberID
+            selectedClientName = homeViewModel.relationLists.first?.memberName
         }
         homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
     }
@@ -228,7 +278,6 @@ struct DoseScheduleSubView: View {
                 default:
                     EmptyView()
                 }
-                
             }
             
             DoseScheduleStatusView(memberId: memberId,
@@ -239,11 +288,7 @@ struct DoseScheduleSubView: View {
                 .padding([.leading, .trailing], 25)
         }
         .sheet(isPresented: $showAddPillCaseView, content: {
-            AddPillCaseView(selectedManagerId: memberId)
+            AddPillCaseView(selectedMemberId: memberId)
         })
     }
 }
-
-//#Preview {
-//    DoseScheduleView(navigator: <#any LinkNavigatorType#>)
-//}

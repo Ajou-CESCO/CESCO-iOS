@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+import Moya
+import Factory
+
 // MARK: - ManagementMyInformationView
 
 struct ManagementMyInformationView: View {
@@ -16,41 +19,58 @@ struct ManagementMyInformationView: View {
     @State private var showToast: Bool = false
 
     @ObservedObject var myPageViewModel: MyPageViewModel = MyPageViewModel()
+    @ObservedObject var managementMyInformationViewModel: ManagementMyInformationViewModel = ManagementMyInformationViewModel(caseService: CaseService(provider: MoyaProvider<CaseAPI>()))
     
-    var name: String
-    var phoneNumber: String
-    var ssn: String
+    let userInfo: SelectedRelation
     
     // MARK: - body
     
     var body: some View {
-        VStack {
-            Text("기본 정보")
-                .font(.h5Bold)
-                .foregroundStyle(Color.gray90)
-                .padding(.leading, 33)
-                .padding(.top, 30)
-                .frame(maxWidth: .infinity,
-                       alignment: .leading)
+        ZStack {
+            Color.white
             
-            List {
-                ForEach(UserProfile.allCases, id: \.self) { element in
-                    HStack {
-                        Text(element.description)
-                            .font(.body2Medium)
-                            .foregroundStyle(Color.gray70)
-                            .frame(width: 100,
-                                   alignment: .leading)
-                        
-                        Text(setTextInputData(element: element))
-                            .font(.h5Medium)
-                            .foregroundStyle(Color.gray90)
+            VStack {
+                Text("기본 정보")
+                    .font(.h5Bold)
+                    .foregroundStyle(Color.gray90)
+                    .padding(.leading, 33)
+                    .padding(.top, 30)
+                    .frame(maxWidth: .infinity,
+                           alignment: .leading)
+                
+                List {
+                    ForEach(UserProfile.allCases, id: \.self) { element in
+                        HStack {
+                            Text(element.description)
+                                .font(.body2Medium)
+                                .foregroundStyle(Color.gray70)
+                                .frame(width: 100,
+                                       alignment: .leading)
+                            
+                            Text(setTextInputData(element: element))
+                                .font(.h5Medium)
+                                .foregroundStyle(Color.gray90)
+                        }
+                        .padding()
+                        .fadeIn(delay: 0.2)
                     }
-                    .padding()
+                }
+                .listStyle(.plain)
+                .background(Color.clear)
+                
+                Spacer()
+                
+                if !(UserManager.shared.isManager ?? true) && (userInfo.cabinetId != 0) {
+                    CustomButton(buttonSize: .regular,
+                                 buttonStyle: .filled,
+                                 action: {
+                        self.managementMyInformationViewModel.$tapDeletePillCaseButton.send(userInfo.cabinetId)
+                    }, content: {
+                        Text("약통 해제하기")
+                    }, isDisabled: self.managementMyInformationViewModel.isDeleteSucced)
+                        .padding([.leading, .trailing], 33)
                 }
             }
-            .listStyle(.plain)
-            .background(Color.clear)
         }
     }
     
@@ -58,11 +78,13 @@ struct ManagementMyInformationView: View {
     private func setTextInputData(element: UserProfile) -> String {
         switch element {
         case .name:
-            return self.name
+            return userInfo.name
         case .phoneNumber:
-            return self.phoneNumber
+            return userInfo.phone
         case .ssn:
-            return self.ssn.prefix(8) + "●●●●●●"
+            return userInfo.ssn.prefix(8) + "●●●●●●"
+        case .isPillCaseExist:
+            return ""
         }
         
     }

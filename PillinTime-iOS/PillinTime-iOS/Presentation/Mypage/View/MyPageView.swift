@@ -8,15 +8,14 @@
 import SwiftUI
 
 import LinkNavigator
+import Moya
 
 struct MyPageView: View {
     
     // MARK: - Properties
     
-    let mainImage: [String] = ["ic_people", "ic_people", "ic_schedule"]
-    let subText: [String] = ["피보호자 관리", "연결된 기기", "복약 일정 관리"]
-    
     @State var showMyPageDetailView: Bool = false
+    @State var selectedSettingList: SettingListElement?
     
     let navigator: LinkNavigatorType
     
@@ -52,16 +51,17 @@ struct MyPageView: View {
                 HStack {
                     Spacer()
                     
-                    ForEach(0..<3, id: \.self) { index in
+                    ForEach(SettingListElement.topCases, id: \.self) { element in
                         Button(action: {
                             self.showMyPageDetailView = true
+                            self.selectedSettingList = element
                         }, label: {
                             VStack {
-                                Image(mainImage[index])
+                                Image(element.image)
                                     .frame(width: 36, height: 36)
                                     .padding(.bottom, 4)
                                 
-                                Text(subText[index])
+                                Text(element.description)
                                     .font(.body2Regular)
                                     .foregroundStyle(Color.gray90)
                             }
@@ -81,10 +81,9 @@ struct MyPageView: View {
             
             SettingList(navigator: navigator)
         }
-        .fullScreenCover(isPresented: $showMyPageDetailView,
-                         content: {
+        .fullScreenCover(item: $selectedSettingList, content: { element in
             MyPageDetailView(navigator: navigator,
-                             settingListElement: .clientManage)
+                             settingListElement: element, name: "")
         })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true
@@ -99,11 +98,13 @@ struct SettingList: View {
     @State private var isShowingDetailView = false
     @State private var selectedElement: SettingListElement?
     @ObservedObject var myPageViewModel: MyPageViewModel
+    @ObservedObject var fcmViewModel: FcmViewModel
     
     let navigator: LinkNavigatorType
     
     init(navigator: LinkNavigatorType) {
         self.myPageViewModel = MyPageViewModel()
+        self.fcmViewModel = FcmViewModel(fcmService: FcmService(provider: MoyaProvider<FcmAPI>()))
         self.navigator = navigator
     }
         
@@ -114,7 +115,7 @@ struct SettingList: View {
             List {
                 ForEach(SettingListElement.listCases, id: \.self) { element in
                     ZStack {
-                        NavigationLink(destination: MyPageDetailView(navigator: navigator, settingListElement: element)) {
+                        NavigationLink(destination: MyPageDetailView(navigator: navigator, settingListElement: element, name: nil)) {
                             EmptyView()
                         }
                         .opacity(0.0)

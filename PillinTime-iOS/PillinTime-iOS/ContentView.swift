@@ -36,7 +36,7 @@ struct ContentView: View {
                         }
                         .tag(TabBarType.doseSchedule)
                     
-                    HomeView(selectedClientId: 0)
+                    HomeView(navigator: navigator)
                         .tabItem {
                             Image(selectedTab == .home ? "ic_home_filled" : "ic_home_unfilled")
                         }
@@ -61,9 +61,14 @@ struct ContentView: View {
         .onAppear {
             if !UserManager.shared.hasAccessToken {
                 navigator.next(paths: ["signup"], items: [:], isAnimated: false)
+            } else {
+                print(UserManager.shared.accessToken)
+                if !(UserManager.shared.isManager ?? false) {
+                    HKAuthorizationHelper.shared.setAuthorization()
+                }
+                homeViewModel.$requestInitClient.send(true)
             }
-            
-            homeViewModel.$requestInitClient.send(true)
+        
         }
         .navigationBarHidden(true)
     }

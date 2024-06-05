@@ -15,6 +15,10 @@ class ToastManager: ObservableObject {
         self.description = description
         self.show = true
     }
+    
+   func showNetworkFailureToast() {
+       showToast(description: "네트워크 통신 실패")
+   }
 }
 
 struct ToastView: View {

@@ -20,8 +20,8 @@ class EtcService: EtcServiceType {
     }
     
     /// 약물 검색 요청
-    func searchDose(name: String) -> AnyPublisher<SearchDoseResponseModel, PillinTimeError> {
-        return provider.requestPublisher(.searchDose(name))
+    func searchDose(memberId: Int, name: String) -> AnyPublisher<SearchDoseResponseModel, PillinTimeError> {
+        return provider.requestPublisher(.searchDose(memberId: memberId, name: name))
             .tryMap { response in
                 let decodeData = try response.map(SearchDoseResponseModel.self)
                 return decodeData
@@ -43,6 +43,27 @@ class EtcService: EtcServiceType {
             .tryMap { response in
                 let decodeData = try response.map(InitResponseModel.self)
                 return decodeData
+            }
+            .mapError { error in
+                print("error:", error)
+                if error is MoyaError {
+                    return PillinTimeError.networkFail
+                } else {
+                    return error as! PillinTimeError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    func bugReport(body: String) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError> {
+        return provider.requestPublisher(.bugReport(body))
+            .tryMap { response in
+                print(response)
+                guard let httpResponse = response.response, httpResponse.statusCode == 200 else {
+                    let errorResponse = try response.map(BaseResponse<BlankData>.self)
+                    throw PillinTimeError.networkFail
+                }
+                return try response.map(BaseResponse<BlankData>.self)
             }
             .mapError { error in
                 print("error:", error)

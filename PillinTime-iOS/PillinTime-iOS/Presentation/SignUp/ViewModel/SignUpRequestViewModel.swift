@@ -9,6 +9,7 @@ import SwiftUI
 import Combine
 
 import Factory
+import Moya
 
 class SignUpRequestViewModel: ObservableObject {
     
@@ -17,7 +18,10 @@ class SignUpRequestViewModel: ObservableObject {
     @Injected(\.authService) var authService: AuthServiceType
     var eventToValidationViewModel = PassthroughSubject<SignUpRequestViewModelEvent, Never>()
     var eventFromValidationViewModel: PassthroughSubject<SignUpValidationViewModelEvent, Never>?
-    
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
+    @ObservedObject var fcmViewModel = FcmViewModel(fcmService: FcmService(provider: MoyaProvider<FcmAPI>()))
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
+
     // MARK: - Input State
     @Subject var tapSignUpButton: Void = ()
     @Subject var tapSignInButton: Void = ()
@@ -140,6 +144,12 @@ class SignUpRequestViewModel: ObservableObject {
                 userManager.accessToken = result.result.accessToken
                 // 유저타입 저장하기 추가
                 self.signUpState.failMessage = String()
+                // fcm 토큰 전송
+                self.fcmViewModel.requestRegisterTokenToServer(UserManager.shared.fcmToken ?? "")
+                // 
+//                if !(UserManager.shared.isManager ?? false) {
+//                    self.homeViewModel.$requestCreateHealthData.send()
+//                }
             })
             .store(in: &cancellables)
     }
@@ -156,6 +166,7 @@ class SignUpRequestViewModel: ObservableObject {
                 case .failure(let error):
                     print("회원가입 요청 실패: \(error)")
                     self.signUpState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 print("회원가입 성공: ", result)
@@ -168,6 +179,8 @@ class SignUpRequestViewModel: ObservableObject {
                 userManager.accessToken = result.result.accessToken
                 userManager.isManager = signUpModel.isManager
                 self.signUpState.failMessage = String()
+                // fcm 토큰 전송
+                self.fcmViewModel.requestRegisterTokenToServer(UserManager.shared.fcmToken ?? "")
             })
             .store(in: &cancellables)
     }
@@ -188,6 +201,7 @@ class SignUpRequestViewModel: ObservableObject {
                 case .failure(let error):
                     print("전화번호 인증 요청 실패: \(error)")
                     self.signUpState.failMessage = error.localizedDescription
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 print("전화번호 인증 요청 성공: ", result)

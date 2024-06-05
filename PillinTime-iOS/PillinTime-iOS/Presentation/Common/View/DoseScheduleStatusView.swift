@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-import CodeScanner
 import Factory
 import Moya
 
@@ -27,6 +26,9 @@ struct DoseScheduleStatusView: View {
     let itemHeight: CGFloat = 45
     let takenStatus: Int?
     @Binding var showAddPillCaseView: Bool
+    
+    let colors: [Color] = [.error60, .warning60, .success60, .primary40, .purple60]
+    let colorToIndex: [Color: Int] = [.error60: 1, .warning60: 2, .success60: 3, .primary40: 4, .purple60: 5]
     
     var body: some View {
         /// 약통이 존재할 경우, 오늘의 약 복용 일정이 보임
@@ -54,8 +56,13 @@ struct DoseScheduleStatusView: View {
                     } else {
                         ScrollView {
                             ForEach(filteredLogs, id: \.id) { log in
+                                let color = colors[log.cabinetIndex]
                                 
                                 HStack {
+                                    Circle()
+                                        .fill(color)
+                                        .frame(width: 20, height: 20)
+                                    
                                     Text(log.medicineName)
                                         .font(.h5Bold)
                                         .foregroundStyle(Color.gray90)
@@ -69,7 +76,7 @@ struct DoseScheduleStatusView: View {
                                         .font(.body1Bold)
                                         .foregroundStyle(Color.gray70)
                                         .padding(.trailing, 10)
-                                    
+
                                     Text(textForTakenStatus(log.takenStatus))
                                         .font(.logo4ExtraBold)
                                         .foregroundColor(colorForDoseStatus(log.takenStatus))
@@ -86,7 +93,7 @@ struct DoseScheduleStatusView: View {
                 }
                 .cornerRadius(8)
                 .frame(maxWidth: .infinity,
-                       minHeight: 45,
+                       minHeight: 50,
                        maxHeight: min(itemHeight * CGFloat(max(homeViewModel.countLogs(filteringBy: takenStatus), 0)) + 15, 240))
             } else {
                 ZStack {
@@ -135,7 +142,6 @@ struct DoseScheduleStatusView: View {
                             .font(.body1Medium)
                             .foregroundStyle(Color.primary90)
                     })
-                    
                     .frame(width: 127, height: 48)
                     .background(Color.white)
                     .cornerRadius(8)
@@ -173,7 +179,7 @@ struct DoseScheduleStatusView: View {
         dateFormatter.locale = Locale(identifier: "ko_KR")
 
         if let date = dateFormatter.date(from: time) {
-            dateFormatter.dateFormat = "a h시"
+            dateFormatter.dateFormat = "HH시 mm분"
             return dateFormatter.string(from: date)
         } else {
             return "nil"
@@ -192,151 +198,5 @@ struct DoseScheduleStatusView: View {
         default:
             return "nil"
         }
-    }
-}
-
-// MARK: - AddPillCaseView
-
-struct AddPillCaseView: View {
-    
-    // MARK: - Properties
-    
-    @Environment(\.dismiss) private var dismiss
-    @ObservedObject var addPillCaseViewModel: AddPillCaseViewModel
-    @State private var textInput: String = String()
-    @State private var showQRCodeScanningView: Bool = false
-    @State private var scannedCode: String?
-    var selectedManagerId: Int
-    
-    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
-    
-    // MARK: - Initializer
-    
-    init(selectedManagerId: Int) {
-        self.selectedManagerId = selectedManagerId
-        self.addPillCaseViewModel = AddPillCaseViewModel(caseService: CaseService(provider: MoyaProvider<CaseAPI>()))
-    }
-    
-    // MARK: - body
-    
-    var body: some View {
-        ZStack {
-            VStack(alignment: .leading) {
-                CustomNavigationBar()
-                
-                VStack(alignment: .leading) {
-                    Text(addPillCaseViewModel.mainText)
-                        .font(.logo2ExtraBold)
-                        .foregroundStyle(Color.gray100)
-                        .padding(.bottom, 5)
-                        .fadeIn(delay: 0.1)
-                    
-                    Text(addPillCaseViewModel.subText)
-                        .font(.body1Regular)
-                        .foregroundStyle(Color.gray70)
-                        .fadeIn(delay: 0.2)
-                    
-                    CustomTextInput(placeholder: addPillCaseViewModel.placeholder,
-                                    text: $addPillCaseViewModel.infoState.serialNumber,
-                                    isError: .constant(false),
-                                    errorMessage: addPillCaseViewModel.infoErrorState.serialNumberErrorMessage,
-                                    textInputStyle: .text)
-                        .fadeIn(delay: 0.3)
-                    
-                    Button(action: {
-                        self.showQRCodeScanningView = true
-                    }, label: {
-                        Text("QR 코드로 등록하기")
-                            .font(.body2Medium)
-                            .foregroundStyle(Color.gray90)
-                    })
-                    .fadeIn(delay: 0.4)
-                    
-                    Spacer()
-                    
-                    CustomButton(buttonSize: .regular,
-                                 buttonStyle: .filled,
-                                 action: {
-                        hideKeyboard()
-                        requestToAddPillCase(serialNumber: addPillCaseViewModel.infoState.serialNumber)
-                    }, content: {
-                        Text("확인")
-                    }, isDisabled: !addPillCaseViewModel.infoErrorState.serialNumberErrorMessage.isEmpty || addPillCaseViewModel.infoState.serialNumber.isEmpty,
-                                 isLoading: addPillCaseViewModel.isNetworking)
-                        .fadeIn(delay: 0.4)
-                }
-                .padding([.leading, .trailing], 33)
-                
-                Spacer()
-            }
-        }
-        .fullScreenCover(isPresented: $showQRCodeScanningView,
-                         content: {
-            ZStack {
-                VStack {
-                    HStack {
-                        Text("약통 QR 코드 스캔")
-                            .font(.body2Medium)
-                            .foregroundStyle(Color.gray90)
-                    }
-                    
-                    ZStack(alignment: .topTrailing) {
-                        CodeScannerView(codeTypes: [.qr]) { response in
-                            switch response {
-                            case .success(let result):
-                                scannedCode = result.string
-                                showQRCodeScanningView = false
-                                requestToAddPillCase(serialNumber: scannedCode ?? "nil")
-                            case .failure(let error):
-                                print("스캔 실패: \(error)")
-                                self.toastManager.showToast(description: "스캔에 실패했습니다.")
-                            }
-                        }
-                        
-                        Button(action: {
-                            self.showQRCodeScanningView = false
-                        }, label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .resizable()
-                                .foregroundStyle(Color.white)
-                                .frame(width: 20, height: 20)
-                        })
-                        .padding()
-                    }
-                    
-                }
-                
-                VStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(.clear)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .strokeBorder(
-                                    Color.primary60,
-                                    lineWidth: 1
-                                )
-                        )
-                        .frame(width: 200, height: 200)
-                    
-                    Text("사각형 안에 QR 코드를 맞춰주세요")
-                        .font(.body2Medium)
-                        .foregroundStyle(Color.primary60)
-                }
-               
-            }
-            
-        })
-        .onChange(of: addPillCaseViewModel.isNetworkSucceed, {
-            self.toastManager.showToast(description: "약통 등록을 성공했습니다.")
-            withAnimation(nil) {
-                dismiss()
-            }
-        })
-
-    }
-    
-    private func requestToAddPillCase(serialNumber: String) {
-        self.addPillCaseViewModel.$tapAddPillCaseButton.send(PillCaseInfoState(ownerId: self.selectedManagerId,
-                                                                              serialNumber: serialNumber))
     }
 }

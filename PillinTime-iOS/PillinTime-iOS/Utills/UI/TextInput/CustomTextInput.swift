@@ -30,6 +30,8 @@ struct CustomTextInput: View {
     
     var onFocusOut: PassthroughSubject<String, Never>?
     var searchButtonAction: (() -> Void)?
+    var onSubmit: (() -> Void)?
+    var maxLength: Int?
     
     @FocusState private var isFocused: Bool
     
@@ -79,6 +81,7 @@ extension CustomTextInput {
                    .padding(.leading, 10)
                    .onSubmit {
                        onFocusOut?.send(text)
+                       onSubmit?()
                    }
                    .disabled(disabled)
                    .font(.h5Medium)
@@ -92,6 +95,10 @@ extension CustomTextInput {
                        }
                    }())
                    .onChange(of: text, perform: { newValue in
+                       if let maxLength = maxLength, newValue.count > maxLength {
+                          text = String(newValue.prefix(maxLength))
+                       }
+                       
                        switch textInputStyle {
                        case .phoneNumber:
                            text = formatPhoneNumber(phoneNumber: newValue)

@@ -16,6 +16,14 @@ protocol CaseServiceType {
     ///
     /// - Parameters:
     ///     - createPillCaseRequestModel: 약통 생성에 필요한 정보들을 담은 Model입니다.
-    /// - Returns: bool
+    /// - Returns: BaseResponse
     func createPillCaseRequest(createPillCaseRequestModel: CreatePillCaseRequestModel) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
+    
+    /// 약통 해제 요청을 보냅니다.
+    ///
+    /// - Parameters:
+    ///     - cabinetId: 해제할 약통의 id입니다.
+    /// - Returns: BaseResponse
+    func deletePillCaseRequest(cabineId: Int) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
+    
 }

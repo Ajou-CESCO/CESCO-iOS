@@ -18,7 +18,11 @@ struct SearchDoseResponseModel: Codable {
 // MARK: - SearchDoseResponseModelResult
 
 struct SearchDoseResponseModelResult: Codable {
-    let companyName, medicineName, medicineCode, medicineImage: String
+    let companyName, medicineName: String
+    let medicineSeries: String
+    let medicineCode: String
+    let medicineImage: String
     let medicineEffect, useMethod, useWarning, useSideEffect: String
     let depositMethod: String
+    let medicineAdverse: MedicineAdverse
 }

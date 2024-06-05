@@ -25,6 +25,7 @@ struct PillinTime_iOSApp: App {
 //                .onOpenURL { url in
 //                    // 딥링크 네비게이션이 필요한 경우, URL 편집 수행
 //                }
+
         }
     }
 }

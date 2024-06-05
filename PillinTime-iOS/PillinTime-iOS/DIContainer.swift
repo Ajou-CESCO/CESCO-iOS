@@ -25,7 +25,8 @@ extension Container {
     var homeViewModel: Factory<HomeViewModel> {
         Factory(self) {
             HomeViewModel(etcService: EtcService(provider: MoyaProvider<EtcAPI>()), 
-                          planService: PlanService(provider: MoyaProvider<PlanAPI>()))
+                          planService: PlanService(provider: MoyaProvider<PlanAPI>()), 
+                          healthService: HealthService(provider: MoyaProvider<HealthAPI>()))
         }
         .singleton
     }
@@ -52,7 +53,7 @@ extension Container {
     
     var userService: Factory<UserServiceType> {
         Factory(self) {
-            UserService()
+            UserService(provider: MoyaProvider<UserAPI>())
         }
         .singleton
     }
@@ -78,9 +79,23 @@ extension Container {
         .singleton
     }
     
+    var relationService: Factory<RelationServiceType> {
+        Factory(self) {
+            RelationService(provider: MoyaProvider<RelationAPI>())
+        }
+        .singleton
+    }
+    
     var planService: Factory<PlanServiceType> {
         Factory(self) {
             PlanService(provider: MoyaProvider<PlanAPI>())
+        }
+        .singleton
+    }
+    
+    var fcmService: Factory<FcmServiceType> {
+        Factory(self) {
+            FcmService(provider: MoyaProvider<FcmAPI>())
         }
         .singleton
     }
@@ -92,4 +107,19 @@ extension Container {
         .singleton
     }
     
+    var healthService: Factory<HealthServiceType> {
+        Factory(self) {
+            HealthService(provider: MoyaProvider<HealthAPI>())
+        }
+        .singleton
+    }
+    
+    // MARK: - HealthKit
+    
+    var hkService: Factory<HKServiceProtocol> {
+        Factory(self) {
+            HKService(provider: HKProvider(), core: HKSleepCore())
+        }
+        .singleton
+    }
 }

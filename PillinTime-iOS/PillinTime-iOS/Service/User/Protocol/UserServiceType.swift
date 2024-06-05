@@ -43,5 +43,5 @@ protocol UserServiceType {
     /// - Parameters:
     ///     - 없음
     /// - Returns: 이후 수정
-    func deleteUserById() -> Bool
+    func deleteUser() -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
 }

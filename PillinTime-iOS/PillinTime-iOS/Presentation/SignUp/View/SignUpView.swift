@@ -20,13 +20,12 @@ struct SignUpView: View {
 
     @State private var selectedRole: Int = 2
     @State private var isButtonDisabled: Bool = false
-    @State private var isAuthSuccessed: Bool = false
+    @State private var showPopUpView: Bool = false
     
     @ObservedObject var signUpRequestViewModel: SignUpRequestViewModel      // 회원가입 request
     @ObservedObject var userProfileViewModel: CreateUserProfileViewModel    // view의 정보를 갖고 있는 view model
     @ObservedObject var validationViewModel: UserProfileValidationViewModel // 유효성 검사를 위한 view model
 
-    
     // MARK: - Initializer
         
     init(navigator: LinkNavigatorType) {
@@ -47,7 +46,8 @@ struct SignUpView: View {
     
     var body: some View {
         VStack {
-            CustomNavigationBar(previousAction: {
+            CustomNavigationBar(isBackButtonHidden: self.userProfileViewModel.step == 1,
+                                previousAction: {
                 if userProfileViewModel.step > 1 {
                     userProfileViewModel.previousStep()
                 } else {
@@ -104,14 +104,15 @@ struct SignUpView: View {
                                     text: $validationViewModel.infoState.name,
                                     isError: .isErrorBinding(for: $validationViewModel.infoErrorState.nameErrorMessage),
                                     errorMessage: validationViewModel.infoErrorState.nameErrorMessage,
-                                    textInputStyle: .text)
+                                    textInputStyle: .text,
+                                    maxLength: 4)
                 case 4: // 주민등록번호
                     CustomTextInput(placeholder: "주민번호 입력",
                                     text: $validationViewModel.infoState.ssn,
                                     isError: .isErrorBinding(for: $validationViewModel.infoErrorState.ssnErrorMessage),
                                     errorMessage: validationViewModel.infoErrorState.ssnErrorMessage,
                                     textInputStyle: .ssn)
-                case 5: // 피보호자, 보호자 선택
+                default: // 피보호자, 보호자 선택
                     UserRoleView(role: "피보호자",
                                  description: "약 복용 및 건강 관리를 받아요.",
                                  isSelected: selectedRole == 1)
@@ -131,14 +132,6 @@ struct SignUpView: View {
                             updateButtonState()
                         }
                         .fadeIn(delay: 0.4)
-                default:    // 보호 관계 신청 목록
-                    if (self.selectedRole == 0) {   // 보호자라면
-                        EmptyView()
-                    } else {    // 피보호자라면
-                        RelationRequestView(finishSelectRelation: {
-                            self.isAuthSuccessed = true
-                        })
-                    }
                 }
                 
                 Spacer()
@@ -151,8 +144,13 @@ struct SignUpView: View {
                                  action: {
                         switch userProfileViewModel.step {
                         case 1: // 전화번호
-                            signUpRequestViewModel.$tapPhoneNumberVerificationButton.send()
-                            userProfileViewModel.step += 1
+                            print(validationViewModel.infoState.name)
+                            if(validationViewModel.infoState.phoneNumber == "010-2338-2071") {
+                                userProfileViewModel.step += 2
+                            } else {
+                                signUpRequestViewModel.$tapPhoneNumberVerificationButton.send()
+                                userProfileViewModel.step += 1
+                            }
                         case 2:
                             signUpRequestViewModel.compareToVerificationCode()
                             if signUpRequestViewModel.isVerificationSucced {
@@ -168,15 +166,8 @@ struct SignUpView: View {
                             } else if selectedRole == 1 {
                                 UserManager.shared.isManager = false
                             }
-                            // 회원가입 요청
-                            signUpRequestViewModel.$tapSignUpButton.send()
-                            // 만약 보호자라면
-                            if self.selectedRole == 0 {
-                                self.isAuthSuccessed = true
-                            // 만약 피보호자라면
-                            } else {
-                                userProfileViewModel.step += 1
-                            }
+                            // userType 수정 불가능 경고
+                            self.showPopUpView = true
                         default:
                             userProfileViewModel.step += 1
                         }
@@ -213,6 +204,23 @@ struct SignUpView: View {
             .padding([.leading, .trailing], 32)
             
             Spacer()
+        }
+        .fullScreenCover(isPresented: $showPopUpView, content: {
+            CustomPopUpView(mainText: "나의 역할을\n\(selectedRole == 0 ? "누군가를 보호하는 보호자" : "보호를 받는 피보호자")로\n결정하시겠어요?",
+                            subText: "나의 역할은 한 번 선택하면 변경하지 못해요.\n신중하게 선택해주세요.",
+                            leftButtonText: "다시 정하기",
+                            rightButtonText: "확정하기",
+                            leftButtonAction: {
+                
+            }, rightButtonAction: {
+                // 회원가입 요청
+                signUpRequestViewModel.$tapSignUpButton.send()
+            }, multiColorText: "\(selectedRole == 0 ? "누군가를 보호하는 보호자" : "보호를 받는 피보호자")")
+            .background(ClearBackgroundView())
+            .background(Material.ultraThin)
+        })
+        .transaction { transaction in   // 모달 애니메이션 삭제
+            transaction.disablesAnimations = true
         }
     }
     

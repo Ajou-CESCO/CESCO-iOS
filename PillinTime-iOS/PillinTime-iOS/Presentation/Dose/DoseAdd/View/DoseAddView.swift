@@ -54,6 +54,9 @@ struct DoseAddView: View {
                     doseAddViewModel.previousStep()
                 } else {
                     navigator.remove(paths: ["doseAdd"])
+                    /// 복용 계획을 생성하고 나면, state 초기화
+                    doseAddViewModel.dosePlanInfoState = AddDosePlanInfoState()
+                    doseAddViewModel.searchDose = ""
                 }
             })
             
@@ -177,13 +180,17 @@ struct DoseAddView: View {
             self.toastManager.showToast(description: "복용 계획 등록을 완료했어요.")
         })
     }
-    
+
     /// 버튼의 상태를 업데이트
     private func updateButtonState() {
         switch doseAddViewModel.step {
         case 1:
             /// medicineId나 textfield가 비어있을 경우, 버튼 disabled
             self.isButtonDisabled = (doseAddViewModel.dosePlanInfoState.medicineID.isEmpty || doseAddViewModel.searchDose.isEmpty ? true : false)
+        case 2:
+            self.isButtonDisabled = doseAddViewModel.dosePlanInfoState.weekdayList.isEmpty
+        case 3:
+            self.isButtonDisabled = doseAddViewModel.dosePlanInfoState.timeList.isEmpty
         case 5:
             self.isButtonDisabled = (self.selectedColorIndex == 0)
         default:

@@ -31,10 +31,12 @@ struct SearchDoseView: View {
                             searchButtonAction: {
                                 hideKeyboard()
                                 searchDoseViewModel.$tapSearchButton.send(doseAddViewModel.searchDose)
+                            }, onSubmit: {
+                                searchDoseViewModel.$tapSearchButton.send(doseAddViewModel.searchDose)
                             })
             
             if (searchDoseViewModel.isNetworking) {
-                LoadingView()
+                SearchDoseLoadingView()
             }
             
             ScrollView(showsIndicators: false) {
@@ -50,27 +52,12 @@ struct SearchDoseView: View {
                                                                   doseAddViewModel.dosePlanInfoState.medicineID = result.medicineCode
                                                               }
                                                            }
-                                                      ))
+                                                  ), isUserHasSideEffect: .constant(!isAdverseMapSafe(medicineAdverse: result.medicineAdverse)))
                         }
                     }
                     
                     if (searchDoseViewModel.isResultEmpty) {
-                        VStack {
-                            Image("ic_empty")
-                                .resizable()
-                                .frame(width: 100, height: 100)
-                                .padding()
-                            
-                            Text("검색어를 다시 확인해주세요")
-                                .font(.caption1Bold)
-                                .foregroundStyle(Color.gray90)
-                                .padding(.bottom, 2)
-                            
-                            Text("검색 결과가 없습니다.")
-                                .font(.caption1Regular)
-                                .foregroundStyle(Color.gray90)
-                        }
-                        .padding()
+                        CustomEmptyView(mainText: "검색어를 다시 확인해주세요", subText: "검색 결과가 없습니다.")
                     }
                 }
             }
@@ -80,6 +67,15 @@ struct SearchDoseView: View {
         .onTapGesture {
             hideKeyboard()
         }
+    }
+    
+    private func isAdverseMapSafe(medicineAdverse: MedicineAdverse) -> Bool {
+        return medicineAdverse.dosageCaution == nil &&
+        medicineAdverse.ageSpecificContraindication == nil &&
+        medicineAdverse.elderlyCaution == nil &&
+        medicineAdverse.administrationPeriodCaution == nil &&
+        medicineAdverse.pregnancyContraindication == nil &&
+        medicineAdverse.duplicateEfficacyGroup == nil
     }
 }
 
@@ -93,6 +89,7 @@ struct SearchDoseElementView: View {
     @Binding var searchDoseResponseModelResult: SearchDoseResponseModelResult
     @State var showDoseElementDetail: Bool = false
     @Binding var isDoseSelected: Bool
+    @Binding var isUserHasSideEffect: Bool
 
     // MARK: - body
     
@@ -108,9 +105,14 @@ struct SearchDoseElementView: View {
                         .padding(.top, 10)
                         .padding(.leading, 5)
                     
-                    MedicineEffectView(text: searchDoseResponseModelResult.medicineEffect)
-                        .padding(.bottom, 10)
-                        .padding(.leading, 5)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            MedicineSideEffectView(isUserHasSideEffect: $isUserHasSideEffect)
+                            MedicineEffectView(text: searchDoseResponseModelResult.medicineEffect)
+                        }
+                    }
+                    .padding(.bottom, 10)
+                    .padding(.leading, 5)
                 }
                                 
                 Image(isDoseSelected ? "ic_dose_selected" : "ic_dose_unselected")
@@ -126,6 +128,9 @@ struct SearchDoseElementView: View {
                                              rightButtonAction: {
                 self.doseAddViewModel.isDoseSelected = true
                 self.doseAddViewModel.dosePlanInfoState.medicineID = searchDoseResponseModelResult.medicineCode
+                self.doseAddViewModel.dosePlanInfoState.medicineName = searchDoseResponseModelResult.medicineName
+                self.doseAddViewModel.dosePlanInfoState.medicineSeries = searchDoseResponseModelResult.medicineSeries
+                self.doseAddViewModel.dosePlanInfoState.medicineAdverse = searchDoseResponseModelResult.medicineAdverse
             })
                 .background(ClearBackgroundView())
                 .background(Material.ultraThin)
@@ -146,23 +151,38 @@ struct MedicineEffectView: View {
     let text: String
     
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(alignment: .center, spacing: 10) {
-                ForEach(splitText(), id: \.self) { word in
-                    Text(word)
-                        .padding(.vertical, 6)
-                        .padding(.horizontal, 10)
-                        .font(.caption2Medium)
-                        .background(Color.gray10)
-                        .foregroundColor(Color.gray80)
-                        .cornerRadius(6)
-                }
+        HStack(alignment: .center, spacing: 10) {
+            ForEach(splitText(), id: \.self) { word in
+                Text(word)
+                    .padding(.vertical, 6)
+                    .padding(.horizontal, 10)
+                    .font(.caption2Medium)
+                    .background(Color.gray10)
+                    .foregroundColor(Color.gray80)
+                    .cornerRadius(6)
             }
-            .padding(.trailing, 5)
         }
+        .padding(.trailing, 5)
     }
     
     func splitText() -> [String] {
         return text.components(separatedBy: ", ")
+    }
+}
+
+// MARK: - MedicineSideEffectView
+
+struct MedicineSideEffectView: View {
+    
+    @Binding var isUserHasSideEffect: Bool
+    
+    var body: some View {
+        Text(isUserHasSideEffect ? "부작용 주의": "부작용 안전")
+            .padding(.vertical, 6)
+            .padding(.horizontal, 10)
+            .font(.caption2Medium)
+            .background(isUserHasSideEffect ? Color.warning60: Color.success60)
+            .foregroundColor(Color.white)
+            .cornerRadius(6)
     }
 }

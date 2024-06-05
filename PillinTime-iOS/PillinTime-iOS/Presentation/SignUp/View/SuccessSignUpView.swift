@@ -46,7 +46,7 @@ struct SuccessSignUpView: View {
                     .font(.logo2ExtraBold)
                     .multilineTextAlignment(.center)
                     .lineSpacing(2)
-                    .foregroundStyle(Color.gray100)
+                    .foregroundStyle(Color.gray90)
                     .frame(alignment: .center)
                     .fadeIn(delay: 0.8)
             }
@@ -54,6 +54,9 @@ struct SuccessSignUpView: View {
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 navigator.next(paths: ["content"], items: [:], isAnimated: true)
+                if !(UserManager.shared.isManager ?? false) {
+                    HKAuthorizationHelper.shared.setAuthorization()
+                }
             }
         }
     }

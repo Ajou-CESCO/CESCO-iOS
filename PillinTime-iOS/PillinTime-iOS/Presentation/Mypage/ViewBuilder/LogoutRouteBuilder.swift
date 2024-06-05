@@ -2,10 +2,10 @@
 //  LogoutRouteBuilder.swift
 //  PillinTime-iOS
 //
-//  Created by Jae Hyun Lee on 5/19/24.
+//  Created by Jae Hyun Lee on 6/4/24.
 //
 
-import SwiftUI
+import Foundation
 
 import LinkNavigator
 

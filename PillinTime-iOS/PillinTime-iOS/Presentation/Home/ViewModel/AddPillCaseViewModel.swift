@@ -39,6 +39,7 @@ class AddPillCaseViewModel: ObservableObject {
     
     @Injected(\.caseService) var caseService: CaseServiceType
     var addPillCaseEventModel = PassthroughSubject<AddPillCaseEventModel, Never>()
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     // MARK: - Properties
 
@@ -104,13 +105,13 @@ class AddPillCaseViewModel: ObservableObject {
                     print("--------------------")
                     print("약통 생성 요청 실패: \(error)")
                     self.isNetworking = false
-                    self.infoErrorState.serialNumberErrorMessage = error.localizedDescription
+                    self.infoErrorState.serialNumberErrorMessage = "이미 등록된 약통입니다."
+                    toastManager.showNetworkFailureToast()
                 }
             }, receiveValue: { [weak self] result in
                 guard let result = self else { return }
                 print(result)
             })
             .store(in: &cancellables)
-        
     }
 }

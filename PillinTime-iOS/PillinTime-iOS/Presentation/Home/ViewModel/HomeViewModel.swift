@@ -161,7 +161,6 @@ class HomeViewModel: ObservableObject {
             }, receiveValue: { [weak self] result in
                 guard let self = self else { return }
                 self.doseLog = result.result
-                self.occupiedCabinetIndex = doseLog.map { $0.cabinetIndex }
                 print(self.doseLog)
             })
             .store(in: &cancellables)

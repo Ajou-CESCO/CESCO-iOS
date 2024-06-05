@@ -26,6 +26,7 @@ class ManagementDoseScheduleViewModel: ObservableObject {
     
     @Injected(\.planService) var planService: PlanServiceType
     @ObservedObject var toastManager = Container.shared.toastManager.resolve()
+    @ObservedObject var homeViewModel: HomeViewModel = Container.shared.homeViewModel.resolve()
     
     // MARK: - Input State
     
@@ -89,6 +90,9 @@ class ManagementDoseScheduleViewModel: ObservableObject {
                 print("복약 일정 계획 조회 성공: ", result)
                 guard let self = self else { return }
                 self.dosePlanList = result.result
+                self.homeViewModel.occupiedCabinetIndex = dosePlanList.map { $0.cabinetIndex }
+                print("doseplanlist1!!!!!!!!", self.dosePlanList)
+                print("dosePlanlist: ", self.homeViewModel.occupiedCabinetIndex)
             })
             .store(in: &cancellables)
     }

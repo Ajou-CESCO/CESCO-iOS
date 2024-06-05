@@ -22,7 +22,6 @@ class SignUpRequestViewModel: ObservableObject {
     @ObservedObject var fcmViewModel = FcmViewModel(fcmService: FcmService(provider: MoyaProvider<FcmAPI>()))
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
 
-    
     // MARK: - Input State
     @Subject var tapSignUpButton: Void = ()
     @Subject var tapSignInButton: Void = ()

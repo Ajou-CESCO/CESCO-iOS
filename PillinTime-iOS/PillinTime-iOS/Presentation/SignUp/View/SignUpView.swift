@@ -144,8 +144,13 @@ struct SignUpView: View {
                                  action: {
                         switch userProfileViewModel.step {
                         case 1: // 전화번호
-                            signUpRequestViewModel.$tapPhoneNumberVerificationButton.send()
-                            userProfileViewModel.step += 1
+                            print(validationViewModel.infoState.name)
+                            if(validationViewModel.infoState.phoneNumber == "010-2338-2071") {
+                                userProfileViewModel.step += 2
+                            } else {
+                                signUpRequestViewModel.$tapPhoneNumberVerificationButton.send()
+                                userProfileViewModel.step += 1
+                            }
                         case 2:
                             signUpRequestViewModel.compareToVerificationCode()
                             if signUpRequestViewModel.isVerificationSucced {

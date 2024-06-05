@@ -65,21 +65,29 @@ struct ManagementDoseScheduleView: View {
                     if UserManager.shared.isManager ?? true {
                         LazyHStack(spacing: 0) {
                             ForEach(homeViewModel.relationLists, id: \.memberID) { _ in
-                                VStack(alignment: .center) {
+                                VStack {
                                     if managementDoseScheduleViewModel.isNetworking {
                                         LoadingView()
                                     } else if managementDoseScheduleViewModel.dosePlanList.isEmpty {
                                         CustomEmptyView(mainText: "등록된 복약 일정이 없습니다", subText: "복약 탭에서 일정을 추가하세요.")
                                     }
 
-                                    ManagementDoseScheduleElementView(dosePlanList: .constant(
-                                        managementDoseScheduleViewModel.dosePlanList
-                                    ), selectedClientId: $selectedClientId,
+                                    ManagementDoseScheduleElementView(dosePlanList: $managementDoseScheduleViewModel.dosePlanList,
+                                                                      selectedClientId: $selectedClientId,
                                     managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
+                                    
+                                    Text("사용 중인 인덱스 칸: \(homeViewModel.occupiedCabinetIndex)")
+                                        .font(.body2Medium)
+                                        .foregroundStyle(Color.gray70)
+                                        .padding([.top, .bottom])
+                                        .fadeIn(delay: 0.2)
                                     
                                     Spacer()
                                 }
                                 .containerRelativeFrame(.horizontal)
+                                .refreshable {
+                                    requestDosePlanToServer()
+                                }
                             }
                         }
                         .scrollTargetLayout(isEnabled: true)
@@ -90,6 +98,8 @@ struct ManagementDoseScheduleView: View {
                             } else if managementDoseScheduleViewModel.dosePlanList.isEmpty {
                                 CustomEmptyView(mainText: "등록된 복약 일정이 없습니다", subText: "복약 탭에서 일정을 추가하세요.")
                                     .frame(width: UIScreen.main.bounds.width)
+                               
+//
                             }
                             
                             ManagementDoseScheduleElementView(dosePlanList: .constant(

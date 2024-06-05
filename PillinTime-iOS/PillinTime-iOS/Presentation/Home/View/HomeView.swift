@@ -63,26 +63,19 @@ struct HomeView: View {
                                                                isCabinetExist: relation.cabinetID != 0,
                                                                takenStatus: nil,
                                                                showAddPillCaseView: $showAddPillCaseView)
-                                        .padding([.top, .bottom], 10)
+                                        .padding([.top], 10)
                                         .padding([.leading, .trailing], 25)
                                         .fadeIn(delay: 0.3)
                                         
-                                        if showEncourageView {
-                                            EncourageMainView()
-                                                .transition(.move(edge: .top))
-                                                .scaleFadeIn(delay: 0.4)
-                                                .padding([.leading, .trailing], 25)
-                                                .onTapGesture {
-                                                    if !(homeViewModel.healthData?.isEmpty ?? true) {
-                                                        self.showHealthView = true
-                                                    }
-                                                }
-                                        }
-                                        
                                         HealthMainView(stepCount: $homeViewModel.state.stepCount)
-                                            .padding(.top, showEncourageView ? 14 : 0) // EncourageMainView 표시에 따라 조정
-                                            .fadeIn(delay: 0.5)
+                                            .fadeIn(delay: 0.4)
+                                            .padding(.top, 10)
                                             .padding([.leading, .trailing], 25)
+                                            .onTapGesture {
+                                                if !(homeViewModel.healthData?.isEmpty ?? true) {
+                                                    self.showHealthView = true
+                                                }
+                                            }
                                         
                                         Spacer()
                                     }
@@ -132,22 +125,14 @@ struct HomeView: View {
                         .padding([.leading, .trailing], 25)
                         .fadeIn(delay: 0.3)
                         
-                        if showEncourageView {
-                            EncourageMainView()
-                                .transition(.move(edge: .top))
-                                .scaleFadeIn(delay: 0.4)
-                                .padding([.leading, .trailing], 25)
-                                .onTapGesture {
-                                    if !(homeViewModel.healthData?.isEmpty ?? true) {
-                                        self.showHealthView = true
-                                    }
-                                }
-                        }
-                        
                         HealthMainView(stepCount: $homeViewModel.state.stepCount)
-                            .padding(.top, showEncourageView ? 17 : 0) // EncourageMainView 표시에 따라 조정
-                            .fadeIn(delay: 0.5)
+                            .fadeIn(delay: 0.4)
                             .padding([.leading, .trailing], 25)
+                            .onTapGesture {
+                                if !(homeViewModel.healthData?.isEmpty ?? true) {
+                                    self.showHealthView = true
+                                }
+                            }
                         
                         Button(action: {
                             homeViewModel.$requestCreateHealthData.send()
@@ -261,11 +246,6 @@ struct HomeView: View {
         }
         homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
         homeViewModel.$requestGetHealthData.send(selectedClientId ?? 0)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-            withAnimation {
-                self.showEncourageView = true
-            }
-        }
     }
 }
 
@@ -284,74 +264,51 @@ struct HealthMainView: View {
         ZStack {
             Color.primary60
             
-            HStack(spacing: 20) {
-                ForEach(homeViewModel.state.asDictionary().sorted(by: <), id: \.key) { key, value in
-                    VStack {
-                        Text("\(key)")
-                            .font(.caption1Medium)
-                            .foregroundStyle(Color.primary40)
-                            .padding(.bottom, 2)
+            if (homeViewModel.healthData?.steps != 0) {
+                VStack {
+                    HStack {
+                        Spacer()
                         
-                        Text("\(value)")
-                            .font(.body1Bold)
+                        Text("통계 보러가기")
+                            .foregroundStyle(Color.white)
+                            .font(.body2Medium)
+                        
+                        Image(systemName: "chevron.forward")
                             .foregroundStyle(Color.white)
                     }
+                    .padding(.bottom, 10)
+                    
+                    HStack(spacing: 20) {
+                        ForEach(homeViewModel.state.asDictionary().sorted(by: <), id: \.key) { key, value in
+                            VStack {
+                                Text("\(key)")
+                                    .font(.caption1Medium)
+                                    .foregroundStyle(Color.primary40)
+                                    .padding(.bottom, 2)
+                                
+                                Text("\(value)")
+                                    .font(.body1Bold)
+                                    .foregroundStyle(Color.white)
+                            }
+                        }
+                    }
+                    
+                }
+                .padding()
+            } else {
+                VStack {
+                    Text("건강 데이터가 없어요.")
+                        .font(.logo4Medium)
+                        .foregroundStyle(Color.white)
+                        .padding(.bottom, 1)
+                    
+                    Text("건강 데이터 자료가 없어서, 통계를 내지 못했어요.")
+                        .font(.body2Medium)
+                        .foregroundStyle(Color.white)
                 }
             }
         }
         .cornerRadius(8)
         .frame(maxWidth: .infinity, minHeight: 80, maxHeight: 80)
-    }
-}
-
-// MARK: - EncourageMainView
-
-struct EncourageMainView: View {
-    
-    // MARK: - Properties
-    
-    var mainTitle: String = "오늘 얼마나 걸으셨나요?"
-    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
-    
-    // MARK: - body
-    
-    var body: some View {
-        HStack {
-            
-            if (homeViewModel.healthData?.stepsMessage != nil) {
-                LottieView(lottieFile: "pie-chart", loopMode: .loop)
-                    .frame(width: 70, height: 70)
-                
-                VStack(alignment: .leading) {
-                    Text(mainTitle)
-                        .font(.logo4Medium)
-                        .foregroundStyle(Color.gray90)
-                        .padding(.bottom, 1)
-                    
-                    Text(homeViewModel.healthData?.stepsMessage ?? "아직 걸음 데이터가 없어요.")
-                        .font(.body2Medium)
-                        .foregroundStyle(Color.gray50)
-                }
-                
-                Image(systemName: "chevron.forward")
-                    .foregroundStyle(Color.gray60)
-                    .padding()
-            } else {
-                VStack {
-                    Text("건강 데이터가 없어요.")
-                        .font(.logo4Medium)
-                        .foregroundStyle(Color.gray90)
-                        .padding(.bottom, 1)
-                    
-                    Text("건강 데이터 자료가 없어서, 통계를 내지 못했어요.")
-                        .font(.body2Medium)
-                        .foregroundStyle(Color.gray50)
-                }
-            }
-            
-        }
-        .frame(maxWidth: .infinity, minHeight: 90, maxHeight: 90)
-        .background(Color.white)
-        .cornerRadius(8)
     }
 }

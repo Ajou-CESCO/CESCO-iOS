@@ -115,6 +115,7 @@ struct DoseScheduleStatusView: View {
                 .frame(maxWidth: .infinity,
                        minHeight: 150,
                        maxHeight: 150)
+                .padding(.bottom, 10)
             }
         } else {
             /// 약통이 존재하지 않을 경우, 약통 등록 유도

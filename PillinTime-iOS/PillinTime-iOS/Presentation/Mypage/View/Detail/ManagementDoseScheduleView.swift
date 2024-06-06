@@ -70,18 +70,12 @@ struct ManagementDoseScheduleView: View {
                                         LoadingView()
                                     } else if managementDoseScheduleViewModel.dosePlanList.isEmpty {
                                         CustomEmptyView(mainText: "등록된 복약 일정이 없습니다", subText: "복약 탭에서 일정을 추가하세요.")
+                                    } else {
+                                        ManagementDoseScheduleElementView(dosePlanList: $managementDoseScheduleViewModel.dosePlanList,
+                                                                          selectedClientId: $selectedClientId,
+                                        managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
                                     }
-
-                                    ManagementDoseScheduleElementView(dosePlanList: $managementDoseScheduleViewModel.dosePlanList,
-                                                                      selectedClientId: $selectedClientId,
-                                    managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
-                                    
-                                    Text("사용 중인 인덱스 칸: \(homeViewModel.occupiedCabinetIndex)")
-                                        .font(.body2Medium)
-                                        .foregroundStyle(Color.gray70)
-                                        .padding([.top, .bottom])
-                                        .fadeIn(delay: 0.2)
-                                    
+                  
                                     Spacer()
                                 }
                                 .containerRelativeFrame(.horizontal)
@@ -98,8 +92,6 @@ struct ManagementDoseScheduleView: View {
                             } else if managementDoseScheduleViewModel.dosePlanList.isEmpty {
                                 CustomEmptyView(mainText: "등록된 복약 일정이 없습니다", subText: "복약 탭에서 일정을 추가하세요.")
                                     .frame(width: UIScreen.main.bounds.width)
-                               
-//
                             }
                             
                             ManagementDoseScheduleElementView(dosePlanList: .constant(
@@ -117,6 +109,9 @@ struct ManagementDoseScheduleView: View {
             }
             .padding(16)
         }
+        .onReceive(managementDoseScheduleViewModel.$dosePlanList, perform: {_ in
+            print("changed doseplanlist", managementDoseScheduleViewModel.dosePlanList)
+        })
         .onAppear {
             if UserManager.shared.isManager ?? true {
                 selectedClientId = homeViewModel.relationLists.first?.memberID

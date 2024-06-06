@@ -91,8 +91,6 @@ class ManagementDoseScheduleViewModel: ObservableObject {
                 guard let self = self else { return }
                 self.dosePlanList = result.result
                 self.homeViewModel.occupiedCabinetIndex = dosePlanList.map { $0.cabinetIndex }
-                print("doseplanlist1!!!!!!!!", self.dosePlanList)
-                print("dosePlanlist: ", self.homeViewModel.occupiedCabinetIndex)
             })
             .store(in: &cancellables)
     }

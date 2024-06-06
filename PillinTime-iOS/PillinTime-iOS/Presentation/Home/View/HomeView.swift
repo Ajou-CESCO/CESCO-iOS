@@ -72,7 +72,7 @@ struct HomeView: View {
                                             .padding(.top, 10)
                                             .padding([.leading, .trailing], 25)
                                             .onTapGesture {
-                                                if !(homeViewModel.healthData?.isEmpty ?? true) {
+                                                if (homeViewModel.healthData?.isEmpty ?? true) {
                                                     self.showHealthView = true
                                                 }
                                             }
@@ -264,7 +264,18 @@ struct HealthMainView: View {
         ZStack {
             Color.primary60
             
-            if (homeViewModel.healthData?.steps != 0) {
+            if (homeViewModel.healthData?.steps != 0 || ((homeViewModel.healthData?.isEmpty) != nil)) {
+                VStack {
+                    Text("건강 데이터가 없어요.")
+                        .font(.logo4Medium)
+                        .foregroundStyle(Color.white)
+                        .padding(.bottom, 1)
+                    
+                    Text("건강 데이터 자료가 없어서, 통계를 내지 못했어요.")
+                        .font(.body2Medium)
+                        .foregroundStyle(Color.white)
+                }
+            } else {
                 VStack {
                     HStack {
                         Spacer()
@@ -295,17 +306,6 @@ struct HealthMainView: View {
                     
                 }
                 .padding()
-            } else {
-                VStack {
-                    Text("건강 데이터가 없어요.")
-                        .font(.logo4Medium)
-                        .foregroundStyle(Color.white)
-                        .padding(.bottom, 1)
-                    
-                    Text("건강 데이터 자료가 없어서, 통계를 내지 못했어요.")
-                        .font(.body2Medium)
-                        .foregroundStyle(Color.white)
-                }
             }
         }
         .cornerRadius(8)

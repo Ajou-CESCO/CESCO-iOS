@@ -49,7 +49,7 @@ struct ContentView: View {
                         .tag(TabBarType.myPage)
                 }
             }
-
+            
             if toastManager.show {
                 ToastView(description: toastManager.description, show: $toastManager.show)
                     .padding(.bottom, 60)

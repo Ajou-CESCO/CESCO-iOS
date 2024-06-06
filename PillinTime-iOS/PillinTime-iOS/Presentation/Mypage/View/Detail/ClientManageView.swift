@@ -26,7 +26,7 @@ struct ClientManageView: View {
     // MARK: - Properties
     
     @ObservedObject var clientManageViewModel: ClientManageViewModel
-    @ObservedObject var managementMyInformationViewModel: ManagementMyInformationViewModel = ManagementMyInformationViewModel(caseService: CaseService(provider: MoyaProvider<CaseAPI>()))
+    @ObservedObject var managementMyInformationViewModel: ManagementMyInformationViewModel
     @State var isDeletePopUp: Bool = false
     @State var isRequestRelationPopUp: Bool = false
     @State var showInformationView: Bool = false
@@ -132,13 +132,20 @@ struct ClientManageView: View {
                     ToastView(description: "보호 관계를 요청했어요.", show: $showToastView)
                         .padding(.bottom, 20)
                 }
+                
+                if toastManager.show {
+                    ToastView(description: toastManager.description, show: $toastManager.show)
+                        .padding(.bottom, 60)
+                        .zIndex(1)
+                }
             }
-            .onChange(of: clientManageViewModel.isDeleteSucceed, {
-                requestToGetInfo()
-            })
         }
         .onChange(of: self.clientManageViewModel.isDeleteSucceed, {
             self.toastManager.showToast(description: "보호 관계 삭제를 완료했어요.")
+            requestToGetInfo()
+        })
+        .onChange(of: self.managementMyInformationViewModel.isDeleteSucced, {
+            self.toastManager.showToast(description: "약통 삭제를 완료했어요.")
             requestToGetInfo()
         })
         .onAppear(perform: {
@@ -165,7 +172,9 @@ struct ClientManageView: View {
             .background(Material.ultraThin)
         })
         .sheet(item: $selectedRelation, content: { relation in
-            ManagementMyInformationView(clientManageViewModel: clientManageViewModel, userInfo: relation)
+            ManagementMyInformationView(managementMyInformationViewModel: managementMyInformationViewModel, 
+                                        clientManageViewModel: clientManageViewModel,
+                                        userInfo: relation)
         })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true

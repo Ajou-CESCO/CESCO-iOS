@@ -18,12 +18,12 @@ struct ManagementMyInformationView: View {
     
     @Environment(\.dismiss) var dismiss
     
-    @State private var showToast: Bool = false
+    @ObservedObject private var toastManager = Container.shared.toastManager.resolve()
     @State private var showDeletePillCasePopUpView: Bool = false
     @State private var showDeleteRelationPopUpView: Bool = false
 
     @ObservedObject var myPageViewModel: MyPageViewModel = MyPageViewModel()
-    @ObservedObject var managementMyInformationViewModel: ManagementMyInformationViewModel = ManagementMyInformationViewModel(caseService: CaseService(provider: MoyaProvider<CaseAPI>()))    
+    @ObservedObject var managementMyInformationViewModel: ManagementMyInformationViewModel
     @ObservedObject var clientManageViewModel: ClientManageViewModel
     
     let userInfo: SelectedRelation
@@ -72,7 +72,7 @@ struct ManagementMyInformationView: View {
                         self.showDeletePillCasePopUpView = true
                     }, content: {
                         Text("약통 해제하기")
-                    }, isDisabled: self.managementMyInformationViewModel.isDeleteSucced)
+                    }, isDisabled: false)
                         .padding([.leading, .trailing], 33)
                         .fadeIn(delay: 0.3)
                 }
@@ -108,11 +108,12 @@ struct ManagementMyInformationView: View {
                          content: {
             CustomPopUpView(mainText: "약통을 해제하시겠어요?",
                             subText: "약통을 해제하면 \(userInfo.name) 님은 더 이상 서비스에서 복약 관리를 받을 수 없어요.",
-                            leftButtonText: "해제할게요",
-                            rightButtonText: "취소할게요",
+                            leftButtonText: "취소할게요",
+                            rightButtonText: "해제할게요",
                             leftButtonAction: {},
                             rightButtonAction: {
                 self.managementMyInformationViewModel.$tapDeletePillCaseButton.send(userInfo.cabinetId)
+                self.dismiss()
             })
             .background(ClearBackgroundView())
             .background(Material.ultraThin)

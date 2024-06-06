@@ -49,6 +49,7 @@ struct MyPageDetailView: View {
     @State var settingListElement: SettingListElement
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     @ObservedObject var clientManageViewModel: ClientManageViewModel = ClientManageViewModel(relationService: RelationService(provider: MoyaProvider<RelationAPI>()))
+    @ObservedObject var managementMyInformationViewModel: ManagementMyInformationViewModel = ManagementMyInformationViewModel(caseService: CaseService(provider: MoyaProvider<CaseAPI>()))
     
     @State var name: String?
     let navigator: LinkNavigatorType
@@ -71,7 +72,8 @@ struct MyPageDetailView: View {
                 
                 switch settingListElement {
                 case .managementMyInformation:
-                    ManagementMyInformationView(clientManageViewModel: clientManageViewModel,
+                    ManagementMyInformationView(managementMyInformationViewModel: managementMyInformationViewModel,
+                                                clientManageViewModel: clientManageViewModel,
                                                 userInfo: SelectedRelation(relationId: UserManager.shared.memberId ?? 0,                                    name: UserManager.shared.name ?? "null",
                                                                            ssn: UserManager.shared.ssn ?? "null",
                                                                            phone: UserManager.shared.phoneNumber ?? "null",
@@ -83,7 +85,8 @@ struct MyPageDetailView: View {
                 case .withdrawal:
                     WithdrawalView(navigator: navigator)
                 case .clientManage:
-                    ClientManageView(clientManageViewModel: clientManageViewModel)
+                    ClientManageView(clientManageViewModel: clientManageViewModel, 
+                                     managementMyInformationViewModel: managementMyInformationViewModel)
                 case .managementDoseSchedule:
                     ManagementDoseScheduleView()
                 case .todaysHealthState:

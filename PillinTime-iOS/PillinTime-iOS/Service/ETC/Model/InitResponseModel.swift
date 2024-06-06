@@ -38,11 +38,13 @@ struct RelationList: Codable {
     let id, memberID: Int
     let memberName, memberSsn, memberPhone: String
     let cabinetID: Int
+    let cabinetIndexList: [Int]
 
     enum CodingKeys: String, CodingKey {
         case id
         case memberID = "memberId"
         case memberName, memberSsn, memberPhone
         case cabinetID = "cabinetId"
+        case cabinetIndexList
     }
 }

@@ -52,11 +52,12 @@ struct DoseScheduleStatusView: View {
                                 .font(.body1Medium)
                                 .foregroundColor(Color.gray90)
                                 .padding()
+                                .fadeIn(delay: 0.1)
                         }
                     } else {
                         ScrollView {
                             ForEach(filteredLogs, id: \.id) { log in
-                                let color = colors[log.cabinetIndex]
+                                let color = colors[log.cabinetIndex - 1]
                                 
                                 HStack {
                                     Circle()
@@ -88,6 +89,7 @@ struct DoseScheduleStatusView: View {
                             .padding(15)
 
                         }
+                        .fadeIn(delay: 0.1)
                     }
 
                 }
@@ -104,10 +106,12 @@ struct DoseScheduleStatusView: View {
                             .font(.body1Bold)
                             .foregroundColor(Color.gray90)
                             .padding(.bottom, 3)
+                            .fadeIn(delay: 0.1)
                         
                         Text("복약 일정을 등록하고 알림을 받아보세요")
                             .font(.caption1Medium)
                             .foregroundColor(Color.gray60)
+                            .fadeIn(delay: 0.2)
                     }
                     
                 }
@@ -115,7 +119,6 @@ struct DoseScheduleStatusView: View {
                 .frame(maxWidth: .infinity,
                        minHeight: 150,
                        maxHeight: 150)
-                .padding(.bottom, 10)
             }
         } else {
             /// 약통이 존재하지 않을 경우, 약통 등록 유도

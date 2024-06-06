@@ -63,7 +63,7 @@ struct HomeView: View {
                                                                isCabinetExist: relation.cabinetID != 0,
                                                                takenStatus: nil,
                                                                showAddPillCaseView: $showAddPillCaseView)
-                                        .padding([.top], 10)
+                                        .padding([.top, .bottom], 10)
                                         .padding([.leading, .trailing], 25)
                                         .fadeIn(delay: 0.3)
                                         
@@ -72,7 +72,7 @@ struct HomeView: View {
                                             .padding(.top, 10)
                                             .padding([.leading, .trailing], 25)
                                             .onTapGesture {
-                                                if (homeViewModel.healthData?.isEmpty ?? true) {
+                                                if (homeViewModel.state.stepCount != "0보") {
                                                     self.showHealthView = true
                                                 }
                                             }
@@ -80,6 +80,7 @@ struct HomeView: View {
                                         Spacer()
                                     }
                                     .containerRelativeFrame(.horizontal)
+
                                 }
                                 .refreshable {
                                     homeViewModel.$requestGetDoseLog.send(self.selectedClientId!)
@@ -88,12 +89,17 @@ struct HomeView: View {
                                     self.isRefresh = true
                                 }
                             }
+                            .scrollTransition { content, phase in
+                                content
+                                    .opacity(phase.isIdentity ? 1 : 0.7)
+                                    .scaleEffect(phase.isIdentity ? 1.0 : 0.7)                            }
                         }
                         .scrollTargetLayout(isEnabled: true)
-                        
+
                     }
                     .scrollTargetBehavior(.viewAligned)
                     .scrollPosition(id: $selectedClientId)
+
                     /// 피보호자일 경우
                 } else {
                     ScrollView {
@@ -125,11 +131,12 @@ struct HomeView: View {
                         .padding([.leading, .trailing], 25)
                         .fadeIn(delay: 0.3)
                         
+                        
                         HealthMainView(stepCount: $homeViewModel.state.stepCount)
                             .fadeIn(delay: 0.4)
                             .padding([.leading, .trailing], 25)
                             .onTapGesture {
-                                if !(homeViewModel.healthData?.isEmpty ?? true) {
+                                if (homeViewModel.state.stepCount != "0보") {
                                     self.showHealthView = true
                                 }
                             }
@@ -264,7 +271,7 @@ struct HealthMainView: View {
         ZStack {
             Color.primary60
             
-            if (homeViewModel.healthData?.steps != 0 || ((homeViewModel.healthData?.isEmpty) != nil)) {
+            if (homeViewModel.state.stepCount == "0보") {
                 VStack {
                     Text("건강 데이터가 없어요.")
                         .font(.logo4Medium)

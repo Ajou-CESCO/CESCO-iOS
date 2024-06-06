@@ -8,6 +8,7 @@
 import SwiftUI 
 
 import Moya
+import Factory
 
 struct SelectedRelation: Identifiable {
     let id = UUID()
@@ -24,13 +25,15 @@ struct ClientManageView: View {
     
     // MARK: - Properties
     
-    @ObservedObject var clientManageViewModel: ClientManageViewModel = ClientManageViewModel(relationService: RelationService(provider: MoyaProvider<RelationAPI>()))
+    @ObservedObject var clientManageViewModel: ClientManageViewModel
+    @ObservedObject var managementMyInformationViewModel: ManagementMyInformationViewModel = ManagementMyInformationViewModel(caseService: CaseService(provider: MoyaProvider<CaseAPI>()))
     @State var isDeletePopUp: Bool = false
     @State var isRequestRelationPopUp: Bool = false
     @State var showInformationView: Bool = false
     @State var selectedRelation: SelectedRelation?
     @State var selectedDeleteRelation: SelectedRelation?
     @State var showToastView: Bool = false
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     // MARK: - body
     
@@ -79,17 +82,9 @@ struct ClientManageView: View {
                                     .font(.body2Medium)
                                     .foregroundStyle(Color.gray70)
                             }
-                            .onTapGesture {
-                                self.selectedRelation = SelectedRelation(relationId: relation.id,
-                                                                         name: relation.memberName,
-                                                                         ssn: relation.memberSsn,
-                                                                         phone: relation.memberPhone, 
-                                                                         cabinetId: relation.cabinetID)
-                                self.showInformationView = true
-                            }
                             
                             Spacer()
-                            
+
                             if (UserManager.shared.isManager ?? true) {
                                 Image(relation.cabinetID == 0 ? "ic_cabnet_disconnected" : "ic_cabnet_connected")
                                     .resizable()
@@ -101,6 +96,14 @@ struct ClientManageView: View {
                                     .frame(width: 40)
                                     .foregroundStyle(Color.gray90)
                             }
+                        }
+                        .onTapGesture {
+                            self.selectedRelation = SelectedRelation(relationId: relation.id,
+                                                                     name: relation.memberName,
+                                                                     ssn: relation.memberSsn,
+                                                                     phone: relation.memberPhone,
+                                                                     cabinetId: relation.cabinetID)
+                            self.showInformationView = true
                         }
                         .swipeActions {
                             Button("삭제") {
@@ -117,13 +120,13 @@ struct ClientManageView: View {
                         .frame(height: 70)
                         .padding([.leading, .trailing], 30)
                     }
-                    .refreshable {
-                        requestToGetInfo()
-                    }
                 }
                 .ignoresSafeArea(edges: .bottom)
                 .listStyle(.plain)
                 .fadeIn(delay: 0.1)
+                .refreshable {
+                    requestToGetInfo()
+                }
                 
                 if showToastView {
                     ToastView(description: "보호 관계를 요청했어요.", show: $showToastView)
@@ -134,6 +137,10 @@ struct ClientManageView: View {
                 requestToGetInfo()
             })
         }
+        .onChange(of: self.clientManageViewModel.isDeleteSucceed, {
+            self.toastManager.showToast(description: "보호 관계 삭제를 완료했어요.")
+            requestToGetInfo()
+        })
         .onAppear(perform: {
             requestToGetInfo()
         })
@@ -158,7 +165,7 @@ struct ClientManageView: View {
             .background(Material.ultraThin)
         })
         .sheet(item: $selectedRelation, content: { relation in
-            ManagementMyInformationView(userInfo: relation)
+            ManagementMyInformationView(clientManageViewModel: clientManageViewModel, userInfo: relation)
         })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true

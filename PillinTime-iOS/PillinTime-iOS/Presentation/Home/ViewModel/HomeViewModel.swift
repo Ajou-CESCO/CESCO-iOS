@@ -58,7 +58,7 @@ class HomeViewModel: ObservableObject {
     // MARK: - Output State
     
     @Published var homeState: HomeState = HomeState()
-    @Published var healthInfoState: HealthInfoState = HealthInfoState()
+//    @Published var healthInfoState: HealthInfoState = HealthInfoState()
     @Published var isNetworking: Bool = false
     @Published var isDataReady: Bool = false
     @Published var relationLists: [RelationList] = []
@@ -246,7 +246,7 @@ class HomeViewModel: ObservableObject {
                                            sleepTotal: "\(String(result.result?.sleepTime ?? 0))시간",
                                            heartRate: "\(String(result.result?.heartRate ?? 0))BPM",
                                            burnCalories: "\(String(result.result?.calorie ?? 0))kcal")
-                print(self.healthInfoState)
+                print("memberId \(memberId) 건강 데이터", self.state)
                 // healthData가 빈 값일 때만 bindHealth() 함수들 실행
                 if (self.healthData?.isEmpty ?? true) && (!(UserManager.shared.isManager ?? false)) && !self.requestToHK {
                     self.requestHealthDataToHK()

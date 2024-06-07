@@ -27,6 +27,8 @@ struct SelectDosePillCaseView: View {
             HStack {
                 ForEach(colors.indices, id: \.self) { index in
                     let color = colors[index]
+                    // homeviewmodel.occupiedcabinetIndex.contains
+                    
                     let isOccupied = homeViewModel.occupiedCabinetIndex.contains(colorToIndex[color] ?? -1)
                     
                     Button(action: {

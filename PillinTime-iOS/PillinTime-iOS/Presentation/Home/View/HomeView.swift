@@ -83,7 +83,7 @@ struct HomeView: View {
 
                                 }
                                 .refreshable {
-                                    homeViewModel.$requestGetDoseLog.send(self.selectedClientId!)
+                                    homeViewModel.$requestGetDoseLog.send((self.selectedClientId!, nil))
                                     homeViewModel.$requestGetHealthData.send(self.selectedClientId!)
                                     homeViewModel.$requestInitClient.send(true)
                                     self.isRefresh = true
@@ -159,7 +159,7 @@ struct HomeView: View {
                         Spacer()
                     }
                     .refreshable {
-                        homeViewModel.$requestGetDoseLog.send(UserManager.shared.memberId ?? 0)
+                        homeViewModel.$requestGetDoseLog.send((UserManager.shared.memberId ?? 0, nil))
                         homeViewModel.$requestInitClient.send(true)
                         self.isRefresh = true
                     }
@@ -196,7 +196,7 @@ struct HomeView: View {
                 if selectedClientId == nil {
                     initSelectedRelationId()
                 }
-                homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
+                homeViewModel.$requestGetDoseLog.send((selectedClientId ?? 0, nil))
                 homeViewModel.$requestGetHealthData.send(selectedClientId ?? 0)
                 UserManager.shared.selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
                 UserManager.shared.selectedClientId = selectedClientId
@@ -251,7 +251,7 @@ struct HomeView: View {
         if selectedClientId == 0 && homeViewModel.isDataReady {
             selectedClientId = homeViewModel.relationLists.first?.memberID
         }
-        homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
+        homeViewModel.$requestGetDoseLog.send((selectedClientId ?? 0, nil))
         homeViewModel.$requestGetHealthData.send(selectedClientId ?? 0)
     }
 }

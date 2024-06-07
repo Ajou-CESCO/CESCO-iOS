@@ -16,6 +16,7 @@ struct DoseScheduleView: View {
     // MARK: - Properties
     
     @State private var selectedDays = Set<String>()
+    @State private var selectedDate: Date = Date()
     @State var selectedClientId: Int?  // 선택된 Client
     @State var selectedClientName: String? // 선택된 Client의 이름, 찌르기 시에 활용
     @State var isUserPoked: Bool = false
@@ -25,6 +26,7 @@ struct DoseScheduleView: View {
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     @ObservedObject var doseAddViewModel = Container.shared.doseAddViewModel.resolve()
     @ObservedObject var toastManager = Container.shared.toastManager.resolve()
+    
     
     init(navigator: LinkNavigatorType) {
         self.navigator = navigator
@@ -39,11 +41,12 @@ struct DoseScheduleView: View {
                         .fadeIn(delay: 0.1)
                 }
                 
-                CustomWeekCalendarView(selectedDays: $selectedDays)
-                    .padding(.top, 17)
+                CustomWeekCalendarHeaderView(selectedDate: $selectedDate)
+                    .padding(.top, 25)
                     .fadeIn(delay: 0.2)
-                    .frame(maxWidth: .infinity, minHeight: 80, maxHeight: 80)
+                    .frame(maxWidth: .infinity, minHeight: 100, maxHeight: 100)
                     .background(UserManager.shared.isManager ?? true ? .clear : .white)
+                    .padding(.bottom, 15)
                 
                 if (UserManager.shared.isManager ?? true) {
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -181,6 +184,9 @@ struct DoseScheduleView: View {
         .onAppear {
             refresh()
         }
+        .onChange(of: selectedDate, {
+            homeViewModel.$requestGetDoseLog.send((selectedClientId!, DateHelper.dateString(selectedDate)))
+        })
         .onChange(of: isUserPoked, {
             if isUserPoked {
                 fcmViewModel.requestPushAlarmToServer(selectedClientId ?? 0)
@@ -200,7 +206,7 @@ struct DoseScheduleView: View {
                 selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
                 UserManager.shared.selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
                 UserManager.shared.selectedClientId = selectedClientId
-                homeViewModel.$requestGetDoseLog.send(selectedClientId!)
+                homeViewModel.$requestGetDoseLog.send((selectedClientId!, DateHelper.dateString(selectedDate)))
             }
         })
     }
@@ -223,7 +229,7 @@ struct DoseScheduleView: View {
             selectedClientId = homeViewModel.relationLists.first?.memberID
             selectedClientName = homeViewModel.relationLists.first?.memberName
         }
-        homeViewModel.$requestGetDoseLog.send(selectedClientId ?? 0)
+        homeViewModel.$requestGetDoseLog.send(((selectedClientId ?? 0), DateHelper.dateString(selectedDate)))
     }
 }
 

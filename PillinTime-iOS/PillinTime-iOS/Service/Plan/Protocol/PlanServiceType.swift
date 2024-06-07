@@ -23,7 +23,8 @@ protocol PlanServiceType {
     ///
     /// - Parameters:
     ///     - memberId: 복약 기록을 조회할 member의 id를 조회합니다.
-    func getDoseLog(memberId: Int) -> AnyPublisher<GetDoseLogResponseModel, PillinTimeError>
+    ///     - date: 복약 기록을 조회할 날짜를 선택합니다. (적지 않을 경우, 오늘 날짜를 받음)
+    func getDoseLog(memberId: Int, date: String?) -> AnyPublisher<GetDoseLogResponseModel, PillinTimeError>
     
     /// 복약 계획 조회 요청을 보냅니다.
     ///

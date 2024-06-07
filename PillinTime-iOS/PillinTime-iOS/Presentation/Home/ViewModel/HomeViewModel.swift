@@ -51,7 +51,7 @@ class HomeViewModel: ObservableObject {
     // MARK: - Input State
     
     @Subject var requestInitClient: Bool = false
-    @Subject var requestGetDoseLog: Int = 0
+    @Subject var requestGetDoseLog: (Int, String?) = (0, nil)
     @Subject var requestGetHealthData: Int = 0
     @Subject var requestCreateHealthData: Void = ()
     
@@ -94,8 +94,8 @@ class HomeViewModel: ObservableObject {
         }
         .store(in: &cancellables)
         
-        $requestGetDoseLog.sink { memberId in
-            self.requestGetDoseLogToServer(memberId: memberId)
+        $requestGetDoseLog.sink { memberId, date in
+            self.requestGetDoseLogToServer(memberId: memberId, date: date)
         }
         .store(in: &cancellables)
         
@@ -146,9 +146,9 @@ class HomeViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func requestGetDoseLogToServer(memberId: Int) {
+    private func requestGetDoseLogToServer(memberId: Int, date: String?) {
         print("memberId \(memberId) 복약 기록 요청 시작")
-        planService.getDoseLog(memberId: memberId)
+        planService.getDoseLog(memberId: memberId, date: date)
             .sink(receiveCompletion: { [weak self] completion in
                 guard let self = self else { return }
                 switch completion {

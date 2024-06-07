@@ -10,7 +10,7 @@ import Moya
 
 enum PlanAPI {
     case addDosePlan(_ addDosePlanModel: AddDosePlanRequestModel)
-    case getDoseLog(_ memberId: Int)
+    case getDoseLog(_ memberId: Int, _ date: String?)
     case getDosePlan(_ memberId: Int)
     case deleteDosePlan(memberId: Int, medicineId: String, cabinetIndex: Int)
 }
@@ -48,7 +48,13 @@ extension PlanAPI: TargetType {
         switch self {
         case .addDosePlan(let addDosePlanModel):
             return .requestJSONEncodable(addDosePlanModel)
-        case .getDoseLog(let memberId), .getDosePlan(let memberId):
+        case .getDoseLog(let memberId, let date):
+            var parameters: [String: Any] = ["memberId": memberId]
+            if let date = date {
+                parameters["date"] = date
+            }
+            return .requestParameters(parameters: parameters, encoding: URLEncoding.queryString)
+        case .getDosePlan(let memberId):
             return .requestParameters(parameters: ["memberId": memberId],
                                       encoding: URLEncoding.queryString)
         case .deleteDosePlan(let memberId, let medicineId, let cabinetIndex):

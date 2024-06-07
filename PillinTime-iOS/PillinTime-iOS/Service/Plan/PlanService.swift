@@ -42,8 +42,8 @@ class PlanService: PlanServiceType {
     }
     
     /// 약물 복용 기록 조회
-    func getDoseLog(memberId: Int) -> AnyPublisher<GetDoseLogResponseModel, PillinTimeError> {
-        return provider.requestPublisher(.getDoseLog(memberId))
+    func getDoseLog(memberId: Int, date: String?) -> AnyPublisher<GetDoseLogResponseModel, PillinTimeError> {
+        return provider.requestPublisher(.getDoseLog(memberId, date))
             .tryMap { response in
                 let decodeData = try response.map(GetDoseLogResponseModel.self)
                 return decodeData

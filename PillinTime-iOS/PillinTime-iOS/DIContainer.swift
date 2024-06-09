@@ -31,6 +31,13 @@ extension Container {
         .singleton
     }
     
+    var doseScheduleStatusViewModel: Factory<DoseScheduleStatusViewModel> {
+        Factory(self) {
+            DoseScheduleStatusViewModel(etcService: EtcService(provider: MoyaProvider<EtcAPI>()))
+        }
+        .singleton
+    }
+    
     // MARK: - Moya
     
     // MARK: - Etc

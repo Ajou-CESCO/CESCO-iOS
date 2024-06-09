@@ -30,4 +30,12 @@ protocol EtcServiceType {
     
     /// 캡디 시연용 임시 bug report
     func bugReport(body: String) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
+    
+    /// 약물 ID를 통해 약물 정보를 검색합니다.
+    ///
+    /// - Parameters:
+    ///     - medicineId: 검색하고자 하는 약물의 Id입니다.
+    /// - Returns:
+    ///     - SearchDoseByIdResponseModel: 검색 결과 정보를 담은 Model입니다.
+    func searchDoseById(medicineId: String) -> AnyPublisher<SearchDoseByIdResponseModel, PillinTimeError>
 }

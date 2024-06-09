@@ -89,10 +89,6 @@ struct HomeView: View {
                                     self.isRefresh = true
                                 }
                             }
-                            .scrollTransition { content, phase in
-                                content
-                                    .opacity(phase.isIdentity ? 1 : 0.7)
-                                    .scaleEffect(phase.isIdentity ? 1.0 : 0.7)                            }
                         }
                         .scrollTargetLayout(isEnabled: true)
 

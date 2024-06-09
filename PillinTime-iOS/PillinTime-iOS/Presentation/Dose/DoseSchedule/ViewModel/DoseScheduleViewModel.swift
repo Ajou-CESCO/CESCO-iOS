@@ -10,10 +10,14 @@ import SwiftUI
 class DoseScheduleViewModel: ObservableObject {
     
     @Published var relationLists: [RelationList] = []
+
+    // MARK: - Constructor
     
     init() {
         loadRelationLists()
     }
+    
+    // MARK: - Methods
     
     func loadRelationLists() {
         if let data = UserDefaults.standard.data(forKey: "relationLists") {

@@ -8,25 +8,30 @@
 import Foundation
 
 // MARK: - GetDoseLogResponseModel
-
 struct GetDoseLogResponseModel: Codable {
     let status: Int
     let message: String
-    let result: [GetDoseLogResponseModelResult]
+    let result: GetDoseLogResponseModelResult
 }
 
 // MARK: - GetDoseLogResponseModelResult
-
 struct GetDoseLogResponseModelResult: Codable {
-    var id, memberID, planID: Int
-    var plannedAt, medicineName: String
-    var takenStatus: Int
-    var cabinetIndex: Int
+    let cabinetIndexList: [Int]
+    let logList: [LogList]
+}
+
+// MARK: - LogList
+struct LogList: Codable {
+    let id, memberID: Int
+    let plannedAt: String
+    let cabinetIndex: Int
+    let medicineName: String
+    let takenStatus: Int
+    let medicineId: String
 
     enum CodingKeys: String, CodingKey {
         case id
         case memberID = "memberId"
-        case planID = "planId"
-        case plannedAt, medicineName, takenStatus, cabinetIndex
+        case plannedAt, cabinetIndex, medicineName, takenStatus, medicineId
     }
 }

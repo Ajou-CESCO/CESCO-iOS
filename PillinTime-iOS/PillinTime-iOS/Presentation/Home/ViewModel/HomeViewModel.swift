@@ -62,7 +62,7 @@ class HomeViewModel: ObservableObject {
     @Published var isNetworking: Bool = false
     @Published var isDataReady: Bool = false
     @Published var relationLists: [RelationList] = []
-    @Published var doseLog: [GetDoseLogResponseModelResult] = []
+    @Published var doseLog: [LogList] = []
     @Published var healthData: GetHealthDateResponseModelResult?
     @Published var clientCabnetId: Int = 0
     @Published var occupiedCabinetIndex: [Int] = []
@@ -160,7 +160,8 @@ class HomeViewModel: ObservableObject {
                 }
             }, receiveValue: { [weak self] result in
                 guard let self = self else { return }
-                self.doseLog = result.result
+                self.doseLog = result.result.logList
+                self.occupiedCabinetIndex = result.result.cabinetIndexList
                 print(self.doseLog)
             })
             .store(in: &cancellables)

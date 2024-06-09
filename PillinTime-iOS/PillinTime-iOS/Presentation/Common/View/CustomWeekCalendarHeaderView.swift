@@ -15,9 +15,11 @@ struct CustomWeekCalendarHeaderView: View {
         VStack {
 
             ZStack {
-                Text("\(getFormattedDate(selectedDate, format: "yyyy년 MMMM"))")
-                    .font(.body2Bold)
-                    .foregroundStyle(Color.gray90)
+                if let firstDayOfWeek = currentWeek.first {
+                    Text("\(getFormattedDate(firstDayOfWeek, format: "yyyy년 MMMM"))")
+                        .font(.body2Bold)
+                        .foregroundStyle(Color.gray90)
+                }
                 
                 HStack {
                     Spacer()

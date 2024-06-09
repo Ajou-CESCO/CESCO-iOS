@@ -20,18 +20,26 @@ struct DoseScheduleView: View {
     @State var selectedClientId: Int?  // 선택된 Client
     @State var selectedClientName: String? // 선택된 Client의 이름, 찌르기 시에 활용
     @State var isUserPoked: Bool = false
+    @State var showDoseInfoView: Bool = false
+    
     let navigator: LinkNavigatorType
+    
     @ObservedObject var doseScheduleViewModel = DoseScheduleViewModel()
     @ObservedObject var fcmViewModel = FcmViewModel(fcmService: FcmService(provider: MoyaProvider<FcmAPI>()))
+    
+    @ObservedObject var doseScheduleStatusViewModel = Container.shared.doseScheduleStatusViewModel.resolve()
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     @ObservedObject var doseAddViewModel = Container.shared.doseAddViewModel.resolve()
     @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
+    // MARK: - Initializer
     
     init(navigator: LinkNavigatorType) {
         self.navigator = navigator
     }
 
+    // MARK: - body
+    
     var body: some View {
         ZStack(alignment: .bottomTrailing) {
             VStack {
@@ -181,6 +189,14 @@ struct DoseScheduleView: View {
                 self.selectedClientId = homeViewModel.relationLists.first?.memberID
             }
         }
+        .onReceive(doseScheduleStatusViewModel.$showDoseInfoView) { newValue in
+            if newValue {
+                self.showDoseInfoView = true
+            }
+        }
+        .onReceive(doseScheduleStatusViewModel.$doseInfo, perform: { newValue in
+            print(newValue)
+        })
         .onAppear {
             refresh()
         }
@@ -192,7 +208,7 @@ struct DoseScheduleView: View {
                 fcmViewModel.requestPushAlarmToServer(selectedClientId ?? 0)
                 toastManager.showToast(description: "\(selectedClientName ?? "노수인") 님을 콕 찔렀어요.")
                 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                     self.isUserPoked = false
                 })
             }
@@ -209,6 +225,12 @@ struct DoseScheduleView: View {
                 homeViewModel.$requestGetDoseLog.send((selectedClientId!, DateHelper.dateString(selectedDate)))
             }
         })
+        .fullScreenCover(isPresented: $showDoseInfoView, content: {
+            SearchDoseElementByIdPopUpView()
+        })
+        .transaction { transaction in
+            transaction.disablesAnimations = true
+        }
     }
     
     private func isSelectedMemberHasntPillCase() -> Bool {

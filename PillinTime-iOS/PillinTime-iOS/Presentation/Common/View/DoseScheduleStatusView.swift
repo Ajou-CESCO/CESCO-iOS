@@ -22,6 +22,8 @@ struct DoseScheduleStatusView: View {
     
     /// HomeViewModel의 dose log
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
+    
+    @ObservedObject var doseScheduleStatusViewModel = Container.shared.doseScheduleStatusViewModel.resolve()
 
     let itemHeight: CGFloat = 45
     let takenStatus: Int?
@@ -84,7 +86,9 @@ struct DoseScheduleStatusView: View {
                                         .frame(width: 50)
                                 }
                                 .padding(5)
-
+                                .onTapGesture {
+                                    self.doseScheduleStatusViewModel.$requestGetDoseInfoById.send(log.medicineId)
+                                }
                             }
                             .padding(15)
 

@@ -73,7 +73,7 @@ struct ManagementDoseScheduleView: View {
                                     } else {
                                         ManagementDoseScheduleElementView(dosePlanList: $managementDoseScheduleViewModel.dosePlanList,
                                                                           selectedClientId: $selectedClientId,
-                                        managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
+                                                                          managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
                                     }
                   
                                     Spacer()
@@ -145,7 +145,7 @@ struct ManagementDoseScheduleElementView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            ForEach(dosePlanList, id: \.medicineID) { plan in
+            ForEach(managementDoseScheduleViewModel.dosePlanList, id: \.medicineID) { plan in
                 HStack {
                     VStack(alignment: .leading) {
                         Text(plan.medicineName)

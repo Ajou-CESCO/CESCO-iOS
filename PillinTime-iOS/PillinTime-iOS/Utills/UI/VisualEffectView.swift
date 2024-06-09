@@ -33,9 +33,8 @@ struct ClearBackgroundView: UIViewRepresentable {
     private class InnerView: UIView {
         override func didMoveToWindow() {
             super.didMoveToWindow()
-            
+            superview?.backgroundColor = .clear
             superview?.superview?.backgroundColor = .clear
         }
-        
     }
 }

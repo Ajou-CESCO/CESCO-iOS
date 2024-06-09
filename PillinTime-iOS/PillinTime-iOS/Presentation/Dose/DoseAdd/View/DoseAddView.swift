@@ -17,7 +17,9 @@ struct DoseAddView: View {
     // MARK: - Properties
     
     @ObservedObject var doseAddViewModel = Container.shared.doseAddViewModel.resolve()
+    @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
     @ObservedObject var toastManager = Container.shared.toastManager.resolve()
+
     let navigator: LinkNavigatorType
     
     @State private var isButtonDisabled: Bool = true
@@ -150,6 +152,13 @@ struct DoseAddView: View {
                 } else if doseAddViewModel.step == 4 {
                     updatePeriod()
                     self.doseAddViewModel.step += 1
+                } else if doseAddViewModel.step == 1 {
+                    self.doseAddViewModel.searchDose = self.doseAddViewModel.dosePlanInfoState.medicineName
+                    if homeViewModel.occupiedCabinetIndex.count == 5 {
+                        toastManager.showToast(description: "현재 모든 약통 칸이 사용 중입니다.\n기존 복용 계획을 삭제한 후 다시 이용해주세요.")
+                    } else {
+                        self.doseAddViewModel.step += 1
+                    }
                 } else {
                     self.doseAddViewModel.step += 1
                 }
@@ -178,6 +187,7 @@ struct DoseAddView: View {
         .onChange(of: doseAddViewModel.isNetworkSucceed, {
             navigator.remove(paths: ["doseAdd"])
             self.toastManager.showToast(description: "복용 계획 등록을 완료했어요.")
+            self.doseAddViewModel.step = 1
         })
     }
 

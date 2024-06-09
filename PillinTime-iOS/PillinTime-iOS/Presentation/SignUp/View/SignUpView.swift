@@ -119,6 +119,7 @@ struct SignUpView: View {
                         .onTapGesture {
                             selectedRole = 1
                             updateButtonState()
+                            UserManager.shared.isManager = false
                         }
                         .padding(.bottom, 10)
                         .padding(.top, 71)
@@ -130,6 +131,7 @@ struct SignUpView: View {
                         .onTapGesture {
                             selectedRole = 0
                             updateButtonState()
+                            UserManager.shared.isManager = true
                         }
                         .fadeIn(delay: 0.4)
                 }

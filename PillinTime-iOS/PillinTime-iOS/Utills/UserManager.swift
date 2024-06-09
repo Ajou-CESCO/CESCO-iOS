@@ -22,6 +22,7 @@ final class UserManager {
     @UserDefaultWrapper<String>(key: "phoneNumber") public var phoneNumber
     @UserDefaultWrapper<String>(key: "ssn") public var ssn
     @UserDefaultWrapper<Bool>(key: "isManager") public var isManager
+    @UserDefaultWrapper<Bool>(key: "isSubscriber") public var isSubscriber
     @UserDefaultWrapper<String>(key: "fcmToken") public var fcmToken
     @UserDefaultWrapper<String>(key: "selectedClientName") public var selectedClientName    // 선택한 보호자의 이름
     @UserDefaultWrapper<Int>(key: "selectedClientId") public var selectedClientId  // 선택한 보호자의 memberId

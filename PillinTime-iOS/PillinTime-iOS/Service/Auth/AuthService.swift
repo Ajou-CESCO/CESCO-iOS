@@ -11,6 +11,7 @@ import CombineMoya
 import Combine
 
 class AuthService: AuthServiceType {
+
     
     let provider: MoyaProvider<AuthAPI>
     var cancellables = Set<AnyCancellable>()
@@ -79,4 +80,27 @@ class AuthService: AuthServiceType {
             }
             .eraseToAnyPublisher()
     }
+    
+    /// 로그아웃 요청
+    func logout() -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError> {
+        return provider.requestPublisher(.logout)
+            .tryMap { response in
+                print(response)
+                guard let httpResponse = response.response, httpResponse.statusCode == 200 else {
+                    let errorResponse = try response.map(BaseResponse<BlankData>.self)
+                    throw PillinTimeError.networkFail
+                }
+                return try response.map(BaseResponse<BlankData>.self)
+            }
+            .mapError { error in
+                print("error:", error)
+                if error is MoyaError {
+                    return PillinTimeError.networkFail
+                } else {
+                    return error as! PillinTimeError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
 }

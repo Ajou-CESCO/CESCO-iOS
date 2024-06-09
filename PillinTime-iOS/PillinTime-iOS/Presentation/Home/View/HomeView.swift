@@ -179,6 +179,7 @@ struct HomeView: View {
 
         }
         .onAppear {
+            print(UserManager.shared.isManager)
             initSelectedRelationId()
             checkReleationEmpty()
             initClient()
@@ -218,7 +219,7 @@ struct HomeView: View {
     }
     
     private func checkReleationEmpty() {
-        if !(UserManager.shared.isManager ?? false) && homeViewModel.relationLists.isEmpty {
+        if !(UserManager.shared.isManager ?? true) && homeViewModel.relationLists.isEmpty {
             self.showRequestRelationListView = true
         } else {
             self.showRequestRelationListView = false

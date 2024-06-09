@@ -26,6 +26,7 @@ extension RelationError {
     enum CreateRelationError: Error {
         case createFailed
         case duplicatedUser // 40008
+        case managerIsNotPremium  // 40302
         
         var description: String {
             switch self {
@@ -33,6 +34,8 @@ extension RelationError {
                 return "보호 관계 요청에 실패하였습니다."
             case .duplicatedUser:
                 return "이미 보호 관계가 맺어져있는 사용자입니다."
+            case .managerIsNotPremium:
+                return "프리미엄 상품을 결제해야 이용 가능합니다."
             }
         }
     }
@@ -54,6 +57,9 @@ class RelationService: RelationServiceType {
                 let decodedData = try response.map(SignInResponseModel.self)
                 if decodedData.status == 40008 {
                     throw RelationError.createRelation(.duplicatedUser)
+                }
+                if decodedData.status == 40302 {
+                    throw RelationError.createRelation(.managerIsNotPremium)
                 }
                 return try response.map(BaseResponse<BlankData>.self)
             }

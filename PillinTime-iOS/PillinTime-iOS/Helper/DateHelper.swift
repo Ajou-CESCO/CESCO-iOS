@@ -20,6 +20,12 @@ struct DateHelper {
         return koreanLocaleFormatter.string(from: Date())
     }
     
+    /// 요일을 문자열로 반환
+    static func dateDay(_ date: Date) -> String {
+        koreanLocaleFormatter.dateFormat = "EEEEE"
+        return koreanLocaleFormatter.string(from: date)
+    }
+    
     /// 날짜를 문자열로 변경
     static func dateString(_ date: Date) -> String {
         koreanLocaleFormatter.dateFormat = "yyyy-MM-dd"

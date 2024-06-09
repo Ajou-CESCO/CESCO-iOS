@@ -81,8 +81,8 @@ class DoseScheduleStatusViewModel: ObservableObject {
     
     private func requestGetDoseInfoByIdToServer(_ medicineId: String) {
         print("약품 \(medicineId) 정보 요청 시작")
-        self.isNetworking = true
         self.showDoseInfoView = true
+        self.isNetworking = true
         etcService.searchDoseById(medicineId: medicineId)
             .sink(receiveCompletion: { [weak self] completion in
                 guard let self = self else { return }

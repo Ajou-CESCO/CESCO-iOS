@@ -91,8 +91,8 @@ struct MyPageDetailView: View {
                     ManagementDoseScheduleView()
                 case .todaysHealthState:
                     HealthDashBoardView(name: (UserManager.shared.isManager ?? true) ? (UserManager.shared.selectedClientName ?? "null"): (UserManager.shared.name ?? "null"))
-                case .bugReport:
-                    BugReportView()
+                case .payment:
+                    TossPaymentsContentView()
                 case .logout:
                     LogoutView(navigator: navigator)
                 }

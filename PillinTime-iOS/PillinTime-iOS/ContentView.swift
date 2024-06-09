@@ -70,6 +70,11 @@ struct ContentView: View {
             }
         
         }
+        .onChange(of: UserManager.shared.accessToken, {
+            if !UserManager.shared.hasAccessToken {
+                navigator.next(paths: ["signup"], items: [:], isAnimated: false)
+            }
+        })
         .navigationBarHidden(true)
     }
 }

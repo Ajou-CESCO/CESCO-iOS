@@ -12,6 +12,7 @@ enum AuthAPI {
     case signIn(_ signInModel: SignInRequestModel)
     case signUp(_ signUpModel: SignUpRequestModel)
     case requestPhoneNumberConfirm(_ phoneNumber: String)
+    case logout
 }
 
 extension AuthAPI: TargetType {
@@ -31,6 +32,8 @@ extension AuthAPI: TargetType {
             return "/api/user"
         case.requestPhoneNumberConfirm:
             return "/api/auth/sms"
+        case .logout:
+            return "/api/auth/logout"
         }
     }
     
@@ -38,6 +41,8 @@ extension AuthAPI: TargetType {
         switch self {
         case .signUp, .signIn, .requestPhoneNumberConfirm:
             return .post
+        case .logout:
+            return .get
         }
     }
     
@@ -49,10 +54,17 @@ extension AuthAPI: TargetType {
             return .requestJSONEncodable(signUpModel)
         case .requestPhoneNumberConfirm(let phoneNumber):
             return .requestJSONEncodable(["phone": phoneNumber])
+        case .logout:
+            return .requestPlain
         }
     }
     
     var headers: [String: String]? {
-        return Config.defaultHeader
+        switch self {
+        case .logout:
+            return Config.headerWithAccessToken
+        case .requestPhoneNumberConfirm, .signIn, .signUp:
+            return Config.defaultHeader
+        }
     }
 }

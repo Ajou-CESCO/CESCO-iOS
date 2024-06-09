@@ -29,15 +29,22 @@ struct MyPageView: View {
         
         VStack {
             VStack {
-                Text(UserManager.shared.isManager ?? true ? "보호자" : "피보호자")
-                    .font(.body1Medium)
-                    .foregroundStyle(Color.primary40)
-                    .padding(.leading, 32)
-                    .padding(.top, 10)
-                    .padding(.bottom, 6)
-                    .frame(maxWidth: .infinity,
-                           alignment: .leading)
-                    .fadeIn(delay: 0.1)
+                HStack {
+                    Text(UserManager.shared.isManager ?? true ? "보호자" : "피보호자")
+                        .font(.body1Medium)
+                        .foregroundStyle(Color.primary40)
+                        .padding(.leading, 32)
+                        .padding(.top, 10)
+                        .padding(.bottom, 6)
+                    
+                    if (UserManager.shared.isSubscriber ?? true) {
+                        Image(systemName: "star.fill")
+                            .foregroundStyle(Color.primary40)
+                    }
+                    
+                    Spacer()
+                }
+                .fadeIn(delay: 0.1)
                 
                 Text("\(UserManager.shared.name ?? "null") 님, 안녕하세요!")
                     .font(.logo2Medium)
@@ -96,6 +103,8 @@ struct MyPageView: View {
 struct SettingList: View {
     
     @State private var isShowingDetailView = false
+    @State private var isModalPresented = false
+
     @State private var selectedElement: SettingListElement?
     @ObservedObject var myPageViewModel: MyPageViewModel
     @ObservedObject var fcmViewModel: FcmViewModel
@@ -111,33 +120,46 @@ struct SettingList: View {
     var body: some View {
         ZStack {
             Color.gray5
+                .edgesIgnoringSafeArea(.all)
             
-            List {
-                ForEach(SettingListElement.listCases, id: \.self) { element in
-                    ZStack {
-                        NavigationLink(destination: MyPageDetailView(navigator: navigator, settingListElement: element, name: nil)) {
-                            EmptyView()
-                        }
-                        .opacity(0.0)
-                        .buttonStyle(PlainButtonStyle())
-                        .background(Color.clear)
-                        .listRowSeparator(.hidden)
-                        
-                        HStack {
-                            Text(element.description)
-                                .font(.system(size: 18, weight: .medium))
-                                .foregroundColor(Color.black)
-                                .frame(height: 50)
-                                .padding(.leading, 5)
+            ZStack {
+                VStack {
+                    ForEach(SettingListElement.listCases, id: \.self) { element in
+                        Button(action: {
+                            selectedElement = element
+                            isModalPresented = true
+                        }, label: {
+                            HStack {
+                                Text(element.description)
+                                    .font(.h5Medium)
+                                    .foregroundColor(Color.gray90)
+                                    .frame(height: 50)
+                                    .padding(.leading, 25)
+
+                                Spacer()
+                            }
+                            .background(Color.white)
+                            .padding(.vertical, 7)
                             
-                            Spacer()
+                        })
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        if element != .withdrawal {
+                            Rectangle()
+                                .frame(width: 300, height: 1)
+                                .foregroundStyle(Color.gray20)
                         }
                     }
                 }
+                .padding(10)
+                .fadeIn(delay: 0.4)
             }
-            .fadeIn(delay: 0.4)
-            .listStyle(.sidebar)
-            .background(Color.clear)
+            .background(Color.white)
+            .cornerRadius(20)
+            .padding(20)
+            .fullScreenCover(item: $selectedElement) { element in
+                MyPageDetailView(navigator: navigator, settingListElement: element, name: nil)
+            }
         }
     }
 }

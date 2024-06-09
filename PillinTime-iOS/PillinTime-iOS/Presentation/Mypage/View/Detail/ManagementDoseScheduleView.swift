@@ -165,6 +165,9 @@ struct ManagementDoseScheduleElementView: View {
     @Binding var selectedClientId: Int?
     @State var selectedDosePlan: GetDosePlanResponseModelResult?  // 삭제할 dose plan
     @State var showSelectDetailView = [String: Bool]()
+    @State var showDeleteView: Bool = false
+    @State var showEditView: Bool = false
+    
     @ObservedObject var managementDoseScheduleViewModel: ManagementDoseScheduleViewModel
     @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     @ObservedObject var doseScheduleStatusViewModel = Container.shared.doseScheduleStatusViewModel.resolve()
@@ -225,6 +228,7 @@ struct ManagementDoseScheduleElementView: View {
                     if showSelectDetailView[plan.medicineID] == true {
                         VStack {
                             Button(action: {
+                                self.showDeleteView = true
                                 self.selectedDosePlan = plan
                             }, label: {
                                 HStack {
@@ -244,7 +248,7 @@ struct ManagementDoseScheduleElementView: View {
                             Divider()
                                                         
                             Button(action: {
-                                
+
                             }, label: {
                                 HStack {
                                     Text("수정하기")
@@ -271,7 +275,6 @@ struct ManagementDoseScheduleElementView: View {
                 }
                 .onTapGesture {
                     showSelectDetailView[plan.medicineID] = false
-                    self.doseScheduleStatusViewModel.$requestGetDoseInfoById.send(plan.medicineID)
                 }
             }
         }

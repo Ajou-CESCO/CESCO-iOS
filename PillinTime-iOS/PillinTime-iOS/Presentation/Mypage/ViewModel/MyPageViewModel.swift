@@ -18,7 +18,7 @@ enum SettingListElement: Identifiable {
     case logout
     case managementDoseSchedule
     case todaysHealthState
-    case bugReport
+    case payment
     
     var id: SettingListElement {
         return self
@@ -42,8 +42,8 @@ enum SettingListElement: Identifiable {
             return "복약 일정 관리"
         case .todaysHealthState:
             return "오늘의 건강 상태"
-        case .bugReport:
-            return "버그 제출하기"
+        case .payment:
+            return "결제 관리하기"
         }
     }
     
@@ -63,15 +63,24 @@ enum SettingListElement: Identifiable {
         .managementDoseSchedule
     ]
     
-    static let listCases: [SettingListElement] = [
-        .managementMyInformation,
-//        .subscriptionPaymentHistory,
-//        .customerServiceCenter,
-        .logout,
-        .withdrawal,
-        .bugReport
-    ]
+    static var listCases: [SettingListElement] {
+        if UserManager.shared.isManager ?? true {
+            return [
+                .managementMyInformation,
+                .payment,
+                .logout,
+                .withdrawal
+            ]
+        } else {
+            return [
+                .managementMyInformation,
+                .logout,
+                .withdrawal
+            ]
+        }
+    }
 }
+
 
 class MyPageViewModel: ObservableObject {
     

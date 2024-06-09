@@ -221,7 +221,7 @@ struct DoseScheduleView: View {
                 selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
                 UserManager.shared.selectedClientName = homeViewModel.relationLists.first(where: { $0.memberID == selectedClientId})?.memberName ?? "null"
                 UserManager.shared.selectedClientId = selectedClientId
-                homeViewModel.$requestGetDoseLog.send((selectedClientId!, DateHelper.dateString(selectedDate)))
+                homeViewModel.$requestGetDoseLog.send((selectedClientId ?? 0, DateHelper.dateString(selectedDate)))
             }
         })
         .fullScreenCover(isPresented: $showDoseInfoView, content: {

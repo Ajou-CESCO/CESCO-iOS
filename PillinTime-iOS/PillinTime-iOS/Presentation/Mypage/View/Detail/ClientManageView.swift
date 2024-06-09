@@ -97,6 +97,7 @@ struct ClientManageView: View {
                                     .foregroundStyle(Color.gray90)
                             }
                         }
+                        .background(Color.white)
                         .onTapGesture {
                             self.selectedRelation = SelectedRelation(relationId: relation.id,
                                                                      name: relation.memberName,

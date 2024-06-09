@@ -121,6 +121,13 @@ extension Container {
         .singleton
     }
     
+    var paymentService: Factory<PaymentServiceType> {
+        Factory(self) {
+            PaymentService(provider: MoyaProvider<PaymentAPI>())
+        }
+        .singleton
+    }
+    
     // MARK: - HealthKit
     
     var hkService: Factory<HKServiceProtocol> {

@@ -124,7 +124,10 @@ struct DoseAddView: View {
                 .padding([.leading, .trailing], 30)
                 
             case 4:
-                SelectDosePeriodView(startDate: $startDate, endDate: $endDate, endDateExist: $endDateExist)
+                SelectDosePeriodView(startDate: $startDate, 
+                                     endDate: $endDate,
+                                     endDateExist: $endDateExist,
+                                     selectedDays: selectedDays)
                     .padding([.leading, .trailing], 30)
                     .fadeIn(delay: 0.1)
                     .onAppear(perform: {

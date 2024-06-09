@@ -130,6 +130,7 @@ class HomeViewModel: ObservableObject {
                 guard let self = self else { return }
                 UserManager.shared.memberId = result.result.memberID
                 UserManager.shared.isManager = result.result.isManager
+                UserManager.shared.isSubscriber = result.result.isSubscriber
                 self.clientCabnetId = result.result.cabinetID
                 
                 // relationList UserDefault에 저장

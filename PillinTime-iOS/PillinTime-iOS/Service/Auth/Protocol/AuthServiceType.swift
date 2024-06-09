@@ -32,5 +32,12 @@ protocol AuthServiceType {
     ///     - SignInRequestModel: 로그인에 필요한 정보들을 담은 Model입니다.
     /// - Returns: 요청에 성공 시, SignInResponseModel을 반환합니다. 실패 시 AuthError를 throw합니다.
     func requestSignIn(signInRequestModel: SignInRequestModel) -> AnyPublisher<SignInResponseModel, AuthError>
+    
+    /// 로그아웃 요청을 보냅니다.
+    ///
+    /// - Parameters:
+    ///     - 없음
+    /// - Returns: 없음
+    func logout() -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
 }
 

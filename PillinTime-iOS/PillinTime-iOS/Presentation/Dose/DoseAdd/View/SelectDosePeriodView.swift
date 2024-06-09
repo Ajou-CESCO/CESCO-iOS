@@ -18,6 +18,13 @@ struct SelectDosePeriodView: View {
     @Binding var endDateExist: Bool
     @State private var showDatePicker: Bool = false
     @State private var isEndDatePickerDisabled: Bool = false
+    var selectedDays: Set<String> = Set<String>()
+    
+    let dayToInt: [String: Int] = ["월": 1, "화": 2, "수": 3, "목": 4, "금": 5, "토": 6, "일": 7]
+    
+    var weekdayList: [Int] {
+        return selectedDays.compactMap { dayToInt[$0] }.sorted()
+    }
     
     private var startDateRange: ClosedRange<Date> {
         let today = Calendar.current.startOfDay(for: Date())

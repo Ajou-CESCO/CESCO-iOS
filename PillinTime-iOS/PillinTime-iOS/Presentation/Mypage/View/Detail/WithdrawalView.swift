@@ -79,7 +79,7 @@ struct WithdrawalView: View {
         }
         .onChange(of: withdrawalViewModel.isNetworkSucceed, {
             if withdrawalViewModel.isNetworkSucceed {
-                navigator.next(paths: ["content"], items: [:], isAnimated: true)
+                navigator.replace(paths: ["content"], items: [:], isAnimated: true)
             }
         })
     }

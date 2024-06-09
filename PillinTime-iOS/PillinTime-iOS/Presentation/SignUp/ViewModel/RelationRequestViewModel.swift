@@ -98,8 +98,7 @@ class RelationRequestViewModel: ObservableObject {
                     print("보호 관계 생성 요청 완료")
                 case .failure(let error):
                     print("보호 관계 생성 실패: \(error)")
-                    self.relationRequestState.failMessage = error.localizedDescription
-                    toastManager.showNetworkFailureToast()
+                    self.relationRequestState.failMessage = "보호자가 프리미엄 구매를 하지 않았어요.\n프리미엄 구독을 해야만 이용이 가능해요."
                 }
             }, receiveValue: { [weak self] result in
                 print("보호 관계 생성 성공: ", result)

@@ -16,10 +16,12 @@ struct ManagementDoseScheduleView: View {
     
     @ObservedObject var homeViewModel: HomeViewModel = Container.shared.homeViewModel.resolve()
     @ObservedObject var managementDoseScheduleViewModel: ManagementDoseScheduleViewModel = ManagementDoseScheduleViewModel(planService: PlanService(provider: MoyaProvider<PlanAPI>()))
+    @ObservedObject var doseScheduleStatusViewModel = Container.shared.doseScheduleStatusViewModel.resolve()
     
     // MARK: - Properties
     
     @State var selectedClientId: Int?  // 선택된 Client
+    @State var showDoseInfoView: Bool = false
 
     // MARK: - body
     
@@ -51,6 +53,7 @@ struct ManagementDoseScheduleView: View {
                         }
                     }
                     .fadeIn(delay: 0.1)
+                    .padding([.leading, .trailing, .top], 16)
                 }
                             
                 Text.multiColoredText("등록된 약 \(managementDoseScheduleViewModel.dosePlanList.count)",
@@ -59,6 +62,7 @@ struct ManagementDoseScheduleView: View {
                     .foregroundStyle(Color.gray70)
                     .padding([.top, .bottom])
                     .fadeIn(delay: 0.2)
+                    .padding(.leading, 16)
                 
                 ScrollView(.horizontal, showsIndicators: false) {
                     
@@ -71,9 +75,13 @@ struct ManagementDoseScheduleView: View {
                                     } else if managementDoseScheduleViewModel.dosePlanList.isEmpty {
                                         CustomEmptyView(mainText: "등록된 복약 일정이 없습니다", subText: "복약 탭에서 일정을 추가하세요.")
                                     } else {
-                                        ManagementDoseScheduleElementView(dosePlanList: $managementDoseScheduleViewModel.dosePlanList,
-                                                                          selectedClientId: $selectedClientId,
-                                                                          managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
+                                        ScrollView {
+                                            ManagementDoseScheduleElementView(dosePlanList: $managementDoseScheduleViewModel.dosePlanList,
+                                                                              selectedClientId: $selectedClientId,
+                                                                              managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
+                                            .padding(20)
+
+                                        }
                                     }
                   
                                     Spacer()
@@ -94,10 +102,13 @@ struct ManagementDoseScheduleView: View {
                                     .frame(width: UIScreen.main.bounds.width)
                             }
                             
-                            ManagementDoseScheduleElementView(dosePlanList: .constant(
-                                managementDoseScheduleViewModel.dosePlanList
-                            ), selectedClientId: $selectedClientId,
-                                managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
+                            ScrollView {
+                                ManagementDoseScheduleElementView(dosePlanList: .constant(
+                                    managementDoseScheduleViewModel.dosePlanList
+                                ), selectedClientId: $selectedClientId,
+                                    managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
+                                .padding(20)
+                            }
                             
                             Spacer()
                         }
@@ -107,11 +118,13 @@ struct ManagementDoseScheduleView: View {
                 .scrollPosition(id: $selectedClientId)
                 .fadeIn(delay: 0.3)
             }
-            .padding(16)
+
         }
-        .onReceive(managementDoseScheduleViewModel.$dosePlanList, perform: {_ in
-            print("changed doseplanlist", managementDoseScheduleViewModel.dosePlanList)
-        })
+        .onReceive(doseScheduleStatusViewModel.$showDoseInfoView) { newValue in
+            if newValue {
+                self.showDoseInfoView = true
+            }
+        }
         .onAppear {
             if UserManager.shared.isManager ?? true {
                 selectedClientId = homeViewModel.relationLists.first?.memberID
@@ -122,6 +135,12 @@ struct ManagementDoseScheduleView: View {
         .onChange(of: selectedClientId, {
             requestDosePlanToServer()
         })
+        .fullScreenCover(isPresented: $showDoseInfoView, content: {
+            SearchDoseElementByIdPopUpView()
+        })
+        .transaction { transaction in
+            transaction.disablesAnimations = true
+        }
     }
     
     private func requestDosePlanToServer() {
@@ -138,41 +157,118 @@ struct ManagementDoseScheduleElementView: View {
     @Binding var dosePlanList: [GetDosePlanResponseModelResult]
     @Binding var selectedClientId: Int?
     @State var selectedDosePlan: GetDosePlanResponseModelResult?  // 삭제할 dose plan
+    @State var showSelectDetailView = [String: Bool]()
     @ObservedObject var managementDoseScheduleViewModel: ManagementDoseScheduleViewModel
     @ObservedObject var toastManager = Container.shared.toastManager.resolve()
+    @ObservedObject var doseScheduleStatusViewModel = Container.shared.doseScheduleStatusViewModel.resolve()
+    
+    let colors: [Color] = [.error60, .warning60, .success60, .primary40, .purple60]
+    let colorToIndex: [Color: Int] = [.error60: 1, .warning60: 2, .success60: 3, .primary40: 4, .purple60: 5]
 
     // MARK: - body
     
     var body: some View {
         VStack(alignment: .leading) {
             ForEach(managementDoseScheduleViewModel.dosePlanList, id: \.medicineID) { plan in
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(plan.medicineName)
-                            .multilineTextAlignment(.leading)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .frame(width: 250)
-                            .font(.h5Bold)
-                            .foregroundStyle(Color.gray90)
-                            .padding(.top, 10)
+                ZStack(alignment: .topTrailing) {
+                    HStack {
+                        VStack(alignment: .leading) {
+                            let color = colors[plan.cabinetIndex - 1]
+                            
+                            HStack {
+                                Circle()
+                                    .fill(color)
+                                    .frame(width: 20, height: 20)
+                                
+                                Text(plan.medicineName)
+                                    .lineLimit(1)
+                                    .truncationMode(.tail)
+                                    .frame(width: 150, alignment: .leading)
+                                    .font(.h5Bold)
+                                    .foregroundStyle(Color.gray90)
+                                
+                                Spacer()
+                            }
+
+                            MedicineSideEffectView(isUserHasSideEffect: .constant(!isAdverseMapSafe(medicineAdverse: plan.medicineAdverse)))
+                            
+                            ManagementDoseScheduleElementDetailView(dosePlanList: plan,
+                                                                    isUserHasSideEffect: .constant(!isAdverseMapSafe(medicineAdverse: plan.medicineAdverse)))
+                        }
+                        .padding(20)
                         
-                        ManagementDoseScheduleElementDetailView(dosePlanList: plan, 
-                                                                isUserHasSideEffect: .constant(!isAdverseMapSafe(medicineAdverse: plan.medicineAdverse)))
-                            .padding(.bottom, 10)
+                        VStack {
+                            Button(action: {
+                                toggleSelectDetailView(for: plan.medicineID)
+                            }, label: {
+                                Image(systemName: "ellipsis")
+                                    .foregroundStyle(Color.gray90)
+                                    .padding(25)
+                            })
+                            
+                            Spacer()
+                        }
+
+                        Spacer()
                     }
-                    .padding(.leading, 20)
-                    
-                    Button(action: {
-                        self.selectedDosePlan = plan
-                    }, label: {
-                        Image(systemName: "xmark.circle")
-                            .foregroundStyle(Color.gray90)
-                    })
-                    .padding()
+                    .background(Color.white)
+                    .cornerRadius(20)
+                    .padding(.bottom, 20)
+                    .scaleFadeIn(delay: 0.1)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .shadow(color: Color.gray60.opacity(0.2), radius: 10, x: 0, y: 0)
+
+                    if showSelectDetailView[plan.medicineID] == true {
+                        VStack {
+                            Button(action: {
+                                self.selectedDosePlan = plan
+                            }, label: {
+                                HStack {
+                                    Text("삭제하기")
+                                        .font(.body2Medium)
+                                        .foregroundStyle(Color.gray90)
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: "xmark.circle")
+                                        .foregroundStyle(Color.gray90)
+                                    
+                                }
+                                .padding(2)
+                            })
+                            
+                            Divider()
+                                                        
+                            Button(action: {
+                                
+                            }, label: {
+                                HStack {
+                                    Text("수정하기")
+                                        .font(.body2Medium)
+                                        .foregroundStyle(Color.gray90)
+                                    
+                                    Spacer()
+                                    
+                                    Image(systemName: "highlighter")
+                                        .foregroundStyle(Color.gray90)
+                                }
+                                .padding(2)
+                            })
+                        }
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(20)
+                        .scaleFadeIn(delay: 0.1)
+                        .frame(width: 150, height: 30)
+                        .padding(.top, 18)
+                        .padding(.trailing, 20)
+                        .shadow(color: Color.gray60.opacity(0.2), radius: 5, x: 0, y: 0)
+                    }
                 }
-                
-                Divider()
+                .onTapGesture {
+                    showSelectDetailView[plan.medicineID] = false
+                    self.doseScheduleStatusViewModel.$requestGetDoseInfoById.send(plan.medicineID)
+                }
             }
         }
         .fullScreenCover(item: $selectedDosePlan, content: { _ in
@@ -190,6 +286,16 @@ struct ManagementDoseScheduleElementView: View {
         .onChange(of: managementDoseScheduleViewModel.isDeleteSucceed, {
             self.toastManager.showToast(description: "일정 삭제를 완료했어요.")
         })
+    }
+  
+    // MARK: - Methods
+    
+    private func toggleSelectDetailView(for medicineID: String) {
+        if showSelectDetailView[medicineID] == nil {
+            showSelectDetailView[medicineID] = true
+        } else {
+            showSelectDetailView[medicineID]?.toggle()
+        }
     }
     
     private func requestServer() {
@@ -221,8 +327,6 @@ struct ManagementDoseScheduleElementDetailView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(alignment: .center, spacing: 10) {
-                MedicineSideEffectView(isUserHasSideEffect: $isUserHasSideEffect)
-
                 Text(convertIntArrayToDays(dosePlanList.weekdayList))
                     .padding(.vertical, 6)
                     .padding(.horizontal, 10)

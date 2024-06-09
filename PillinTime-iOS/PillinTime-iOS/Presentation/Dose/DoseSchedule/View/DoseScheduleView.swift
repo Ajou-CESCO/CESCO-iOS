@@ -194,9 +194,6 @@ struct DoseScheduleView: View {
                 self.showDoseInfoView = true
             }
         }
-        .onReceive(doseScheduleStatusViewModel.$doseInfo, perform: { newValue in
-            print(newValue)
-        })
         .onAppear {
             refresh()
         }

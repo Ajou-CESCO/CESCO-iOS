@@ -142,6 +142,7 @@ class DoseAddViewModel: ObservableObject {
     private func requestAddDosePlanToServer(_ addDosePlanModel: AddDosePlanRequestModel) {
         print("복용 계획 생성 요청 시작")
         print(addDosePlanModel)
+        self.isNetworkSucceed = false
         self.isNetworking = true
         planService.addDosePlan(addDosePlanModel: addDosePlanModel)
             .sink(receiveCompletion: { [weak self] completion in

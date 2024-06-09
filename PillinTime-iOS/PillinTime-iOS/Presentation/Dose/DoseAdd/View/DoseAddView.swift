@@ -185,9 +185,11 @@ struct DoseAddView: View {
             updateButtonState()
         })
         .onChange(of: doseAddViewModel.isNetworkSucceed, {
-            navigator.remove(paths: ["doseAdd"])
-            self.toastManager.showToast(description: "복용 계획 등록을 완료했어요.")
-            self.doseAddViewModel.step = 1
+            if doseAddViewModel.isNetworkSucceed {
+                navigator.remove(paths: ["doseAdd"])
+                self.toastManager.showToast(description: "복용 계획 등록을 완료했어요.")
+                self.doseAddViewModel.step = 1
+            }
         })
     }
 

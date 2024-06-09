@@ -57,72 +57,6 @@ struct SearchDoseElementByIdPopUpView: View {
                             .lineSpacing(5)
                             .padding(.bottom, 10)
                         
-                        if !isAdverseMapSafe(medicineAdverse: doseScheduleStatusViewModel.doseInfo.medicineAdverse) {
-                            
-                            ZStack(alignment: .leading) {
-                                VStack(alignment: .leading) {
-                                    HStack {
-                                        Image(systemName: "exclamationmark.triangle.fill")
-                                            .foregroundStyle(Color.white)
-                                        
-                                        Text("부작용 주의")
-                                            .multilineTextAlignment(.leading)
-                                            .font(.body2Bold)
-                                            .foregroundStyle(Color.white)
-                                            .fadeIn(delay: 0.1)
-                                    }
-                                    .padding(.bottom, 10)
-                                    
-                                    Text("해당 의약품은")
-                                        .multilineTextAlignment(.leading)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .font(.body2Medium)
-                                        .foregroundStyle(Color.white)
-                                        .padding(.bottom, 5)
-                                        .fadeIn(delay: 0.2)
-                                    
-                                    if doseScheduleStatusViewModel.doseInfo.medicineAdverse.nonNilValues() != [] {
-                                        ForEach(doseScheduleStatusViewModel.doseInfo.medicineAdverse.nonNilValues(), id: \.self) { warning in
-                                            Text(warning)
-                                                .multilineTextAlignment(.leading)
-                                                .font(.body2Bold)
-                                                .foregroundStyle(Color.white)
-                                                .padding(.bottom, 5)
-                                                .fadeIn(delay: 0.2)
-                                        }
-                                    }
-                                    
-                                    if doseScheduleStatusViewModel.doseInfo.medicineAdverse.duplicateEfficacyGroup != nil {
-                                        Text("의 부작용과,")
-                                            .font(.body2Medium)
-                                            .foregroundStyle(Color.white)
-                                            .padding(.bottom, 10)
-                                            .fadeIn(delay: 0.3)
-                                        
-                                        Text("기존 복용 중인 약과 함께 섭취할 경우")
-                                            .multilineTextAlignment(.leading)
-                                            .font(.body2Bold)
-                                            .foregroundStyle(Color.white)
-                                            .padding(.bottom, 5)
-                                            .fadeIn(delay: 0.3)
-                                    }
-                                    
-                                    Text("부작용 위험이 있습니다.\n섭취에 주의 바랍니다.")
-                                        .multilineTextAlignment(.leading)
-                                        .lineSpacing(10)
-                                        .font(.body2Medium)
-                                        .foregroundStyle(Color.white)
-                                        .fadeIn(delay: 0.4)
-                                }
-                                .padding(.horizontal, 20)
-                                .padding(.vertical, 20)
-                            }
-                            .background(Color.primary40)
-                            .cornerRadius(15)
-                            .frame(maxWidth: .infinity)
-                            .padding(.bottom, 15)
-                        }
-                        
                         HStack {
                             Text("품목기준코드")
                                 .multilineTextAlignment(.leading)
@@ -176,14 +110,5 @@ struct SearchDoseElementByIdPopUpView: View {
         case 2: return doseScheduleStatusViewModel.doseInfo.useWarning
         default: return doseScheduleStatusViewModel.doseInfo.depositMethod
         }
-    }
-    
-    private func isAdverseMapSafe(medicineAdverse: MedicineAdverse) -> Bool {
-        return medicineAdverse.dosageCaution == nil &&
-        medicineAdverse.ageSpecificContraindication == nil &&
-        medicineAdverse.elderlyCaution == nil &&
-        medicineAdverse.administrationPeriodCaution == nil &&
-        medicineAdverse.pregnancyContraindication == nil &&
-        medicineAdverse.duplicateEfficacyGroup == nil
     }
 }

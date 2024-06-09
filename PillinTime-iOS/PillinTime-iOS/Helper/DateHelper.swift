@@ -38,7 +38,7 @@ struct DateHelper {
         inputDateFormatter.dateFormat = "HH:mm:ss"
         
         let outputDateFormatter = DateFormatter()
-        outputDateFormatter.dateFormat = "a h시"
+        outputDateFormatter.dateFormat = "a h시 mm분"
         outputDateFormatter.locale = Locale(identifier: "ko_KR")
         
         let times = timeStrings.compactMap { timeString -> String? in

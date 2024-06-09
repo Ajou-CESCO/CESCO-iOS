@@ -16,8 +16,7 @@ struct ManagementDoseScheduleState {
 
 struct DeleteDoseScheduleState {
     var memberId: Int = Int()
-    var medicineId: String = String()
-    var cabinetIndex: Int = Int()
+    var groupId: Int = Int()
 }
 
 class ManagementDoseScheduleViewModel: ObservableObject {
@@ -95,16 +94,15 @@ class ManagementDoseScheduleViewModel: ObservableObject {
     
     func requestDeletePlanToServer(_ plan: DeleteDoseScheduleState) {
         print("복약 일정 계획 삭제 시작")
-        planService.deleteDosePlan(memberId: plan.memberId, medicineId: plan.medicineId, cabinetIndex: plan.cabinetIndex)
+        self.isNetworking = true
+        planService.deleteDosePlan(memberId: plan.memberId, groupId: plan.groupId)
             .sink(receiveCompletion: { [weak self] completion in
                 guard let self = self else { return }
+                self.isNetworking = false
                 switch completion {
                 case .finished:
                     print("복약 일정 계획 삭제 요청 완료")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        self.isDeleteSucceed = true
-                    }
-
+                    self.isDeleteSucceed = true
                 case .failure(let error):
                     print("복약 일정 계획 삭제 실패: \(error)")
                     self.managementDoseScheduleState.failMessage = error.localizedDescription

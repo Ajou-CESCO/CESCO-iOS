@@ -200,7 +200,7 @@ struct RequestRelationPopUpView: View {
     
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var validationViewModel: UserProfileValidationViewModel
-    @ObservedObject var requestRelationViewModel: RequestRelationViewModel
+    @StateObject var requestRelationViewModel: RequestRelationViewModel
     @State private var isButtonDisabled: Bool = true
     
     let onNetworkSuccess: () -> Void  // 클로저 추가
@@ -208,7 +208,7 @@ struct RequestRelationPopUpView: View {
     init(onNetworkSuccess: @escaping () -> Void) {
         self.onNetworkSuccess = onNetworkSuccess
         self.validationViewModel = UserProfileValidationViewModel(validationService: ValidationService())
-        self.requestRelationViewModel = RequestRelationViewModel(requestService: RequestService(provider: MoyaProvider<RequestAPI>()))
+        _requestRelationViewModel = StateObject(wrappedValue: RequestRelationViewModel(requestService: RequestService(provider: MoyaProvider<RequestAPI>())))
         self.validationViewModel.bindEvent()
     }
     
@@ -236,11 +236,11 @@ struct RequestRelationPopUpView: View {
             
                 CustomTextInput(placeholder: "휴대폰 번호 입력",
                                 text: $validationViewModel.infoState.phoneNumber,
-                                isError: .isErrorBinding(for: $validationViewModel.infoErrorState.phoneNumberErrorMessage),
-                                errorMessage: validationViewModel.infoErrorState.phoneNumberErrorMessage,
+                                isError: validationViewModel.infoErrorState.phoneNumberErrorMessage.isEmpty ? .isErrorBinding(for: $requestRelationViewModel.requestRelationState.failMessage) : .isErrorBinding(for: $validationViewModel.infoErrorState.phoneNumberErrorMessage),
+                                errorMessage: validationViewModel.infoErrorState.phoneNumberErrorMessage.isEmpty ? requestRelationViewModel.requestRelationState.failMessage : validationViewModel.infoErrorState.phoneNumberErrorMessage,
                                 textInputStyle: .phoneNumber)
                 .padding(.bottom, 40)
-                
+                                
                 CustomButton(buttonSize: .regular,
                              buttonStyle: .filled,
                              action: {
@@ -266,6 +266,7 @@ struct RequestRelationPopUpView: View {
             updateButtonState()
         }
         .onReceive(validationViewModel.$infoState, perform: { _ in
+            requestRelationViewModel.requestRelationState.failMessage = ""
             updateButtonState()
         })
         .onTapGesture {
@@ -277,6 +278,7 @@ struct RequestRelationPopUpView: View {
                 dismiss()
             }
         })
+
     }
     
     private func updateButtonState() {

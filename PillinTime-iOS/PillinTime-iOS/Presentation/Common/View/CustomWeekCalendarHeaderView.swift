@@ -28,7 +28,7 @@ struct CustomWeekCalendarHeaderView: View {
                         Text("오늘")
                             .padding(5)
                             .font(.body2Medium)
-                            .background(Color.primary40)
+                            .background(Color.primary60)
                             .foregroundColor(.white)
                             .cornerRadius(5)
                     }

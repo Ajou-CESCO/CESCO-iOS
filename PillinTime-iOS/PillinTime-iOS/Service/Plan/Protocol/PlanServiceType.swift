@@ -36,7 +36,6 @@ protocol PlanServiceType {
     ///
     /// - Parameters:
     ///     - memberId: 복약 계획을 삭제할 member의 id를 조회합니다.
-    ///     - medicineId: 복약 계획을 삭제할 medicineId를 조회합니다.
-    ///     - cabinetIndex: 복약 계획을 삭제할 cabinetIndex를 조회합니다.
-    func deleteDosePlan(memberId: Int, medicineId: String, cabinetIndex: Int) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
+    ///     - groupId: 복약 계획을 삭제할 groupId를 조회합니다.
+    func deleteDosePlan(memberId: Int, groupId: Int) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
 }

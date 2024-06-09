@@ -78,8 +78,8 @@ class PlanService: PlanServiceType {
     }
     
     /// 약물 복용 계획 삭제
-    func deleteDosePlan(memberId: Int, medicineId: String, cabinetIndex: Int) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError> {
-        return provider.requestPublisher(.deleteDosePlan(memberId: memberId, medicineId: medicineId, cabinetIndex: cabinetIndex))
+    func deleteDosePlan(memberId: Int, groupId: Int) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError> {
+        return provider.requestPublisher(.deleteDosePlan(memberId: memberId, groupId: groupId))
             .tryMap { response in
                 print(response)
                 guard let httpResponse = response.response, httpResponse.statusCode == 200 else {

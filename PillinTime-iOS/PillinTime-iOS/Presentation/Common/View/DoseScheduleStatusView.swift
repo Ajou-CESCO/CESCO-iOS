@@ -59,13 +59,13 @@ struct DoseScheduleStatusView: View {
                     } else {
                         ScrollView {
                             ForEach(filteredLogs, id: \.id) { log in
-                                let color = colors[log.cabinetIndex - 1]
+                                let color = (log.cabinetIndex > 0) ? colors[log.cabinetIndex - 1] : Color.gray20
                                 
                                 HStack {
                                     Circle()
                                         .fill(color)
                                         .frame(width: 20, height: 20)
-                                    
+
                                     Text(log.medicineName)
                                         .font(.h5Bold)
                                         .foregroundStyle(Color.gray90)
@@ -98,7 +98,7 @@ struct DoseScheduleStatusView: View {
 
                 }
                 .cornerRadius(8)
-                .frame(maxWidth: .infinity,
+                .frame(maxWidth: UIScreen.main.bounds.width,
                        minHeight: 50,
                        maxHeight: min(itemHeight * CGFloat(max(homeViewModel.countLogs(filteringBy: takenStatus), 0)) + 15, 240))
             } else {

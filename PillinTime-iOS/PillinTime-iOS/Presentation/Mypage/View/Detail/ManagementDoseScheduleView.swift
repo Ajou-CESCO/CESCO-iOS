@@ -17,6 +17,7 @@ struct ManagementDoseScheduleView: View {
     @ObservedObject var homeViewModel: HomeViewModel = Container.shared.homeViewModel.resolve()
     @ObservedObject var managementDoseScheduleViewModel: ManagementDoseScheduleViewModel = ManagementDoseScheduleViewModel(planService: PlanService(provider: MoyaProvider<PlanAPI>()))
     @ObservedObject var doseScheduleStatusViewModel = Container.shared.doseScheduleStatusViewModel.resolve()
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     // MARK: - Properties
     
@@ -27,7 +28,7 @@ struct ManagementDoseScheduleView: View {
     
     var body: some View {
         
-        ZStack {
+        ZStack(alignment: .bottom) {
             Color.white
                 .ignoresSafeArea()
             
@@ -109,6 +110,7 @@ struct ManagementDoseScheduleView: View {
                                     managementDoseScheduleViewModel: self.managementDoseScheduleViewModel)
                                 .padding(20)
                             }
+                            .frame(width: UIScreen.main.bounds.width)
                             
                             Spacer()
                         }
@@ -118,7 +120,12 @@ struct ManagementDoseScheduleView: View {
                 .scrollPosition(id: $selectedClientId)
                 .fadeIn(delay: 0.3)
             }
-
+            
+            if toastManager.show {
+                ToastView(description: toastManager.description, show: $toastManager.show)
+                    .zIndex(1)
+                    .padding(.bottom, 60)
+            }
         }
         .onReceive(doseScheduleStatusViewModel.$showDoseInfoView) { newValue in
             if newValue {
@@ -183,11 +190,9 @@ struct ManagementDoseScheduleElementView: View {
                                 Text(plan.medicineName)
                                     .lineLimit(1)
                                     .truncationMode(.tail)
-                                    .frame(width: 150, alignment: .leading)
+                                    .frame(width: 200, alignment: .leading)
                                     .font(.h5Bold)
                                     .foregroundStyle(Color.gray90)
-                                
-                                Spacer()
                             }
 
                             MedicineSideEffectView(isUserHasSideEffect: .constant(!isAdverseMapSafe(medicineAdverse: plan.medicineAdverse)))
@@ -209,7 +214,6 @@ struct ManagementDoseScheduleElementView: View {
                             Spacer()
                         }
 
-                        Spacer()
                     }
                     .background(Color.white)
                     .cornerRadius(20)
@@ -275,7 +279,8 @@ struct ManagementDoseScheduleElementView: View {
             CustomPopUpView(mainText: "선택한 일정을 삭제하시겠습니까?",
                             subText: "삭제하면 해당 일정에 대해 관리하지 못해요.",
                             leftButtonText: "취소하기", rightButtonText: "삭제하기", leftButtonAction: {}, rightButtonAction: {
-                requestServer()
+                managementDoseScheduleViewModel.isNetworking = true
+                requestDeleteDoseScheduleToServer()
             })
             .background(ClearBackgroundView())
             .background(Material.ultraThin)
@@ -284,8 +289,12 @@ struct ManagementDoseScheduleElementView: View {
             transaction.disablesAnimations = true
         }
         .onChange(of: managementDoseScheduleViewModel.isDeleteSucceed, {
-            self.toastManager.showToast(description: "일정 삭제를 완료했어요.")
+            if managementDoseScheduleViewModel.isDeleteSucceed {
+                self.toastManager.showToast(description: "일정 삭제를 완료했어요.")
+                self.requestDosePlanToServer()
+            }
         })
+
     }
   
     // MARK: - Methods
@@ -298,10 +307,13 @@ struct ManagementDoseScheduleElementView: View {
         }
     }
     
-    private func requestServer() {
+    private func requestDeleteDoseScheduleToServer() {
         self.managementDoseScheduleViewModel.requestDeletePlanToServer(DeleteDoseScheduleState(memberId: self.selectedClientId ?? 0,
-                                                                                               medicineId: self.selectedDosePlan?.medicineID ?? "",
-                                                                                               cabinetIndex: self.selectedDosePlan?.cabinetIndex ?? 0))
+                                                                                               groupId: self.selectedDosePlan?.groupId ?? 0))
+    }
+    
+    private func requestDosePlanToServer() {
+        managementDoseScheduleViewModel.$requestGetDosePlan.send(selectedClientId ?? 0)
     }
     
     private func isAdverseMapSafe(medicineAdverse: MedicineAdverse) -> Bool {

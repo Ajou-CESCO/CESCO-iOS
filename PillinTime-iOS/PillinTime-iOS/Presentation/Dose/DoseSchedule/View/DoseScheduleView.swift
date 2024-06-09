@@ -52,7 +52,9 @@ struct DoseScheduleView: View {
                 CustomWeekCalendarHeaderView(selectedDate: $selectedDate)
                     .padding(.top, 25)
                     .fadeIn(delay: 0.2)
-                    .frame(maxWidth: .infinity, minHeight: 100, maxHeight: 100)
+                    .frame(maxWidth: .infinity, 
+                           minHeight: UserManager.shared.isManager ?? true ? 100 : 130,
+                           maxHeight: UserManager.shared.isManager ?? true ? 100 : 130)
                     .background(UserManager.shared.isManager ?? true ? .clear : .white)
                     .padding(.bottom, 15)
                 

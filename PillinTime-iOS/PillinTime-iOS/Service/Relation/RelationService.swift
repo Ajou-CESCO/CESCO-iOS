@@ -10,6 +10,34 @@ import Moya
 import CombineMoya
 import Combine
 
+/// RelationAPI Error
+enum RelationError: Error {
+    case createRelation(_: CreateRelationError)
+    
+    var description: String {
+        switch self {
+        case .createRelation(let error):
+            return error.description
+        }
+    }
+}
+
+extension RelationError {
+    enum CreateRelationError: Error {
+        case createFailed
+        case duplicatedUser // 40008
+        
+        var description: String {
+            switch self {
+            case .createFailed:
+                return "보호 관계 요청에 실패하였습니다."
+            case .duplicatedUser:
+                return "이미 보호 관계가 맺어져있는 사용자입니다."
+            }
+        }
+    }
+}
+
 class RelationService: RelationServiceType {
     let provider: MoyaProvider<RelationAPI>
     var cancellables = Set<AnyCancellable>()
@@ -20,21 +48,21 @@ class RelationService: RelationServiceType {
     }
     
     // 보호관계 생성 요청
-    func createRelation(id: Int) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError> {
+    func createRelation(id: Int) -> AnyPublisher<BaseResponse<BlankData>, RelationError> {
         return provider.requestPublisher(.createRelation(id))
             .tryMap { response in
-                guard let httpResponse = response.response, httpResponse.statusCode == 200 else {
-                    let errorResponse = try response.map(BaseResponse<BlankData>.self)
-                    throw PillinTimeError.networkFail
+                let decodedData = try response.map(SignInResponseModel.self)
+                if decodedData.status == 40008 {
+                    throw RelationError.createRelation(.duplicatedUser)
                 }
                 return try response.map(BaseResponse<BlankData>.self)
             }
             .mapError { error in
                 print("error:", error)
                 if error is MoyaError {
-                    return PillinTimeError.networkFail
+                    return RelationError.createRelation(.createFailed)
                 } else {
-                    return error as! PillinTimeError
+                    return error as! RelationError
                 }
             }
             .eraseToAnyPublisher()

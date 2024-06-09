@@ -12,7 +12,7 @@ enum PlanAPI {
     case addDosePlan(_ addDosePlanModel: AddDosePlanRequestModel)
     case getDoseLog(_ memberId: Int, _ date: String?)
     case getDosePlan(_ memberId: Int)
-    case deleteDosePlan(memberId: Int, medicineId: String, cabinetIndex: Int)
+    case deleteDosePlan(memberId: Int, groupId: Int)
 }
 
 extension PlanAPI: TargetType {
@@ -57,8 +57,8 @@ extension PlanAPI: TargetType {
         case .getDosePlan(let memberId):
             return .requestParameters(parameters: ["memberId": memberId],
                                       encoding: URLEncoding.queryString)
-        case .deleteDosePlan(let memberId, let medicineId, let cabinetIndex):
-            return .requestParameters(parameters: ["memberId": memberId, "medicineId": medicineId, "cabinetIndex": cabinetIndex],
+        case .deleteDosePlan(let memberId, let groupId):
+            return .requestParameters(parameters: ["memberId": memberId, "groupId": groupId],
                                       encoding: URLEncoding.queryString)
         }
     }

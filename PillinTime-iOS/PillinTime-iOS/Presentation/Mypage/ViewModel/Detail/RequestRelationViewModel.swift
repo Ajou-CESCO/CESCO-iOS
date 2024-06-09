@@ -19,7 +19,6 @@ class RequestRelationViewModel: ObservableObject {
     // MARK: - Dependency
     
     @Injected(\.requestServie) var requestService: RequestServiceType
-    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
 
     // MARK: - Input State
     
@@ -69,10 +68,9 @@ class RequestRelationViewModel: ObservableObject {
                     }
                 case .failure(let error):
                     print("보호관계 요청 실패: \(error)")
-                    self.toastManager.showToast(description: "보호관계 요청 실패")
                     self.isNetworking = false
-                    self.requestRelationState.failMessage = error.localizedDescription
-                    toastManager.showNetworkFailureToast()
+                    self.requestRelationState.failMessage = error.description
+                    print(self.requestRelationState.failMessage)
                 }
             }, receiveValue: { [weak self] result in
                 guard let self = self else { return }

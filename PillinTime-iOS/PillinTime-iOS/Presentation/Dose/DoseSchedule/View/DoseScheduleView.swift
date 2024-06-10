@@ -176,12 +176,12 @@ struct DoseScheduleView: View {
                 }
             })
             .padding([.top, .bottom], 15)
-            .background(isSelectedMemberHasntPillCase() ? Color.gray70 :Color.primary60)
+            .background(isSelectedMemberHasntPillCase() || homeViewModel.relationLists.isEmpty ? Color.gray70 : Color.primary60)
             .cornerRadius(30)
             .padding(.trailing, 20)
             .padding(.bottom, 25)
             .fadeIn(delay: 0.6)
-            .disabled(isSelectedMemberHasntPillCase())
+            .disabled(isSelectedMemberHasntPillCase() || homeViewModel.relationLists.isEmpty)
         }
         .onReceive(homeViewModel.$isDataReady) { _ in
             // 만약 피보호자라면
@@ -200,7 +200,7 @@ struct DoseScheduleView: View {
             refresh()
         }
         .onChange(of: selectedDate, {
-            homeViewModel.$requestGetDoseLog.send((selectedClientId!, DateHelper.dateString(selectedDate)))
+            homeViewModel.$requestGetDoseLog.send((selectedClientId ?? 0, DateHelper.dateString(selectedDate)))
         })
         .onChange(of: isUserPoked, {
             if isUserPoked {

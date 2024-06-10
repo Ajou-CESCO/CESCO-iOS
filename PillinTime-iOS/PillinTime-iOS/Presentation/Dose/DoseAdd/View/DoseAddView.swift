@@ -25,7 +25,7 @@ struct DoseAddView: View {
     @State private var isButtonDisabled: Bool = true
     @State private var selectedDays: Set<String> = Set<String>()
     @State private var startDate: Date = Date()  // 날짜 초기화
-    @State private var endDate: Date = Calendar.current.date(byAdding: .day, value: 1, to: Date())!
+    @State private var endDate: Date = Calendar.current.date(byAdding: .day, value: 7, to: Date())!
     @State private var endDateExist: Bool = false
     @State private var selectedTimeStrings: [String] = []
     @State private var selectedColorIndex: Int = 0

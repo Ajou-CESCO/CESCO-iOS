@@ -20,6 +20,12 @@ struct DateHelper {
         return koreanLocaleFormatter.string(from: Date())
     }
     
+    /// 요일을 문자열로 반환
+    static func dateDay(_ date: Date) -> String {
+        koreanLocaleFormatter.dateFormat = "EEEEE"
+        return koreanLocaleFormatter.string(from: date)
+    }
+    
     /// 날짜를 문자열로 변경
     static func dateString(_ date: Date) -> String {
         koreanLocaleFormatter.dateFormat = "yyyy-MM-dd"
@@ -38,7 +44,7 @@ struct DateHelper {
         inputDateFormatter.dateFormat = "HH:mm:ss"
         
         let outputDateFormatter = DateFormatter()
-        outputDateFormatter.dateFormat = "a h시"
+        outputDateFormatter.dateFormat = "a h시 mm분"
         outputDateFormatter.locale = Locale(identifier: "ko_KR")
         
         let times = timeStrings.compactMap { timeString -> String? in

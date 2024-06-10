@@ -9,6 +9,7 @@ import SwiftUI
 
 import LinkNavigator
 import Factory
+import Moya
 
 // 이후 다른 곳으로 이동할 것
 @frozen
@@ -47,6 +48,8 @@ struct MyPageDetailView: View {
     @State var isEditing: Bool = false
     @State var settingListElement: SettingListElement
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
+    @ObservedObject var clientManageViewModel: ClientManageViewModel = ClientManageViewModel(relationService: RelationService(provider: MoyaProvider<RelationAPI>()))
+    @ObservedObject var managementMyInformationViewModel: ManagementMyInformationViewModel = ManagementMyInformationViewModel(caseService: CaseService(provider: MoyaProvider<CaseAPI>()))
     
     @State var name: String?
     let navigator: LinkNavigatorType
@@ -69,8 +72,9 @@ struct MyPageDetailView: View {
                 
                 switch settingListElement {
                 case .managementMyInformation:
-                    ManagementMyInformationView(userInfo: SelectedRelation(relationId: UserManager.shared.memberId ?? 0,
-                                                                           name: UserManager.shared.name ?? "null",
+                    ManagementMyInformationView(managementMyInformationViewModel: managementMyInformationViewModel,
+                                                clientManageViewModel: clientManageViewModel,
+                                                userInfo: SelectedRelation(relationId: UserManager.shared.memberId ?? 0,                                    name: UserManager.shared.name ?? "null",
                                                                            ssn: UserManager.shared.ssn ?? "null",
                                                                            phone: UserManager.shared.phoneNumber ?? "null",
                                                                            cabinetId: homeViewModel.clientCabnetId))
@@ -81,13 +85,14 @@ struct MyPageDetailView: View {
                 case .withdrawal:
                     WithdrawalView(navigator: navigator)
                 case .clientManage:
-                    ClientManageView()
+                    ClientManageView(clientManageViewModel: clientManageViewModel, 
+                                     managementMyInformationViewModel: managementMyInformationViewModel)
                 case .managementDoseSchedule:
                     ManagementDoseScheduleView()
                 case .todaysHealthState:
                     HealthDashBoardView(name: (UserManager.shared.isManager ?? true) ? (UserManager.shared.selectedClientName ?? "null"): (UserManager.shared.name ?? "null"))
-                case .bugReport:
-                    BugReportView()
+                case .payment:
+                    TossPaymentsContentView()
                 case .logout:
                     LogoutView(navigator: navigator)
                 }

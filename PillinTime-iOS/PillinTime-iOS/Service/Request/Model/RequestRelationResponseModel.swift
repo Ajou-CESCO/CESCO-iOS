@@ -12,7 +12,7 @@ import Foundation
 struct RequestRelationResponseModel: Codable {
     let status: Int
     let message: String
-    let result: RequestRelationResponseModelResult
+    let result: RequestRelationResponseModelResult?
 }
 
 // MARK: - RequestRelationResponseModelResult

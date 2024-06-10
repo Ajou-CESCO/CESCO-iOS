@@ -75,4 +75,22 @@ class EtcService: EtcServiceType {
             }
             .eraseToAnyPublisher()
     }
+    
+    /// 약품 Id 기반 정보 조회
+    func searchDoseById(medicineId: String) -> AnyPublisher<SearchDoseByIdResponseModel, PillinTimeError> {
+        return provider.requestPublisher(.searchDoseById(medicineId: medicineId))
+            .tryMap { response in
+                let decodeData = try response.map(SearchDoseByIdResponseModel.self)
+                return decodeData
+            }
+            .mapError { error in
+                print("error:", error)
+                if error is MoyaError {
+                    return PillinTimeError.networkFail
+                } else {
+                    return error as! PillinTimeError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
 }

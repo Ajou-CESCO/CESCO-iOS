@@ -22,6 +22,8 @@ struct DoseScheduleStatusView: View {
     
     /// HomeViewModel의 dose log
     @ObservedObject var homeViewModel = Container.shared.homeViewModel.resolve()
+    
+    @ObservedObject var doseScheduleStatusViewModel = Container.shared.doseScheduleStatusViewModel.resolve()
 
     let itemHeight: CGFloat = 45
     let takenStatus: Int?
@@ -52,17 +54,18 @@ struct DoseScheduleStatusView: View {
                                 .font(.body1Medium)
                                 .foregroundColor(Color.gray90)
                                 .padding()
+                                .fadeIn(delay: 0.1)
                         }
                     } else {
                         ScrollView {
                             ForEach(filteredLogs, id: \.id) { log in
-                                let color = colors[log.cabinetIndex]
+                                let color = (log.cabinetIndex > 0) ? colors[log.cabinetIndex - 1] : Color.gray20
                                 
                                 HStack {
                                     Circle()
                                         .fill(color)
                                         .frame(width: 20, height: 20)
-                                    
+
                                     Text(log.medicineName)
                                         .font(.h5Bold)
                                         .foregroundStyle(Color.gray90)
@@ -83,16 +86,19 @@ struct DoseScheduleStatusView: View {
                                         .frame(width: 50)
                                 }
                                 .padding(5)
-
+                                .onTapGesture {
+                                    self.doseScheduleStatusViewModel.$requestGetDoseInfoById.send(log.medicineId)
+                                }
                             }
                             .padding(15)
 
                         }
+                        .fadeIn(delay: 0.1)
                     }
 
                 }
                 .cornerRadius(8)
-                .frame(maxWidth: .infinity,
+                .frame(maxWidth: UIScreen.main.bounds.width,
                        minHeight: 50,
                        maxHeight: min(itemHeight * CGFloat(max(homeViewModel.countLogs(filteringBy: takenStatus), 0)) + 15, 240))
             } else {
@@ -104,10 +110,12 @@ struct DoseScheduleStatusView: View {
                             .font(.body1Bold)
                             .foregroundColor(Color.gray90)
                             .padding(.bottom, 3)
+                            .fadeIn(delay: 0.1)
                         
                         Text("복약 일정을 등록하고 알림을 받아보세요")
                             .font(.caption1Medium)
                             .foregroundColor(Color.gray60)
+                            .fadeIn(delay: 0.2)
                     }
                     
                 }

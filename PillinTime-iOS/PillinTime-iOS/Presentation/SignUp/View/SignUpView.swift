@@ -88,7 +88,7 @@ struct SignUpView: View {
                                     textInputStyle: .verificationCode)
                     
                     if signUpRequestViewModel.isNetworkSucceed {
-                        Text("인증코드 유효 시간: \(timeString(time: signUpRequestViewModel.timeRemaining))")
+                        Text("인증번호 유효 시간: \(timeString(time: signUpRequestViewModel.timeRemaining))")
                             .font(.body1Bold)
                             .foregroundStyle(Color.primary60)
                             .padding(5)
@@ -119,6 +119,7 @@ struct SignUpView: View {
                         .onTapGesture {
                             selectedRole = 1
                             updateButtonState()
+                            UserManager.shared.isManager = false
                         }
                         .padding(.bottom, 10)
                         .padding(.top, 71)
@@ -130,6 +131,7 @@ struct SignUpView: View {
                         .onTapGesture {
                             selectedRole = 0
                             updateButtonState()
+                            UserManager.shared.isManager = true
                         }
                         .fadeIn(delay: 0.4)
                 }

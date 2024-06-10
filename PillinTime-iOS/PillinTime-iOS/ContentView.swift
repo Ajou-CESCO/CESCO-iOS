@@ -49,7 +49,7 @@ struct ContentView: View {
                         .tag(TabBarType.myPage)
                 }
             }
-
+            
             if toastManager.show {
                 ToastView(description: toastManager.description, show: $toastManager.show)
                     .padding(.bottom, 60)
@@ -70,6 +70,11 @@ struct ContentView: View {
             }
         
         }
+        .onChange(of: UserManager.shared.accessToken, {
+            if !UserManager.shared.hasAccessToken {
+                navigator.next(paths: ["signup"], items: [:], isAnimated: false)
+            }
+        })
         .navigationBarHidden(true)
     }
 }

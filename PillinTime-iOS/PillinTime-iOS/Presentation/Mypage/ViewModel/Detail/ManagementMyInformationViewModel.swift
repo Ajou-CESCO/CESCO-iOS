@@ -70,12 +70,7 @@ class ManagementMyInformationViewModel: ObservableObject {
                 switch completion {
                 case .finished:
                     print("약통 삭제 요청 완료")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        self.isNetworking = false
-                        self.isNetworkSucceed = true
-                        self.toastManager.showToast(description: "약통 삭제를 완료했습니다.")
-                        self.isDeleteSucced = true
-                    }
+                    self.isDeleteSucced = true
                 case .failure(let error):
                     print("약통 삭제 요청 실패: \(error)")
                     self.isNetworking = false

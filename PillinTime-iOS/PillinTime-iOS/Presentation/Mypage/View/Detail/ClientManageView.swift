@@ -8,6 +8,7 @@
 import SwiftUI 
 
 import Moya
+import Factory
 
 struct SelectedRelation: Identifiable {
     let id = UUID()
@@ -24,13 +25,15 @@ struct ClientManageView: View {
     
     // MARK: - Properties
     
-    @ObservedObject var clientManageViewModel: ClientManageViewModel = ClientManageViewModel(relationService: RelationService(provider: MoyaProvider<RelationAPI>()))
+    @ObservedObject var clientManageViewModel: ClientManageViewModel
+    @ObservedObject var managementMyInformationViewModel: ManagementMyInformationViewModel
     @State var isDeletePopUp: Bool = false
     @State var isRequestRelationPopUp: Bool = false
     @State var showInformationView: Bool = false
     @State var selectedRelation: SelectedRelation?
     @State var selectedDeleteRelation: SelectedRelation?
     @State var showToastView: Bool = false
+    @ObservedObject var toastManager = Container.shared.toastManager.resolve()
     
     // MARK: - body
     
@@ -79,17 +82,9 @@ struct ClientManageView: View {
                                     .font(.body2Medium)
                                     .foregroundStyle(Color.gray70)
                             }
-                            .onTapGesture {
-                                self.selectedRelation = SelectedRelation(relationId: relation.id,
-                                                                         name: relation.memberName,
-                                                                         ssn: relation.memberSsn,
-                                                                         phone: relation.memberPhone, 
-                                                                         cabinetId: relation.cabinetID)
-                                self.showInformationView = true
-                            }
                             
                             Spacer()
-                            
+
                             if (UserManager.shared.isManager ?? true) {
                                 Image(relation.cabinetID == 0 ? "ic_cabnet_disconnected" : "ic_cabnet_connected")
                                     .resizable()
@@ -101,6 +96,15 @@ struct ClientManageView: View {
                                     .frame(width: 40)
                                     .foregroundStyle(Color.gray90)
                             }
+                        }
+                        .background(Color.white)
+                        .onTapGesture {
+                            self.selectedRelation = SelectedRelation(relationId: relation.id,
+                                                                     name: relation.memberName,
+                                                                     ssn: relation.memberSsn,
+                                                                     phone: relation.memberPhone,
+                                                                     cabinetId: relation.cabinetID)
+                            self.showInformationView = true
                         }
                         .swipeActions {
                             Button("삭제") {
@@ -117,23 +121,34 @@ struct ClientManageView: View {
                         .frame(height: 70)
                         .padding([.leading, .trailing], 30)
                     }
-                    .refreshable {
-                        requestToGetInfo()
-                    }
                 }
                 .ignoresSafeArea(edges: .bottom)
                 .listStyle(.plain)
                 .fadeIn(delay: 0.1)
+                .refreshable {
+                    requestToGetInfo()
+                }
                 
                 if showToastView {
                     ToastView(description: "보호 관계를 요청했어요.", show: $showToastView)
                         .padding(.bottom, 20)
                 }
+                
+                if toastManager.show {
+                    ToastView(description: toastManager.description, show: $toastManager.show)
+                        .padding(.bottom, 60)
+                        .zIndex(1)
+                }
             }
-            .onChange(of: clientManageViewModel.isDeleteSucceed, {
-                requestToGetInfo()
-            })
         }
+        .onChange(of: self.clientManageViewModel.isDeleteSucceed, {
+            self.toastManager.showToast(description: "보호 관계 삭제를 완료했어요.")
+            requestToGetInfo()
+        })
+        .onChange(of: self.managementMyInformationViewModel.isDeleteSucced, {
+            self.toastManager.showToast(description: "약통 삭제를 완료했어요.")
+            requestToGetInfo()
+        })
         .onAppear(perform: {
             requestToGetInfo()
         })
@@ -158,7 +173,9 @@ struct ClientManageView: View {
             .background(Material.ultraThin)
         })
         .sheet(item: $selectedRelation, content: { relation in
-            ManagementMyInformationView(userInfo: relation)
+            ManagementMyInformationView(managementMyInformationViewModel: managementMyInformationViewModel, 
+                                        clientManageViewModel: clientManageViewModel,
+                                        userInfo: relation)
         })
         .transaction { transaction in   // 모달 애니메이션 삭제
             transaction.disablesAnimations = true
@@ -184,7 +201,7 @@ struct RequestRelationPopUpView: View {
     
     @Environment(\.dismiss) private var dismiss
     @ObservedObject var validationViewModel: UserProfileValidationViewModel
-    @ObservedObject var requestRelationViewModel: RequestRelationViewModel
+    @StateObject var requestRelationViewModel: RequestRelationViewModel
     @State private var isButtonDisabled: Bool = true
     
     let onNetworkSuccess: () -> Void  // 클로저 추가
@@ -192,7 +209,7 @@ struct RequestRelationPopUpView: View {
     init(onNetworkSuccess: @escaping () -> Void) {
         self.onNetworkSuccess = onNetworkSuccess
         self.validationViewModel = UserProfileValidationViewModel(validationService: ValidationService())
-        self.requestRelationViewModel = RequestRelationViewModel(requestService: RequestService(provider: MoyaProvider<RequestAPI>()))
+        _requestRelationViewModel = StateObject(wrappedValue: RequestRelationViewModel(requestService: RequestService(provider: MoyaProvider<RequestAPI>())))
         self.validationViewModel.bindEvent()
     }
     
@@ -220,11 +237,11 @@ struct RequestRelationPopUpView: View {
             
                 CustomTextInput(placeholder: "휴대폰 번호 입력",
                                 text: $validationViewModel.infoState.phoneNumber,
-                                isError: .isErrorBinding(for: $validationViewModel.infoErrorState.phoneNumberErrorMessage),
-                                errorMessage: validationViewModel.infoErrorState.phoneNumberErrorMessage,
+                                isError: validationViewModel.infoErrorState.phoneNumberErrorMessage.isEmpty ? .isErrorBinding(for: $requestRelationViewModel.requestRelationState.failMessage) : .isErrorBinding(for: $validationViewModel.infoErrorState.phoneNumberErrorMessage),
+                                errorMessage: validationViewModel.infoErrorState.phoneNumberErrorMessage.isEmpty ? requestRelationViewModel.requestRelationState.failMessage : validationViewModel.infoErrorState.phoneNumberErrorMessage,
                                 textInputStyle: .phoneNumber)
                 .padding(.bottom, 40)
-                
+                                
                 CustomButton(buttonSize: .regular,
                              buttonStyle: .filled,
                              action: {
@@ -250,6 +267,7 @@ struct RequestRelationPopUpView: View {
             updateButtonState()
         }
         .onReceive(validationViewModel.$infoState, perform: { _ in
+            requestRelationViewModel.requestRelationState.failMessage = ""
             updateButtonState()
         })
         .onTapGesture {
@@ -261,6 +279,7 @@ struct RequestRelationPopUpView: View {
                 dismiss()
             }
         })
+
     }
     
     private func updateButtonState() {

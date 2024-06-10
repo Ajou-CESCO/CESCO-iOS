@@ -88,6 +88,7 @@ class RelationRequestViewModel: ObservableObject {
     
     func requestCreateRelation(id: Int) {
         print("보호 관계 생성 시작")
+        self.relationRequestState.failMessage = ""
         self.isNetworking = true
         relationService.createRelation(id: id)
             .sink(receiveCompletion: { [weak self] completion in
@@ -96,17 +97,16 @@ class RelationRequestViewModel: ObservableObject {
                 switch completion {
                 case .finished:
                     print("보호 관계 생성 요청 완료")
+                    self.relationRequestState.failMessage = ""
                 case .failure(let error):
                     print("보호 관계 생성 실패: \(error)")
-                    self.relationRequestState.failMessage = error.localizedDescription
-                    toastManager.showNetworkFailureToast()
+                    self.relationRequestState.failMessage = error.description
                 }
             }, receiveValue: { [weak self] result in
-                print("보호 관계 생성 성공: ", result)
                 guard let self = self else { return }
-                self.isCreateRelationSucced = true                    
-                toastManager.showToast(description: "보호 관계 생성을 완료했어요.")
-
+                print("보호 관계 생성 성공: ", result)
+                self.isCreateRelationSucced = true
+                self.toastManager.showToast(description: "보호 관계 생성을 완료했어요.")
             })
             .store(in: &cancellables)
     }

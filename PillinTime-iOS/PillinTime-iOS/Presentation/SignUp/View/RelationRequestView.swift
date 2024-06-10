@@ -42,6 +42,14 @@ struct RelationRequestView: View {
                 .foregroundStyle(Color.gray70)
                 .fadeIn(delay: 0.2)
             
+            Text(relationRequestViewModel.relationRequestState.failMessage)
+                .foregroundStyle(Color.error90)
+                .font(.body1Regular)
+                .multilineTextAlignment(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineSpacing(3)
+                .padding(.top, 10)
+            
             ScrollView {
                 if relationRequestViewModel.relationRequestList.isEmpty {
                     CustomEmptyView(mainText: "요청을 다시 확인해주세요", subText: "보호관계 요청 결과가 없습니다.")
@@ -101,7 +109,7 @@ struct RelationRequestView: View {
             }
             
             Spacer()
-            
+  
             CustomButton(buttonSize: .regular,
                          buttonStyle: .filled, action: {
                 requestToServer()

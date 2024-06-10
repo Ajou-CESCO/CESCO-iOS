@@ -28,6 +28,7 @@ struct SelectDosePillCaseView: View {
                 ForEach(colors.indices, id: \.self) { index in
                     let color = colors[index]
                     let isOccupied = homeViewModel.occupiedCabinetIndex.contains(colorToIndex[color] ?? -1)
+                    let displayColor = isOccupied ? Color.gray20 : color
                     
                     Button(action: {
                         if !isOccupied {
@@ -38,7 +39,7 @@ struct SelectDosePillCaseView: View {
                         }
                     }, label: {
                         Circle()
-                            .fill(color)
+                            .fill(displayColor)
                             .frame(width: 40, height: 40)
                             .overlay(
                                 Circle()

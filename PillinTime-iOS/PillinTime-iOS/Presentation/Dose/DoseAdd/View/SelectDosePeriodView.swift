@@ -18,6 +18,13 @@ struct SelectDosePeriodView: View {
     @Binding var endDateExist: Bool
     @State private var showDatePicker: Bool = false
     @State private var isEndDatePickerDisabled: Bool = false
+    var selectedDays: Set<String> = Set<String>()
+    
+    let dayToInt: [String: Int] = ["월": 1, "화": 2, "수": 3, "목": 4, "금": 5, "토": 6, "일": 7]
+    
+    var weekdayList: [Int] {
+        return selectedDays.compactMap { dayToInt[$0] }.sorted()
+    }
     
     private var startDateRange: ClosedRange<Date> {
         let today = Calendar.current.startOfDay(for: Date())
@@ -25,7 +32,7 @@ struct SelectDosePeriodView: View {
     }
     
     private var endDateRange: ClosedRange<Date> {
-        let firstDay = Calendar.current.date(byAdding: .day, value: 1, to: startDate)!
+        let firstDay = Calendar.current.date(byAdding: .day, value: 7, to: startDate)!
         return firstDay...Date.distantFuture
     }
     
@@ -37,7 +44,7 @@ struct SelectDosePeriodView: View {
                 DatePickerField(date: $startDate, title: "복용 시작일", symbolName: "calendar", range: startDateRange)
                     .padding(.vertical, 30)
                     .onChange(of: startDate, {
-                        let newEndDate = Calendar.current.date(byAdding: .day, value: 1, to: startDate)!
+                        let newEndDate = Calendar.current.date(byAdding: .day, value: 7, to: startDate)!
                         if endDate < newEndDate {
                             endDate = newEndDate
                         }
@@ -53,7 +60,7 @@ struct SelectDosePeriodView: View {
                             isEndDatePickerDisabled = true
                         } else {
                             isEndDatePickerDisabled = false
-                            endDate = Calendar.current.date(byAdding: .day, value: 1, to: startDate)!
+                            endDate = Calendar.current.date(byAdding: .day, value: 7, to: startDate)!
                         }
                     })
                     .frame(width: 125)

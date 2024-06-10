@@ -29,7 +29,7 @@ struct SelectDoseTimeView: View {
         ["\(hour):00", "\(hour):30"]
     }
     
-    let afternoonTimes = (0...11).flatMap { hour -> [String] in
+    let afternoonTimes = (12...23).flatMap { hour -> [String] in
         ["\(hour):00", "\(hour):30"]
     }
     
@@ -115,8 +115,7 @@ struct SelectDoseTimeView: View {
         selectedTimeStrings = selectedTimes.map { identifier -> String in
             let hour = Int(identifier.time.split(separator: ":")[0])!
             let minute = identifier.time.split(separator: ":")[1]
-            let formattedHour = identifier.period == "AM" ? hour : hour + 12
-            return String(format: "%02d:%@", formattedHour, minute as CVarArg)
+            return String(format: "%02d:%@", hour, minute as CVarArg)
         }.sorted()
     }
 }

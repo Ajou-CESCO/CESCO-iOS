@@ -17,7 +17,7 @@ protocol RelationServiceType {
     /// - Parameters:
     ///     - id: 보호관계의 id입니다.
     /// - Returns: BaseResponse
-    func createRelation(id: Int) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError>
+    func createRelation(id: Int) -> AnyPublisher<BaseResponse<BlankData>, RelationError>
     
     /// 보호관계 조회 요청을 보냅니다.
     ///

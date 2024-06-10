@@ -17,7 +17,7 @@ struct LogoutView: View {
     // MARK: - Properties
     
     @State private var showPopUpView: Bool = false
-    @State private var requestToLogout: Bool = false
+    @ObservedObject var logoutViewModel: LogoutViewModel = LogoutViewModel(authService: AuthService(provider: MoyaProvider<AuthAPI>()))
     
     let navigator: LinkNavigatorType
     
@@ -50,12 +50,17 @@ struct LogoutView: View {
             CustomButton(buttonSize: .regular,
                          buttonStyle: .filled,
                          action: {
-                logout()
+                self.logoutViewModel.$requestLogout.send()
             }, content: {
                 Text("로그아웃하기")
             }, isDisabled: false)
             .padding([.leading, .trailing], 32)
         }
+        .onChange(of: self.logoutViewModel.isLogoutSucced, {
+            if self.logoutViewModel.isLogoutSucced {
+                logout()
+            }
+        })
     }
     
     private func popUpSubText() -> String {
@@ -63,9 +68,8 @@ struct LogoutView: View {
     }
     
     private func logout() {
-        navigator.next(paths: ["content"], items: [:], isAnimated: true)
         UserManager.shared.accessToken = nil
         UserManager.shared.fcmToken = nil
-        
+        navigator.replace(paths: ["content"], items: [:], isAnimated: true)
     }
 }

@@ -17,6 +17,7 @@ struct GetDosePlanResponseModel: Codable {
 // MARK: - GetDosePlanResponseModelResult
 struct GetDosePlanResponseModelResult: Codable, Identifiable {
     let id = UUID()  
+    let groupId: Int
     let medicineID, medicineName: String
     let cabinetIndex: Int
     let weekdayList: [Int]
@@ -26,6 +27,6 @@ struct GetDosePlanResponseModelResult: Codable, Identifiable {
 
     enum CodingKeys: String, CodingKey {
         case medicineID = "medicineId"
-        case medicineName, cabinetIndex, weekdayList, timeList, startAt, endAt, medicineAdverse
+        case medicineName, cabinetIndex, weekdayList, timeList, startAt, endAt, medicineAdverse, groupId
     }
 }

@@ -51,18 +51,18 @@ class HomeViewModel: ObservableObject {
     // MARK: - Input State
     
     @Subject var requestInitClient: Bool = false
-    @Subject var requestGetDoseLog: Int = 0
+    @Subject var requestGetDoseLog: (Int, String?) = (0, nil)
     @Subject var requestGetHealthData: Int = 0
     @Subject var requestCreateHealthData: Void = ()
     
     // MARK: - Output State
     
     @Published var homeState: HomeState = HomeState()
-    @Published var healthInfoState: HealthInfoState = HealthInfoState()
+//    @Published var healthInfoState: HealthInfoState = HealthInfoState()
     @Published var isNetworking: Bool = false
     @Published var isDataReady: Bool = false
     @Published var relationLists: [RelationList] = []
-    @Published var doseLog: [GetDoseLogResponseModelResult] = []
+    @Published var doseLog: [LogList] = []
     @Published var healthData: GetHealthDateResponseModelResult?
     @Published var clientCabnetId: Int = 0
     @Published var occupiedCabinetIndex: [Int] = []
@@ -94,8 +94,8 @@ class HomeViewModel: ObservableObject {
         }
         .store(in: &cancellables)
         
-        $requestGetDoseLog.sink { memberId in
-            self.requestGetDoseLogToServer(memberId: memberId)
+        $requestGetDoseLog.sink { memberId, date in
+            self.requestGetDoseLogToServer(memberId: memberId, date: date)
         }
         .store(in: &cancellables)
         
@@ -130,6 +130,7 @@ class HomeViewModel: ObservableObject {
                 guard let self = self else { return }
                 UserManager.shared.memberId = result.result.memberID
                 UserManager.shared.isManager = result.result.isManager
+                UserManager.shared.isSubscriber = result.result.isSubscriber
                 self.clientCabnetId = result.result.cabinetID
                 
                 // relationList UserDefault에 저장
@@ -146,9 +147,9 @@ class HomeViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    private func requestGetDoseLogToServer(memberId: Int) {
+    private func requestGetDoseLogToServer(memberId: Int, date: String?) {
         print("memberId \(memberId) 복약 기록 요청 시작")
-        planService.getDoseLog(memberId: memberId)
+        planService.getDoseLog(memberId: memberId, date: date)
             .sink(receiveCompletion: { [weak self] completion in
                 guard let self = self else { return }
                 switch completion {
@@ -160,7 +161,8 @@ class HomeViewModel: ObservableObject {
                 }
             }, receiveValue: { [weak self] result in
                 guard let self = self else { return }
-                self.doseLog = result.result
+                self.doseLog = result.result.logList
+                self.occupiedCabinetIndex = result.result.cabinetIndexList
                 print(self.doseLog)
             })
             .store(in: &cancellables)
@@ -246,7 +248,7 @@ class HomeViewModel: ObservableObject {
                                            sleepTotal: "\(String(result.result?.sleepTime ?? 0))시간",
                                            heartRate: "\(String(result.result?.heartRate ?? 0))BPM",
                                            burnCalories: "\(String(result.result?.calorie ?? 0))kcal")
-                print(self.healthInfoState)
+                print("memberId \(memberId) 건강 데이터", self.state)
                 // healthData가 빈 값일 때만 bindHealth() 함수들 실행
                 if (self.healthData?.isEmpty ?? true) && (!(UserManager.shared.isManager ?? false)) && !self.requestToHK {
                     self.requestHealthDataToHK()

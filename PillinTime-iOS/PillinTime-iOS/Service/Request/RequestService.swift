@@ -21,19 +21,24 @@ class RequestService: RequestServiceType {
     }
     
     /// 보호 관계 요청
-    func relationRequest(receiverPhone: String) -> AnyPublisher<RequestRelationResponseModel, PillinTimeError> {
+    func relationRequest(receiverPhone: String) -> AnyPublisher<RequestRelationResponseModel, RelationError> {
         return provider.requestPublisher(.requestRelation(receiverPhone))
             .tryMap { response in
-                print(response)
+                let json = try JSONSerialization.jsonObject(with: response.data, options: []) as? [String: Any]
+                
+                if let status = json?["status"] as? Int, status == 40008 {
+                    throw RelationError.createRelation(.duplicatedUser)
+                }
+                
                 let decodedData = try response.map(RequestRelationResponseModel.self)
                 return decodedData
             }
             .mapError { error in
                 print("error:", error)
                 if error is MoyaError {
-                    return PillinTimeError.networkFail
+                    return RelationError.createRelation(.duplicatedUser)
                 } else {
-                    return error as! PillinTimeError
+                    return error as! RelationError
                 }
             }
             .eraseToAnyPublisher()

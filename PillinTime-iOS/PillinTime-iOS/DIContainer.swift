@@ -31,6 +31,13 @@ extension Container {
         .singleton
     }
     
+    var doseScheduleStatusViewModel: Factory<DoseScheduleStatusViewModel> {
+        Factory(self) {
+            DoseScheduleStatusViewModel(etcService: EtcService(provider: MoyaProvider<EtcAPI>()))
+        }
+        .singleton
+    }
+    
     // MARK: - Moya
     
     // MARK: - Etc
@@ -110,6 +117,13 @@ extension Container {
     var healthService: Factory<HealthServiceType> {
         Factory(self) {
             HealthService(provider: MoyaProvider<HealthAPI>())
+        }
+        .singleton
+    }
+    
+    var paymentService: Factory<PaymentServiceType> {
+        Factory(self) {
+            PaymentService(provider: MoyaProvider<PaymentAPI>())
         }
         .singleton
     }

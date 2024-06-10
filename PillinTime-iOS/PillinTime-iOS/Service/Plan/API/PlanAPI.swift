@@ -13,6 +13,7 @@ enum PlanAPI {
     case getDoseLog(_ memberId: Int, _ date: String?)
     case getDosePlan(_ memberId: Int)
     case deleteDosePlan(memberId: Int, groupId: Int)
+    case patchDosePlan(_ patchDosePlan: PatchDosePlanRequestModel)
 }
 
 extension PlanAPI: TargetType {
@@ -26,7 +27,7 @@ extension PlanAPI: TargetType {
     
     var path: String {
         switch self {
-        case .addDosePlan, .getDosePlan, .deleteDosePlan:
+        case .addDosePlan, .getDosePlan, .deleteDosePlan, .patchDosePlan:
             return "/api/dose/plan"
         case .getDoseLog:
             return "/api/dose/log"
@@ -41,6 +42,8 @@ extension PlanAPI: TargetType {
             return .get
         case .deleteDosePlan:
             return .delete
+        case .patchDosePlan:
+            return .patch
         }
     }
     
@@ -48,6 +51,8 @@ extension PlanAPI: TargetType {
         switch self {
         case .addDosePlan(let addDosePlanModel):
             return .requestJSONEncodable(addDosePlanModel)
+        case .patchDosePlan(let patchDosePlanModel):
+            return .requestJSONEncodable(patchDosePlanModel)
         case .getDoseLog(let memberId, let date):
             var parameters: [String: Any] = ["memberId": memberId]
             if let date = date {

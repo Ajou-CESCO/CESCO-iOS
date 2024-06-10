@@ -35,7 +35,7 @@ extension RelationError {
             case .duplicatedUser:
                 return "이미 보호 관계가 맺어져있는 사용자입니다."
             case .managerIsNotPremium:
-                return "프리미엄 상품을 결제해야 이용 가능합니다."
+                return "보호자가 프리미엄 구매를 하지 않았어요.\n프리미엄 구독을 해야만 이용이 가능해요."
             }
         }
     }

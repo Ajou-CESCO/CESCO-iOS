@@ -41,6 +41,27 @@ class PlanService: PlanServiceType {
             .eraseToAnyPublisher()
     }
     
+    func patchDosePlan(patchdosePlanModel patchDosePlanModel: PatchDosePlanRequestModel) -> AnyPublisher<BaseResponse<BlankData>, PillinTimeError> {
+        return provider.requestPublisher(.patchDosePlan(patchDosePlanModel))
+            .tryMap { response in
+                guard let httpResponse = response.response, httpResponse.statusCode == 200 else {
+                    let errorResponse = try response.map(BaseResponse<BlankData>.self)
+                    throw PillinTimeError.networkFail
+                }
+                return try response.map(BaseResponse<BlankData>.self)
+            }
+            .mapError { error in
+                print("error:", error)
+                if error is MoyaError {
+                    return PillinTimeError.networkFail
+                } else {
+                    return error as! PillinTimeError
+                }
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    
     /// 약물 복용 기록 조회
     func getDoseLog(memberId: Int, date: String?) -> AnyPublisher<GetDoseLogResponseModel, PillinTimeError> {
         return provider.requestPublisher(.getDoseLog(memberId, date))

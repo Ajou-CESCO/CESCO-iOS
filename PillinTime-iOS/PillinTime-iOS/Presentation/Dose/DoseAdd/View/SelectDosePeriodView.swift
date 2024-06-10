@@ -32,7 +32,7 @@ struct SelectDosePeriodView: View {
     }
     
     private var endDateRange: ClosedRange<Date> {
-        let firstDay = Calendar.current.date(byAdding: .day, value: 1, to: startDate)!
+        let firstDay = Calendar.current.date(byAdding: .day, value: 7, to: startDate)!
         return firstDay...Date.distantFuture
     }
     
@@ -44,7 +44,7 @@ struct SelectDosePeriodView: View {
                 DatePickerField(date: $startDate, title: "복용 시작일", symbolName: "calendar", range: startDateRange)
                     .padding(.vertical, 30)
                     .onChange(of: startDate, {
-                        let newEndDate = Calendar.current.date(byAdding: .day, value: 1, to: startDate)!
+                        let newEndDate = Calendar.current.date(byAdding: .day, value: 7, to: startDate)!
                         if endDate < newEndDate {
                             endDate = newEndDate
                         }
@@ -60,7 +60,7 @@ struct SelectDosePeriodView: View {
                             isEndDatePickerDisabled = true
                         } else {
                             isEndDatePickerDisabled = false
-                            endDate = Calendar.current.date(byAdding: .day, value: 1, to: startDate)!
+                            endDate = Calendar.current.date(byAdding: .day, value: 7, to: startDate)!
                         }
                     })
                     .frame(width: 125)
